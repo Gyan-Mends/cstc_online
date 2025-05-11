@@ -1,0 +1,125 @@
+"use client"
+
+import { Link } from "@remix-run/react"
+import { motion } from "framer-motion"
+import { Calendar, MapPin, Clock, Users, ArrowRight } from "lucide-react"
+import RootLayout from "~/Layout/PublicLayout"
+
+export default function EventsPage() {
+    return (
+        <RootLayout>
+            <main className="flex-1">
+                <div className="bg-gray-50 py-12 md:py-16">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="text-center"
+                        >
+                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Events</h1>
+                            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+                                Join us for upcoming events, workshops, and networking opportunities
+                            </p>
+                        </motion.div>
+                    </div>
+                </div>
+
+                <section className="py-12 md:py-16">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div className=" gap-12 ">
+                            <div className="">
+
+
+                                <div className=" mt-10 lg:grid lg:grid-cols-3 gap-10">
+                                    {[
+                                        {
+                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            title: "Corporate Governance Workshop",
+                                            description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members",
+                                            location: "Kempinski Hotel, Accra",
+                                            date: "June 15, 2025"
+
+                                        },
+                                        {
+                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            title: "Corporate Governance Workshop",
+                                            description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members.",
+                                            location: "Kempinski Hotel, Accra",
+                                            date: "July 10, 2025"
+
+                                        },
+                                        {
+                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            title: "Entrepreneurship Training Series",
+                                            description: "A week-long training series focused on equipping entrepreneurs with essential skills in various areas including product development, marketing, and financial management.",
+                                            location: "CSTS Training Center, Madina, Accra",
+                                            date: "August 5-12, 2025"
+
+                                        },
+                                        {
+                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            title: "Company Secretary Masterclass",
+                                            description: "An advanced training program for company secretaries covering the latest regulatory changes and best practices in corporate governance.",
+                                            location: "Movenpick Ambassador Hotel, Accra",
+                                            date: "September 20, 2025"
+
+                                        },
+                                    ].map((article, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                duration: 0.5,
+                                                delay: 0.1 * index,
+                                            }}
+                                            className="border-b border-gray-300 bg-white rounded-lg pb-10 shadow-md last:border-0 hover:transform-3d"
+                                        >
+                                            <Link to={`/blog/${index + 1}`}>
+                                                <div className="group">
+                                                    <div className="mb-4 h-60 w-full rounded-lg bg-gray-200">
+                                                        <img className="rounded-tr-lg rounded-tl-lg h-full w-full" src={article.image} alt="" /></div>
+                                                    <div className="flex flex-col gap-2 px-2">
+                                                        <div className="flex justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="p-2 w-10 bg-pink-200 rounded-md">
+                                                                    <Calendar className="text-pink-500  h-6 w-6" />
+                                                                </div>
+                                                                <p className="text-gray-400"> {article.date}</p>
+                                                            </div>
+                                                            <div className="flex items-center">
+                                                                <p className="text-gray-400">{article.location}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <p className="font-bold">{article.title}</p>
+                                                        <p className="mt-2">{article.description}</p>
+                                                        <div className="mt-6">
+                                                            <Link
+                                                                to={`/resources/${article.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                                                className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg  flex gap-4 justify-center"
+                                                            >
+                                                                Register For Event <ArrowRight className="h-4 w-4" />
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-10 flex justify-center">
+                                    <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                                        Load more articles
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </RootLayout>
+    )
+}
