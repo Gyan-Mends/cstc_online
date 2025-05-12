@@ -2,7 +2,7 @@
 
 import { Link } from "@remix-run/react"
 import { motion } from "framer-motion"
-import { BookOpen, Calendar, Clock, Users, Award, CheckCircle } from "lucide-react"
+import { BookOpen, Calendar, Clock, Users, Award, CheckCircle, User } from "lucide-react"
 import RootLayout from "~/Layout/PublicLayout"
 
 export default function TrainingsPage() {
@@ -37,12 +37,13 @@ export default function TrainingsPage() {
                         <div className="mt-8 space-y-8 lg:grid">
                             {[
                                 {
-                                    title: "Fresh Yoghurt & Fruit Juice Production",
+                                    client: "Fan milk Limited",
+                                    title: "Development Enhancement Exit Programme (DEEP)",
                                     date: "June 15-16, 2025",
                                     duration: "2 days (16 hours)",
                                     format: "In-person",
                                     description:
-                                        "Learn to create high-quality yogurt and fruit juice products with proper hygiene and preservation techniques..",
+                                        "A comprehensive program designed to enhance employee development and prepare them for career transitions.",
                                     highlights: [
                                         "Board effectiveness and accountability",
                                         "Risk management and internal controls",
@@ -51,12 +52,13 @@ export default function TrainingsPage() {
                                     ],
                                 },
                                 {
-                                    title: "Cosmetics Product Development",
+                                    client: "Various Corporate Client",
+                                    title: "Managing Boardroom Dynamics under The New Companies Act of Ghana",
                                     date: "July 10-12, 2025",
                                     duration: "3 days (24 hours)",
                                     format: "In-person",
                                     description:
-                                        "Training on creating personal care products including hair shampoo, conditioner, and bath products.",
+                                        "Training focused on effective boardroom management in compliance with the new Companies Act of Ghana.",
                                     highlights: [
                                         "Understanding financial statements",
                                         "Budgeting and forecasting",
@@ -65,12 +67,13 @@ export default function TrainingsPage() {
                                     ],
                                 },
                                 {
-                                    title: "Hand Sanitizer & Liquid Soap Production",
+                                    title: "Company Secretary Training",
+                                    client: " Various Corporate Clients",
                                     date: "August 5-7, 2025",
                                     duration: "3 days (24 hours)",
                                     format: "In-person",
                                     description:
-                                        "Learn how to produce effective hand sanitizers and liquid soap products that meet health standards.",
+                                        "Specialized training for company secretaries covering legal and regulatory requirements and best practices.",
                                     highlights: [
                                         "Strategic thinking and planning",
                                         "Team building and motivation",
@@ -79,11 +82,12 @@ export default function TrainingsPage() {
                                     ],
                                 },
                                 {
-                                    title: "Fashion Accessories Creation",
+                                    client: "Corporate Clients",
+                                    title: "Tax Administration",
                                     date: "September 20-24, 2025",
                                     duration: "5 days (40 hours)",
                                     format: "Hybrid (In-person & Virtual)",
-                                    description: "Training on creating hair fascinators, hair bonnets, wax print brooches, and other fashion items.",
+                                    description: "Training on tax compliance, administration, and optimization strategies for businesses.",
                                     highlights: [
                                         "Regulatory frameworks and requirements",
                                         "Compliance risk assessment",
@@ -91,20 +95,7 @@ export default function TrainingsPage() {
                                         "Monitoring and reporting",
                                     ],
                                 },
-                                {
-                                    title: "Business Administration Essentials",
-                                    date: "October 15-17, 2025",
-                                    duration: "3 days (24 hours)",
-                                    format: "Virtual",
-                                    description:
-                                        "Master the essential aspects of business administration to improve operational efficiency.",
-                                    highlights: [
-                                        "Organizational structure and design",
-                                        "Process optimization",
-                                        "Resource management",
-                                        "Performance measurement",
-                                    ],
-                                },
+
                             ].map((program, index) => (
                                 <motion.div
                                     key={index}
@@ -121,7 +112,7 @@ export default function TrainingsPage() {
                                             </div>
                                         </div>
                                         <div className="p-6 md:w-3/4">
-                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
                                                 <div>
                                                     <div className="flex items-center">
                                                         <Calendar className="mr-2 h-4 w-4 text-gray-500" />
@@ -142,6 +133,13 @@ export default function TrainingsPage() {
                                                         <span className="text-sm font-medium text-gray-700">Format</span>
                                                     </div>
                                                     <p className="mt-1 text-sm text-gray-600">{program.format}</p>
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center">
+                                                        <User className="mr-2 h-4 w-4 text-gray-500" />
+                                                        <span className="text-sm font-medium text-gray-700">Client: </span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm text-gray-600">{program.client}</p>
                                                 </div>
                                             </div>
                                             <p className="mt-4 text-gray-600">{program.description}</p>
@@ -248,7 +246,7 @@ export default function TrainingsPage() {
                     </div>
 
                     <Link
-                        to=""
+                        to="contact"
                         className="rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white hover:bg-pink-600"
                     >
                         Request Customed Training

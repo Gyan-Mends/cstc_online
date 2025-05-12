@@ -74,25 +74,25 @@ export default function Footer() {
                         <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Connect With Us</h3>
                         <div className="mt-4 flex space-x-4">
                             <a
-                                href="#twitter"
+                                href="https://twitter.com/CSTSGHANA"
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-pink-500 hover:text-white"
                             >
                                 <Twitter className="h-5 w-5" />
                             </a>
                             <a
-                                href="#instagram"
+                                href="https://www.instagram.com/cstsghana/"
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-pink-500 hover:text-white"
                             >
                                 <Instagram className="h-5 w-5" />
                             </a>
                             <a
-                                href="#facebook"
+                                href="https://www.facebook.com/CorporateSecretarialandTrainingServices/"
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-pink-500 hover:text-white"
                             >
                                 <Facebook className="h-5 w-5" />
                             </a>
                             <a
-                                href="#linkedin"
+                                href="https://www.linkedin.com/company/csts-ghana/"
                                 className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:bg-pink-500 hover:text-white"
                             >
                                 <Linkedin className="h-5 w-5" />

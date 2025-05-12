@@ -103,7 +103,7 @@ export default function Home() {
                   <ScrollAnimation>
                     <div className="mt-8">
                       <Link
-                        to="/about"
+                        to="/who-we-are"
                         className="inline-flex items-center text-sm font-medium text-white transition-colors bg-pink-500 h-10 px-4 rounded-md hover:transform-3d"
                       >
                         Learn more about us
@@ -176,7 +176,7 @@ export default function Home() {
                       <p className="text-gray-600">{service.description}</p>
                       <div className="mt-4">
                         <Link
-                          to={`/services/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
+                          to="/corporate-services"
                           className="inline-flex items-center text-sm font-medium text-pink-500 transition-colors hover:text-pink-600"
                         >
                           Learn more
@@ -192,7 +192,7 @@ export default function Home() {
             <ScrollAnimation>
               <div className="flex justify-center items-center mt-20">
                 <Link
-                  to="/contact"
+                  to="/corporate-services"
                   className="inline-flex items-center rounded-md h-10 px-6 py-3 text-sm font-medium text-white transition-colors  hover:transform-3d bg-pink-500"
                 >
                   View All Services
@@ -254,7 +254,7 @@ export default function Home() {
                       <p className="text-gray-600">{program.description}</p>
                       <div className="mt-4">
                         <Link
-                          to={`/trainings/${program.title.toLowerCase().replace(/\s+/g, "-")}`}
+                          to="Events"
                           className="inline-flex items-center rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600 w-full justify-center"
                         >
                           Learn More
@@ -268,7 +268,7 @@ export default function Home() {
 
               <ScrollAnimation delay={0.3} className="mt-12 text-center">
                 <Link
-                  to="/trainings"
+                  to="/Events"
                   className="inline-flex items-center text-sm font-medium text-pink-500 transition-colors hover:text-pink-600"
                 >
                   View All Events
@@ -343,14 +343,14 @@ export default function Home() {
                     <div className="mt-8 flex flex-wrap gap-4">
                       <Link
                         to="/contact"
-                        className="inline-flex items-center rounded-md shadow-sm bg-white px-6 py-3 text-sm font-medium text-pink-500 transition-colors hover:bg-pink-600"
+                        className="inline-flex items-center rounded-md shadow-sm bg-white px-6 py-3 text-sm font-medium text-pink-500 transition-colors "
                       >
                         Get in Touch
                         <ArrowRight className="h-4 w-4 ml-4" />
                       </Link>
                       <Link
-                        to="/services"
-                        className="inline-flex items-center rounded-md shadow-sm bg-white px-6 py-3 text-sm font-medium text-pink-500 transition-colors hover:bg-gray-800"
+                        to="/corporate-services"
+                        className="inline-flex items-center rounded-md shadow-sm bg-white px-6 py-3 text-sm font-medium text-pink-500 transition-colors "
                       >
                         Explore Services
                         <ArrowRight className="h-4 w-4 ml-4" />

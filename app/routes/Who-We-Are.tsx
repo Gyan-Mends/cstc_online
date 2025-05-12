@@ -98,16 +98,16 @@ export default function WhoWeArePage() {
                                     title: "Collaboration",
                                     description: "We believe in the power of teamwork and partnerships.",
                                 },
-                                {
-                                    icon: <Clock className="h-8 w-8 text-pink-500" />,
-                                    title: "Mission",
-                                    description: "To provide exceptional corporate services and training programs that empower businesses and entrepreneurs to achieve their full potential and succeed in an increasingly competitive business environment.",
-                                },
-                                {
-                                    icon: <Eye className="h-8 w-8 text-pink-500" />,
-                                    title: "Our Vission",
-                                    description: "To be the leading provider of corporate secretarial services and business training in Ghana, recognized for excellence, innovation, and commitment to client success.",
-                                },
+                                // {
+                                //     icon: <Clock className="h-8 w-8 text-pink-500" />,
+                                //     title: "Mission",
+                                //     description: "To provide exceptional corporate services and training programs that empower businesses and entrepreneurs to achieve their full potential and succeed in an increasingly competitive business environment.",
+                                // },
+                                // {
+                                //     icon: <Eye className="h-8 w-8 text-pink-500" />,
+                                //     title: "Our Vission",
+                                //     description: "To be the leading provider of corporate secretarial services and business training in Ghana, recognized for excellence, innovation, and commitment to client success.",
+                                // },
                             ].map((value, index) => (
                                 <ScrollAnimation key={index} delay={0.1 * index}>
                                     <div className="rounded-lg border border-gray-200 bg-white p-6 h-80 text-center shadow-sm">
@@ -123,10 +123,45 @@ export default function WhoWeArePage() {
                     </div>
                 </section>
 
+                <section>
+                    <div className="lg:grid lg:grid-cols-2 gap-20 py-40 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                       <ScrollAnimation>
+                         <div className="border h-80 w-full bg-white rounded-lg shadow-md p-10 hover:transform-3d">
+                            <div className="flex justify-between items-center">
+                                <h4 className="text-2xl font-montserrat font-bold">
+                                    Mission
+                                </h4>
+                                <p>
+                                    <Clock className="h-8 w-8 text-pink-500" />
+                                </p>
+                            </div>
+                            <p className="mt-16">
+                                "To provide exceptional corporate services and training programs that empower businesses and entrepreneurs to achieve their full potential and succeed in an increasingly competitive business environment.
+                            </p>
+                        </div>
+                       </ScrollAnimation>
+                        <ScrollAnimation>
+                            <div className="border h-80 w-full bg-white rounded-lg shadow-md p-10 hover:transform-3d">
+                            <div className="flex justify-between items-center">
+                                <h4 className="text-2xl font-montserrat font-bold">
+                                    Vission
+                                </h4>
+                                <p>
+                                    <Eye className="h-8 w-8 text-pink-500" />
+                                </p>
+                            </div>
+                            <p className="mt-16">
+                                "To provide exceptional corporate services and training programs that empower businesses and entrepreneurs to achieve their full potential and succeed in an increasingly competitive business environment.
+                            </p>
+                        </div>
+                        </ScrollAnimation>
+                    </div>
+                </section>
 
 
 
-                <section className="py-12 md:py-16">
+
+                {/* <section className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <ScrollAnimation>
                             <div className="text-center">
@@ -185,7 +220,7 @@ export default function WhoWeArePage() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section> */}
             </main>
         </RootLayout>
     )

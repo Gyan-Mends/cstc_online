@@ -215,7 +215,7 @@ export default function ContactPage() {
                                             to="https://calendly.com/cstsghana"
                                             className="inline-flex items-center rounded-md h-10 px-6 py-3 text-sm font-medium text-white transition-colors w-full justify-center  hover:transform-3d bg-pink-500"
                                         >
-                                            View All Services
+                                            Schedule metting via Calendly
                                             <ArrowRight className="ml-2 h-4 w-4" />
 
                                         </Link>

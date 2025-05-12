@@ -34,7 +34,7 @@ export default function EventsPage() {
                                 <div className=" mt-10 lg:grid lg:grid-cols-3 gap-10">
                                     {[
                                         {
-                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1747005405/e3_ypmjut.jpg",
                                             title: "Corporate Governance Workshop",
                                             description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members",
                                             location: "Kempinski Hotel, Accra",
@@ -42,7 +42,7 @@ export default function EventsPage() {
 
                                         },
                                         {
-                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            image: "https://img.freepik.com/premium-photo/woman-giving-presentation-her-colleagues-conference-room_693425-35463.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
                                             title: "Corporate Governance Workshop",
                                             description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members.",
                                             location: "Kempinski Hotel, Accra",
@@ -50,7 +50,7 @@ export default function EventsPage() {
 
                                         },
                                         {
-                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            image: "https://img.freepik.com/premium-photo/young-african-american-businessman-giving-presentation-colleagues_605022-14327.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
                                             title: "Entrepreneurship Training Series",
                                             description: "A week-long training series focused on equipping entrepreneurs with essential skills in various areas including product development, marketing, and financial management.",
                                             location: "CSTS Training Center, Madina, Accra",
@@ -58,7 +58,7 @@ export default function EventsPage() {
 
                                         },
                                         {
-                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746910109/e3_yg6ecy.avif",
+                                            image: "https://img.freepik.com/premium-photo/middle-aged-african-american-businesswoman-work-desk-modern-office_100800-29031.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
                                             title: "Company Secretary Masterclass",
                                             description: "An advanced training program for company secretaries covering the latest regulatory changes and best practices in corporate governance.",
                                             location: "Movenpick Ambassador Hotel, Accra",
@@ -78,8 +78,8 @@ export default function EventsPage() {
                                         >
                                             <Link to={`/blog/${index + 1}`}>
                                                 <div className="group">
-                                                    <div className="mb-4 h-60 w-full rounded-lg bg-gray-200">
-                                                        <img className="rounded-tr-lg rounded-tl-lg h-full w-full" src={article.image} alt="" /></div>
+                                                    <div className="mb-4 h-[33vh] w-full rounded-lg bg-gray-200">
+                                                        <img className="rounded-tr-lg rounded-tl-lg h-[33vh] w-full" src={article.image} alt="" /></div>
                                                     <div className="flex flex-col gap-2 px-2">
                                                         <div className="flex justify-between">
                                                             <div className="flex items-center gap-2">
@@ -117,6 +117,19 @@ export default function EventsPage() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <section className="py-10">
+                    <div className="mx-auto flex flex-col justify-center items-center max-w-7xl px-4 sm:px-6 lg:px-8 w-full h-60 rounded-xl bg-white shadow-md gap-4">
+                        <p className="font-bold text-2xl font-montserrat">Have an idea for an event?</p>
+                        <p>We're always looking for new ideas and collaborations for events and workshops. Reach out to us with your suggestions!
+
+                        </p>
+
+                        <Link className="py-2 px-6 rounded-lg text-white bg-pink-500" to="/contact">
+                            Contact Us
+                        </Link>
                     </div>
                 </section>
             </main>

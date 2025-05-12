@@ -63,7 +63,7 @@ export default function ComplianceNoticesPage() {
                                             to={`/resources/${resource.title.toLowerCase().replace(/\s+/g, "-")}`}
                                             className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg hover:transform-3d"
                                         >
-                                            Download resource
+                                            Read Full Notice
                                         </Link>
                                     </div>
                                 </motion.div>
@@ -71,6 +71,8 @@ export default function ComplianceNoticesPage() {
                         </div>
                     </div>
                 </section>
+
+
             </main>
         </RootLayout>
     )
