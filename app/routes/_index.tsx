@@ -2,7 +2,7 @@
 import { Button } from "@nextui-org/react"
 import { Link } from "@remix-run/react"
 import { style } from "framer-motion/client"
-import { ArrowRight, Calendar, BookOpen, Briefcase, FileText, Users, Building, Phone } from "lucide-react"
+import { ArrowRight, Calendar, BookOpen, Briefcase, FileText, Users, Building, Phone, User } from "lucide-react"
 import ScrollAnimation from "~/components/animation"
 import RootLayout from "~/Layout/PublicLayout"
 
@@ -314,7 +314,7 @@ export default function Home() {
                   <ScrollAnimation key={index} delay={0.1 * index}>
                     <div className="rounded-lg hover:transform-3d border border-gray-200 h-[35vh] bg-white p-6 shadow-sm">
                       <div className="mb-2">
-                        <p>Icon</p>
+                        <p><User className="text-pink-500" /></p>
                       </div>
                       <p className="text-gray-600">"{testimonial.quote}"</p>
                       <div className="mt-6">

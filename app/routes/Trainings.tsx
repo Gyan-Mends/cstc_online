@@ -156,13 +156,13 @@ export default function TrainingsPage() {
                                             </div>
                                             <div className="mt-6 flex items-center justify-between">
                                                 <Link
-                                                    to={`/trainings/${index + 1}`}
+                                                    to="/404"
                                                     className="text-sm font-medium text-pink-500 hover:text-pink-600"
                                                 >
                                                     View details
                                                 </Link>
                                                 <Link
-                                                    to={`/trainings/${index + 1}/register`}
+                                                    to="/404"
                                                     className="rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white hover:bg-pink-600"
                                                 >
                                                     Register
@@ -246,7 +246,7 @@ export default function TrainingsPage() {
                     </div>
 
                     <Link
-                        to="contact"
+                        to="/contact"
                         className="rounded-md bg-pink-500 px-4 py-2 text-sm font-medium text-white hover:bg-pink-600"
                     >
                         Request Customed Training

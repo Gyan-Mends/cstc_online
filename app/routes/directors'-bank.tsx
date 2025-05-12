@@ -294,7 +294,7 @@ export default function DirectorsBankPage() {
                                     </p>
                                     <div className="mt-8">
                                         <Link
-                                            to="#registration-form"
+                                            to="https://docs.google.com/forms/d/1jAzNGuriRUNJzrSpI1feBHMw53s_kevmPHXKg8l7SdY/edit"
                                             className="inline-flex items-center rounded-md bg-pink-500 px-6 py-3 text-base font-medium text-white shadow-sm transition-colors hover:bg-pink-600"
                                         >
                                             Complete Registration Form

@@ -60,7 +60,7 @@ export default function ComplianceNoticesPage() {
                                     <p className="text-gray-600">{resource.description}</p>
                                     <div className="mt-4">
                                         <Link
-                                            to={`/resources/${resource.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                            to="/404"
                                             className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg hover:transform-3d"
                                         >
                                             Read Full Notice

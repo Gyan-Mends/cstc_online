@@ -80,7 +80,7 @@ export default function CorporateServicesPage() {
 
                                     <div className="mt-8">
                                         <Link
-                                            to="#request-service"
+                                            to="/contact"
                                             className="inline-flex items-center rounded-md  bg-pink-500 px-6 py-2 text-base font-medium text-white shadow-sm transition-colors hover:bg-pink-600"
                                         >
                                             Request Service <ArrowRight className="h-4 w-4 ml-2" />

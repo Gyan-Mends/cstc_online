@@ -76,7 +76,7 @@ export default function EventsPage() {
                                             }}
                                             className="border-b border-gray-300 bg-white rounded-lg pb-10 shadow-md last:border-0 hover:transform-3d"
                                         >
-                                            <Link to={`/blog/${index + 1}`}>
+                                            <Link to="/404">
                                                 <div className="group">
                                                     <div className="mb-4 h-[33vh] w-full rounded-lg bg-gray-200">
                                                         <img className="rounded-tr-lg rounded-tl-lg h-[33vh] w-full" src={article.image} alt="" /></div>
@@ -97,7 +97,7 @@ export default function EventsPage() {
                                                         <p className="mt-2">{article.description}</p>
                                                         <div className="mt-6">
                                                             <Link
-                                                                to={`/resources/${article.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                                                to="/404"
                                                                 className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg  flex gap-4 justify-center"
                                                             >
                                                                 Register For Event <ArrowRight className="h-4 w-4" />

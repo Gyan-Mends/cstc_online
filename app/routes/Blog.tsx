@@ -107,7 +107,7 @@ export default function BlogPage() {
                                             }}
                                             className="border-b border-gray-300 pb-10 last:border-0"
                                         >
-                                            <Link to={`/blog/${index + 1}`}>
+                                            <Link to="/404">
                                                 <div className="group">
                                                     <div className="mb-4 h-60 w-full rounded-lg bg-gray-200">
                                                         <img className="rounded-lg h-full w-full" src={article.image} alt="" /></div>
@@ -134,12 +134,12 @@ export default function BlogPage() {
                                                             <span className="mx-2">•</span>
                                                             <span>{article.readTime}</span>
                                                         </div>
-                                                        <div className="mt-4">
+                                                        <Link to="/404" className="mt-4">
                                                             <span className="inline-flex items-center text-sm font-medium text-pink-500 group-hover:text-pink-600">
                                                                 Read more
                                                                 <ArrowRight className="ml-1 h-4 w-4" />
                                                             </span>
-                                                        </div>
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </Link>
