@@ -19,7 +19,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className="">
-                <div className="flex min-h-screen flex-col bg-gray-50">
+                <div className="flex min-h-screen flex-col bg-gray-50 font-nunito">
                     <Navigation />
                     {children}
                     <Footer />

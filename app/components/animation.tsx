@@ -64,10 +64,11 @@ export default function ScrollAnimation({
     return (
         <div ref={ref} className={className}>
             <motion.div
+                style={{ willChange: "opacity, transform" }}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 variants={variants}
-                transition={{ duration: 0.6, delay: delay }}
+                transition={{ duration: 0.6, delay }}
             >
                 {children}
             </motion.div>
