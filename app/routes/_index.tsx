@@ -365,8 +365,8 @@ export default function Home() {
                       <div className="text-center">
                         <Phone className="mx-auto h-12 w-12 text-pink-500" />
                         <p className="mt-4 text-xl font-bold ">Contact Us</p>
-                        <p className="mt-2 ">+1 (555) 123-4567</p>
-                        <p className="">info@corporatesecretarial.com</p>
+                        <p className="mt-2 ">0201108331 / 0270308880 / 0506326541</p>
+                        <p className="">info@cstsghana.com</p>
                         <p className="mt-4 text-sm ">Monday - Friday: 9:00 AM - 5:00 PM</p>
                       </div>
                     </div>
