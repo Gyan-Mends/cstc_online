@@ -1,35 +1,26 @@
-import { useNavigate, useNavigation } from "@remix-run/react";
+import { Checkbox } from "@heroui/react";
+import { ActionFunction } from "@remix-run/node";
+import { Form, useActionData, useNavigate, useNavigation } from "@remix-run/react";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "~/components/image/logo.jpg";
+import login from "~/controllers/users";
 
 const Login = () => {
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
     const navigation = useNavigation();
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const formData = new FormData(event.currentTarget);
-        const data = {
-            email: formData.get("email"),
-            password: formData.get("password")
-        };
-
-        try {
-            const res = await axios.post(
-                "https://cstsapi.vercel.app/auth",
-                data,
-                {
-                    headers: { "Content-Type": "application/json" },
-                    // withCredentials: true
-                }
-            );
-            navigate("/admin");
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Login failed. Please try again.");
+    const [isVisible, setIsVisible] = useState(false);
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const actionData = useActionData<any>();
+    const isSubmitting = navigation.state === "submitting";
+    useEffect(() => {
+        if (actionData) {
+            setEmailError(actionData.emailError?.email || "");
+            setPasswordError(actionData.passwordError?.password || "");
         }
-    };
+    }, [actionData]);
 
     return (
         <div className="bg-gray-50/20 dark:dark-bg w-full h-[100vh] lg:h-[100vh] flex items-center justify-center">
@@ -38,10 +29,9 @@ const Login = () => {
                     <img className="h-10 w-10" src={logo} alt="Logo" />
                     <h5 className="font-nunito dark:dark-text text-2xl font-bold">Sign in</h5>
                 </div>
-                <form
+                <Form
                     className="mt-6 flex flex-col gap-6"
-                    onSubmit={handleSubmit}
-                    method="POST"
+                    method="post"
                 >
                     {error && (
                         <p className="text-red-500 text-center">{error}</p>
@@ -61,6 +51,9 @@ const Login = () => {
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm shadow-md"
                         />
+                        {emailError && (
+                            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                        )}
                     </div>
                     <div>
                         <label
@@ -77,7 +70,11 @@ const Login = () => {
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm"
                         />
+                        {passwordError && (
+                            <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                        )}
                     </div>
+                   
                     <div>
                         <button
                             disabled={navigation.state !== "idle"}
@@ -87,10 +84,23 @@ const Login = () => {
                             {navigation.state === "idle" ? "Login" : "Logging in..."}
                         </button>
                     </div>
-                </form>
+                </Form>
             </div>
         </div>
     );
 };
 
 export default Login;
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const rememberMe = formData.get("rememberMe");
+
+    const signin = await login.Logins({ request, email, password, rememberMe });
+
+    return signin;
+    
+};
+

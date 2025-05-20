@@ -10,19 +10,30 @@ import {
     User,
 
 } from "@heroui/react";
-import { LinksFunction } from "@remix-run/node";
-import { useNavigate, useNavigation } from "@remix-run/react";
+import { json, LinksFunction, LoaderFunction } from "@remix-run/node";
+import { useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import { Delete, Edit, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserColumns } from "~/components/table/columns";
 import NewCustomTable from "~/components/table/newTable";
 import AdminLayout from "~/Layout/AttendantLayout";
-
 export const links: LinksFunction = () => {
     return [
         { rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" },
     ];
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+    const base_url = process.env.CSTS_API_URL;
+    const searchParams = request.url.split("?")[1];
+    const limit = parseInt(searchParams?.split("=")[2] || '7');
+    const page = parseInt(searchParams?.split("=")[1] || "1") || 1;
+
+    if (!base_url) {
+        throw new Error("CSTS_API_URL is not defined");
+    }
+    return json({ base_url, page });
 };
 
 const Users = () => {
@@ -31,38 +42,57 @@ const Users = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [base64Image, setBase64Image] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const fixedUsers = [
-        {
-            id: 1,
-            firstName: "John",
-            middleName: "A.",
-            lastName: "Doe",
-            email: "john.doe@example.com",
-            phone: "123-456-7890",
-            role: "Admin",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            id: 2,
-            firstName: "Jane",
-            middleName: "",
-            lastName: "Smith",
-            email: "jane.smith@example.com",
-            phone: "987-654-3210",
-            role: "User",
-            image: "https://via.placeholder.com/150",
-        },
-        {
-            id: 3,
-            firstName: "Alice",
-            middleName: "B.",
-            lastName: "Johnson",
-            email: "alice.johnson@example.com",
-            phone: "456-123-7890",
-            role: "Manager",
-            image: "https://via.placeholder.com/150",
-        },
-    ];
+    const [users, setUsers] = useState([]);
+    // const fixedUsers = [
+    //     {
+    //         id: 1,
+    //         firstName: "John",
+    //         middleName: "A.",
+    //         lastName: "Doe",
+    //         email: "john.doe@example.com",
+    //         phone: "123-456-7890",
+    //         role: "Admin",
+    //         image: "https://via.placeholder.com/150",
+    //     },
+    //     {
+    //         id: 2,
+    //         firstName: "Jane",
+    //         middleName: "",
+    //         lastName: "Smith",
+    //         email: "jane.smith@example.com",
+    //         phone: "987-654-3210",
+    //         role: "User",
+    //         image: "https://via.placeholder.com/150",
+    //     },
+    //     {
+    //         id: 3,
+    //         firstName: "Alice",
+    //         middleName: "B.",
+    //         lastName: "Johnson",
+    //         email: "alice.johnson@example.com",
+    //         phone: "456-123-7890",
+    //         role: "Manager",
+    //         image: "https://via.placeholder.com/150",
+    //     },
+    // ];
+
+    const { base_url, page } = useLoaderData<typeof loader>();
+    console.log(base_url);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get(`${base_url}/getUsers?page=${page}`);
+                setUsers(response.data);
+            } catch (err) {
+                console.error("Failed to fetch users", err);
+            }
+        };
+        fetchUsers();
+    }, [base_url, page]);
+
+    console.log(users);
+
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
@@ -73,12 +103,11 @@ const Users = () => {
             phone: formData.get("phone"),
             position: formData.get("position"),
             password: formData.get("password"),
-            image: formData.get("base64Image"),
+            image: base64Image,
         };
 
-        console.log(data);
         try {
-            const res = await axios.post("https://cstsapi.vercel.app/users", data, {
+            const res = await axios.post(`${base_url}/users`, data, {
                 headers: { "Content-Type": "application/json" },
             });
             navigate("/admin/users");
@@ -106,10 +135,10 @@ const Users = () => {
                     columns={UserColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
                     totalPages={1}
-                    page={1}
+                    page={Number(page)}
                     setPage={(page) => navigate(`?page=${page}`)}
                 >
-                    {fixedUsers.map((user) => (
+                    {users.map((user: any) => (
                         <TableRow key={user.id}>
                             <TableCell className="text-xs">
                                 <p className="!text-xs">
@@ -117,7 +146,7 @@ const Users = () => {
                                         avatarProps={{ radius: "sm", src: user.image }}
                                         name={
                                             <p className="font-nunito text-xs">
-                                                {`${user.firstName} ${user.middleName || ""} ${user.lastName}`}
+                                                {user.fullName}
                                             </p>
                                         }
                                     />
@@ -125,7 +154,7 @@ const Users = () => {
                             </TableCell>
                             <TableCell className="text-xs">{user.email}</TableCell>
                             <TableCell>{user.phone}</TableCell>
-                            <TableCell>{user.role}</TableCell>
+                            <TableCell>{user.position}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
                                 <Tooltip content="Edit User">
                                     <button
@@ -147,6 +176,7 @@ const Users = () => {
                         </TableRow>
                     ))}
                 </NewCustomTable>
+
             </div>
 
             {/* Drawer */}
@@ -275,3 +305,5 @@ const Users = () => {
 };
 
 export default Users;
+
+
