@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Home, Search } from "lucide-react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { Link, useLocation } from "@remix-run/react";
 import ScrollAnimation from "~/components/animation";
 

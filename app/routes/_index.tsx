@@ -1,5 +1,5 @@
 
-import { Button } from "@nextui-org/react"
+import { Button } from "@heroui/react"
 import { Link } from "@remix-run/react"
 import { style } from "framer-motion/client"
 import { ArrowRight, Calendar, BookOpen, Briefcase, FileText, Users, Building, Phone, User } from "lucide-react"
