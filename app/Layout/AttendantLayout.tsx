@@ -8,7 +8,9 @@ import { Link, useNavigation } from "@remix-run/react";
 import {
     ArrowLeft,
     Bell,
+    Book,
     LayoutDashboard,
+    Mail,
     Menu,
     Search,
     Users,
@@ -24,7 +26,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     const isLoading = navigation.state === "loading";
 
     return (
-        <div className="flex h-screen bg-gray-100 dark:bg-[#000000]">
+        <div className="flex h-screen bg-gray-50 dark:bg-[#000000]">
 
             {/* Sidebar */}
             <div
@@ -51,7 +53,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     </Button>
                 </div>
 
-                <div className="flex flex-col flex-1 px-2 py-4 space-y-6">
+                <div className="flex flex-col flex-1 px-4 py-4 space-y-6">
                     <ul className="flex flex-col">
                         <Link to="/admin">
                             <li className=" flex items-center gap-2">
@@ -65,6 +67,30 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                             <li className=" flex items-center gap-2">
                                 <Users className="h-5 w-5  " />
                                 Users
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className="flex flex-col">
+                        <Link to="/admin/contact">
+                            <li className=" flex items-center gap-2">
+                                <Mail className="h-5 w-5  " />
+                                Contact Us
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className="flex flex-col">
+                        <Link to="/admin/blogCategory">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5  " />
+                                Blog Category
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className="flex flex-col">
+                        <Link to="/admin/blog">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5  " />
+                                Blog
                             </li>
                         </Link>
                     </ul>

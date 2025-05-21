@@ -34,7 +34,7 @@ export default function NewCustomTable(
                     td: "font-nunito text-xs text-slate-500 dark:text-slate-200 ",
                 }}
             >
-                <TableHeader className="" >
+                <TableHeader className="!bg-black/20 dark:bg-slate-800" >
                     {columns.map((column, index: number) => (
                         <TableColumn
                             key={index}

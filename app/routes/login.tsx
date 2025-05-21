@@ -17,8 +17,8 @@ const Login = () => {
     const isSubmitting = navigation.state === "submitting";
     useEffect(() => {
         if (actionData) {
-            setEmailError(actionData.emailError?.email || "");
-            setPasswordError(actionData.passwordError?.password || "");
+            setEmailError(actionData.emailErrorMessage || "");
+            setPasswordError(actionData.passwordErrorMessage || "");
         }
     }, [actionData]);
 

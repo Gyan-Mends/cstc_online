@@ -2,7 +2,13 @@ export interface ContactInterface {
     _id: string,
     name: string,
     email: string,
+    phone: string,
     message: string,
+}
+
+export interface ContactResponse {
+    success: boolean;
+    message: string;
 }
 
 export interface LoginInterface {
@@ -19,4 +25,19 @@ export interface UsersInterface {
     password: string;
     base64Image?: string;
     image?: File;
+}
+
+export interface BlogInterface {
+    _id: string
+    title: string
+    description: string
+    category: string
+    admin: string
+}
+
+export interface CategoryInterface {
+    _id: string;
+    name: string
+    description: string
+    admin: string
 }

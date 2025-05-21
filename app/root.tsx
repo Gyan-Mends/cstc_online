@@ -9,6 +9,8 @@ import {
 } from "@remix-run/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import stylesheet from "~/tailwind.css";
+import {HeroUIProvider} from "@heroui/react";
+
 
 
 export const links: LinksFunction = () => [
@@ -37,9 +39,11 @@ export default function App() {
           }}
           className="light:bg-light-background dark:bg-dark-background"
         >
+          <HeroUIProvider>
           <Outlet />
           <ScrollRestoration />
           <Scripts />
+          </HeroUIProvider>
         </NextThemesProvider>
         <LiveReload />
       </body>

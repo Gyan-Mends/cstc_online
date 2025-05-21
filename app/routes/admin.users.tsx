@@ -10,115 +10,75 @@ import {
     User,
 
 } from "@heroui/react";
-import { json, LinksFunction, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
+import { ActionFunction, json, LinksFunction, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import axios from "axios";
 import { Delete, Edit, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { UsersInterface } from "~/components/interface";
 import { UserColumns } from "~/components/table/columns";
 import NewCustomTable from "~/components/table/newTable";
+import { errorToast, successToast } from "~/components/toast";
+import ConfirmModal from "~/components/ui/confirmModal";
+import usersController from "~/controllers/registration";
+import { DeleteIcon } from "~/icons/DeleteIcon";
+import { EditIcon } from "~/icons/EditIcon";
 import AdminLayout from "~/Layout/AttendantLayout";
-export const links: LinksFunction = () => {
-    return [
-        { rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" },
-    ];
-};
+import { getSession } from "~/session";
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const base_url = process.env.CSTS_API_URL;
-    const searchParams = request.url.split("?")[1];
-    const limit = parseInt(searchParams?.split("=")[2] || '7');
-    const page = parseInt(searchParams?.split("=")[1] || "1") || 1;
 
-    if (!base_url) {
-        throw new Error("CSTS_API_URL is not defined");
-    }
-    return json({ base_url, page });
-};
+
 
 const Users = () => {
     const navigation = useNavigation();
     const navigate = useNavigate();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+    const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false);
     const [base64Image, setBase64Image] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [users, setUsers] = useState([]);
-    // const fixedUsers = [
-    //     {
-    //         id: 1,
-    //         firstName: "John",
-    //         middleName: "A.",
-    //         lastName: "Doe",
-    //         email: "john.doe@example.com",
-    //         phone: "123-456-7890",
-    //         role: "Admin",
-    //         image: "https://via.placeholder.com/150",
-    //     },
-    //     {
-    //         id: 2,
-    //         firstName: "Jane",
-    //         middleName: "",
-    //         lastName: "Smith",
-    //         email: "jane.smith@example.com",
-    //         phone: "987-654-3210",
-    //         role: "User",
-    //         image: "https://via.placeholder.com/150",
-    //     },
-    //     {
-    //         id: 3,
-    //         firstName: "Alice",
-    //         middleName: "B.",
-    //         lastName: "Johnson",
-    //         email: "alice.johnson@example.com",
-    //         phone: "456-123-7890",
-    //         role: "Manager",
-    //         image: "https://via.placeholder.com/150",
-    //     },
-    // ];
-
-    const { base_url, page } = useLoaderData<typeof loader>();
-    console.log(base_url);
+    const [editUser, setEditUser] = useState<UsersInterface | null>(null);
+    const submit = useSubmit()
+    const actionData = useActionData<{
+        message: string;
+        success: boolean;
+        status: number;
+    }>()
+    const {
+        user,
+        users,
+        totalPages
+    } = useLoaderData<{
+        user: { _id: string },
+        users: UsersInterface[],
+        totalPages: number
+    }>()
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get(`${base_url}/getUsers?page=${page}`);
-                setUsers(response.data);
-            } catch (err) {
-                console.error("Failed to fetch users", err);
+        if (actionData) {
+            if (actionData.success) {
+                successToast(actionData.message)
+            } else {
+                errorToast(actionData.message)
             }
-        };
-        fetchUsers();
-    }, [base_url, page]);
-
-    console.log(users);
-
-
-    const handleSubmit = async (event: any) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = {
-            fullName: formData.get("fullName"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            position: formData.get("position"),
-            password: formData.get("password"),
-            image: base64Image,
-        };
-
-        try {
-            const res = await axios.post(`${base_url}/users`, data, {
-                headers: { "Content-Type": "application/json" },
-            });
-            navigate("/admin/users");
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Login failed. Please try again.");
         }
-    };
+    }, [actionData])
+
+    const handleConfirmModalClosed = () => {
+        setIsConfirmModalOpened(false)
+        setEditUser(null)
+    }
+
+    
+
+    
+
 
     return (
         <AdminLayout>
             <div className="relative">
+                <Toaster position="top-right" />
                 {/* Create User Button */}
                 <div className="flex justify-end">
                     <Button
@@ -134,8 +94,8 @@ const Users = () => {
                 <NewCustomTable
                     columns={UserColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
-                    totalPages={1}
-                    page={Number(page)}
+                    totalPages={totalPages}
+                    page={1}
                     setPage={(page) => navigate(`?page=${page}`)}
                 >
                     {users.map((user: any) => (
@@ -156,22 +116,24 @@ const Users = () => {
                             <TableCell>{user.phone}</TableCell>
                             <TableCell>{user.position}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
-                                <Tooltip content="Edit User">
-                                    <button
-                                        className="text-primary"
-                                        onClick={() => console.log("Edit clicked for", user)}
-                                    >
-                                        <Edit className="h-4 w-4" />
-                                    </button>
-                                </Tooltip>
-                                <Tooltip content="Delete User">
-                                    <button
-                                        className="text-danger"
-                                        onClick={() => console.log("Delete clicked for", user)}
-                                    >
-                                        <Delete className="h-4 w-4" />
-                                    </button>
-                                </Tooltip>
+                                <button
+                                    className="text-primary"
+                                    onClick={() => {
+                                        setEditUser(user);
+                                        setIsEditDrawerOpen(true);
+                                    }}
+                                >
+                                    <EditIcon className="h-4 w-4 text-blue-500" />
+                                </button>
+                                <button
+                                    className="text-danger"
+                                    onClick={() => {
+                                        setEditUser(user);
+                                        setIsConfirmModalOpened(true);
+                                    }}
+                                >
+                                    <DeleteIcon className="h-4 w-4 text-red-500" />
+                                </button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -179,7 +141,7 @@ const Users = () => {
 
             </div>
 
-            {/* Drawer */}
+            {/* create user Drawer */}
             <div
                 className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
                     } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 `}
@@ -206,9 +168,9 @@ const Users = () => {
                 <Divider className="mt-0.5" />
 
                 {/* Drawer Content */}
-                <form onSubmit={handleSubmit} method="POST" className="p-4 space-y-4">
+                <Form method="post" className="p-4 space-y-4">
                     <div>
-                        <label htmlFor="fullName" className="font-nunito text-sm text-default-100">Full Name</label>
+                        <label htmlFor="fullName" className="font-nunito text-sm !text-black">Full Name</label>
                         <input
                             name="fullName"
                             placeholder=" "
@@ -216,7 +178,7 @@ const Users = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="email" className="font-nunito text-sm text-default-100">Email</label>
+                        <label htmlFor="email" className="font-nunito text-sm !text-black">Email</label>
                         <input
                             name="email"
                             placeholder=" "
@@ -225,7 +187,7 @@ const Users = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="phone" className="font-nunito text-sm text-default-100">Phone</label>
+                        <label htmlFor="phone" className="font-nunito text-sm !text-black">Phone</label>
                         <input
                             name="phone"
                             placeholder=" "
@@ -233,7 +195,7 @@ const Users = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="position" className="font-nunito text-sm text-default-100">Position</label>
+                        <label htmlFor="position" className="font-nunito text-sm !text-black">Position</label>
                         <input
                             name="position"
                             placeholder=" "
@@ -242,7 +204,7 @@ const Users = () => {
                     </div>
                     {/* Password */}
                     <div>
-                        <label htmlFor="password" className="font-nunito text-sm text-default-100">Password</label>
+                        <label htmlFor="password" className="font-nunito text-sm !text-black">Password</label>
                         <input
                             name="password"
                             placeholder=" "
@@ -251,8 +213,8 @@ const Users = () => {
                     </div>
                     {/* Image */}
                     <div className=" ">
-                        <input name="base64Image" value={base64Image} type="" />
-                        <label className="font-nunito block text-sm text-default-100" htmlFor="">
+                        <input name="base64Image" value={base64Image} type="hidden" />
+                        <label className="font-nunito block text-sm !text-black" htmlFor="">
                             Image
                         </label>
                         <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-400 rounded-xl dark:border-white/30 mt-2">
@@ -287,6 +249,8 @@ const Users = () => {
                         </div>
                     </div>
 
+                    <input type="hidden" name="intent" value="create" />
+
                     {/* Submit Button */}
                     <div>
                         <button
@@ -296,9 +260,116 @@ const Users = () => {
                             Add User
                         </button>
                     </div>
-                </form>
+                </Form>
             </div>
 
+            {/* Edit User Drawer */}
+            <div
+                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditDrawerOpen ? "translate-x-0" : "translate-x-full"
+                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+            >
+                {/* Close Button */}
+                <div className="flex justify-between p-4">
+                    <p className="font-montserrat text-lg font-semibold">Edit User</p>
+                    <button
+                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
+                        onClick={() => setIsEditDrawerOpen(false)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="h-6 w-6"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Divider className="mt-0.5" />
+
+                {/* Drawer Content */}
+                <Form method="post" className="p-4 space-y-4">
+                    <div>
+                        <label htmlFor="fullName" className="font-nunito text-sm !text-black">Full Name</label>
+                        <input
+                            onChange={(e) => setEditUser(prev => prev ? { ...prev, fullName: e.target.value } : null)}
+                            value={editUser?.fullName}
+                            name="fullName"
+                            placeholder=" "
+                            className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="font-nunito text-sm !text-black">Email</label>
+                        <input
+                            onChange={(e) => setEditUser(prev => prev ? { ...prev, email: e.target.value } : null)}
+                            value={editUser?.email}
+                            name="email"
+                            placeholder=" "
+                            className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="phone" className="font-nunito text-sm !text-black">Phone</label>
+                        <input
+                            onChange={(e) => setEditUser(prev => prev ? { ...prev, phone: e.target.value } : null)}
+                            value={editUser?.phone}
+                            name="phone"
+                            placeholder=" "
+                            className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="position" className="font-nunito text-sm !text-black">Position</label>
+                        <input
+                            onChange={(e) => setEditUser(prev => prev ? { ...prev, position: e.target.value } : null)}
+                            value={editUser?.position}
+                            name="position"
+                            placeholder=" "
+                            className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                        />
+                    </div>
+
+
+                    <input type="hidden" name="intent" value="update" />
+                    <input type="hidden" name="id" value={editUser?._id} />
+
+                    {/* Submit Button */}
+                    <div>
+                        <button
+                            type="submit"
+                            className="bg-pink-700 hover:bg-pink-800 text-white  text-sm font-semibold py-2 px-4 rounded font-montserrat"
+                        >
+                            Add User
+                        </button>
+                    </div>
+                </Form>
+            </div>
+
+            <ConfirmModal className=" h-40 bg-white shadow-lg" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                <div className="flex gap-4">
+                    <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
+                        No
+                    </Button>
+                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
+                        setIsConfirmModalOpened(false)
+                        if (editUser) {
+                            submit({
+                                intent: "delete",
+                                id: editUser?._id
+                            }, {
+                                method: "post"
+                            })
+                            
+                        }
+                    }} >
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
         </AdminLayout>
 
     );
@@ -306,4 +377,156 @@ const Users = () => {
 
 export default Users;
 
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const fullName = formData.get("fullName") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const position = formData.get("position") as string;
+    const password = formData.get("password") as string;
+    const base64Image = formData.get("base64Image") as string;
+    const intent = formData.get("intent") as string;
+    const id = formData.get("id") as string;
 
+    switch (intent) {
+        case "create":
+            const result = await usersController.CreateUser({
+                fullName,
+                email,
+                phone,
+                position,
+                password,
+                base64Image,
+            });
+            return result;
+
+        case "update":
+            const result2 = await usersController.UpdateUser({
+                fullName,
+                email,
+                phone,
+                position,
+                id,
+            });
+            return result2;
+
+        case "delete":
+            const result3 = await usersController.DeleteUser({
+                id,
+            });
+            return result3;
+
+        default:
+            break;
+    }
+
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string;
+
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/")
+    }
+    const { user, users, totalPages } = await usersController.FetchUsers({
+        request,
+        page,
+        search_term
+    });
+
+
+
+
+    return json({ user, users, totalPages });
+
+}
+
+
+// export const loader: LoaderFunction = async ({ request }) => {
+//     const base_url = process.env.CSTS_API_URL;
+//     const searchParams = request.url.split("?")[1];
+//     const limit = parseInt(searchParams?.split("=")[2] || '7');
+//     const page = parseInt(searchParams?.split("=")[1] || "1") || 1;
+
+//     if (!base_url) {
+//         throw new Error("CSTS_API_URL is not defined");
+//     }
+//     return json({ base_url, page });
+// };
+
+// const fixedUsers = [
+//     {
+//         id: 1,
+//         firstName: "John",
+//         middleName: "A.",
+//         lastName: "Doe",
+//         email: "john.doe@example.com",
+//         phone: "123-456-7890",
+//         role: "Admin",
+//         image: "https://via.placeholder.com/150",
+//     },
+//     {
+//         id: 2,
+//         firstName: "Jane",
+//         middleName: "",
+//         lastName: "Smith",
+//         email: "jane.smith@example.com",
+//         phone: "987-654-3210",
+//         role: "User",
+//         image: "https://via.placeholder.com/150",
+//     },
+//     {
+//         id: 3,
+//         firstName: "Alice",
+//         middleName: "B.",
+//         lastName: "Johnson",
+//         email: "alice.johnson@example.com",
+//         phone: "456-123-7890",
+//         role: "Manager",
+//         image: "https://via.placeholder.com/150",
+//     },
+// ];
+
+// const { base_url, page } = useLoaderData<typeof loader>();
+// console.log(base_url);
+
+// useEffect(() => {
+//     const fetchUsers = async () => {
+//         try {
+//             const response = await axios.get(`${base_url}/getUsers?page=${page}`);
+//             setUsers(response.data);
+//         } catch (err) {
+//             console.error("Failed to fetch users", err);
+//         }
+//     };
+//     fetchUsers();
+// }, [base_url, page]);
+
+// console.log(users);
+
+
+// const handleSubmit = async (event: any) => {
+//     event.preventDefault();
+//     const formData = new FormData(event.target);
+//     const data = {
+//         fullName: formData.get("fullName"),
+//         email: formData.get("email"),
+//         phone: formData.get("phone"),
+//         position: formData.get("position"),
+//         password: formData.get("password"),
+//         image: base64Image,
+//     };
+
+//     try {
+//         const res = await axios.post(`${base_url}/users`, data, {
+//             headers: { "Content-Type": "application/json" },
+//         });
+//         navigate("/admin/users");
+//     } catch (err: any) {
+//         setError(err.response?.data?.message || "Login failed. Please try again.");
+//     }
+// };

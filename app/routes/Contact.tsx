@@ -2,41 +2,34 @@ import type React from "react"
 
 import { motion } from "framer-motion"
 import { MapPin, Phone, Mail, Clock, Send, Calendar, ArrowRight } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import RootLayout from "~/Layout/PublicLayout"
-import { Link } from "@remix-run/react"
+import { Form, json, Link, useActionData } from "@remix-run/react"
+import CustomInput from "~/components/CustomInput"
+import { Input, Textarea } from "@heroui/react"
+import { ActionFunction } from "@remix-run/node"
+import Contact from "~/model/contact"
+import { errorToast, successToast } from "~/components/toast"
+import { Toaster } from "react-hot-toast"
+import { ContactResponse } from "~/components/interface"
 
 export default function ContactPage() {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-    })
+    const actionData = useActionData<ContactResponse>()
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
-    }
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Handle form submission
-        console.log(formData)
-        alert("Thank you for your message. We will get back to you soon!")
-        setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            subject: "",
-            message: "",
-        })
-    }
+    useEffect(() => {
+        if (actionData) {
+            if (actionData.success) {
+                successToast(actionData.message)
+            } else {
+                errorToast(actionData.message)
+            }
+        }
+    }, [actionData])
 
     return (
         <RootLayout>
             <main className="flex-1">
+                <Toaster position="top-right"  />
                 <div className="bg-gray-50 py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <motion.div
@@ -62,88 +55,69 @@ export default function ContactPage() {
                                     We'd love to hear from you. Please fill out the form below or contact us using the information provided.
                                 </p>
 
-                                <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                                <Form method="post" className="mt-8 flex flex-col gap-6">
                                     <div className="grid gap-6 sm:grid-cols-2">
                                         <div>
-                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                                Your Name
-                                            </label>
-                                            <input
+                                            <Input
+                                                label="Full Name"
+                                                name="fullname"
+                                                placeholder=" "
+                                                isClearable
                                                 type="text"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                required
-                                                className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                                Email Address
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                                className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                            />
-                                        </div>
-                                    </div>
+                                                labelPlacement="outside"
+                                                classNames={{
+                                                    inputWrapper: "bg-white border border-gray-200 h-12"
+                                                }}
 
-                                    <div className="grid gap-6 sm:grid-cols-2">
-                                        <div>
-                                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                                                Phone Number
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
                                             />
                                         </div>
                                         <div>
-                                            <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-                                                Subject
-                                            </label>
-                                            <select
-                                                id="subject"
-                                                name="subject"
-                                                value={formData.subject}
-                                                onChange={handleChange}
-                                                required
-                                                className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                            >
-                                                <option value="">Select a subject</option>
-                                                <option value="Corporate Governance">Corporate Governance</option>
-                                                <option value="Financial Management">Financial Management</option>
-                                                <option value="Business Administration">Business Administration</option>
-                                                <option value="Training Programs">Training Programs</option>
-                                                <option value="Directors' Bank">Directors' Bank</option>
-                                                <option value="Other">Other</option>
-                                            </select>
+                                            <Input
+                                                label="Email"
+                                                name="email"
+                                                placeholder=" "
+                                                isClearable
+                                                type="email"
+                                                labelPlacement="outside"
+                                                classNames={{
+                                                    inputWrapper: "bg-white border border-gray-200 h-12"
+                                                }}
+
+                                            />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                                            Message
-                                        </label>
-                                        <textarea
-                                            id="message"
+                                        <Input
+                                            label="Phone Number"
+                                            name="phone"
+                                            placeholder=" "
+                                            isClearable
+                                            type="tel"
+                                            className="mt-6"
+                                            labelPlacement="outside"
+                                            classNames={{
+                                                inputWrapper: "bg-white border border-gray-200 h-12"
+                                            }}
+
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <Textarea
+                                            autoFocus
+                                            label="Message"
+                                            labelPlacement="outside"
+                                            placeholder=" "
                                             name="message"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            rows={5}
-                                            required
-                                            className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
-                                        ></textarea>
+                                            className="mt-4 font-nunito text-sm"
+                                            classNames={{
+                                                label: "font-nunito text-sm text-default-100",
+                                                inputWrapper: "bg-white border border-gray-200 !h-60"
+                                            }}
+                                        />
+
+
                                     </div>
 
                                     <div>
@@ -155,7 +129,8 @@ export default function ContactPage() {
                                             Send Message
                                         </button>
                                     </div>
-                                </form>
+                                    <input type="text" name="intent" value="create" hidden />
+                                </Form>
                             </motion.div>
 
                             <motion.div
@@ -229,3 +204,40 @@ export default function ContactPage() {
         </RootLayout>
     )
 }
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const name = formData.get("fullname");
+    const email = formData.get("email");
+    const phone = formData.get("phone");
+    const message = formData.get("message");
+    const intent = formData.get("intent");
+
+    try {
+        switch (intent) {
+            case "create":
+                const contact = await Contact.create({
+                    name,
+                    email,
+                    phone,
+                    message,
+                });
+                return json<ContactResponse>({
+                    success: true,
+                    message: "Message sent successfully"
+                });
+            
+            default:
+                return json<ContactResponse>({
+                    success: false,
+                    message: "Invalid action"
+                });
+        }
+    } catch (error: any) {
+        return json<ContactResponse>({
+            success: false,
+            message: error.message || "Failed to send message"
+        });
+    }
+};
+
