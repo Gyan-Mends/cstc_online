@@ -88,3 +88,14 @@ export const ContactColumns = [
     { title: "Action", allowSort: true },
  
 ]
+
+export const TrainingColumns = [
+    { title: "Title", key: "title", allowSort: true },
+    { title: "Description", key: "description", allowSort: true },
+    { title: "Date", key: "date", allowSort: true },
+    { title: "Duration", key: "duration", allowSort: true },
+    { title: "Format", key: "format", allowSort: true },
+    { title: "Client", key: "client", allowSort: true },
+    { title: "Action", key: "action", allowSort: false },
+];
+

@@ -59,6 +59,11 @@ const Users = () => {
         if (actionData) {
             if (actionData.success) {
                 successToast(actionData.message)
+                setIsEditDrawerOpen(false)
+                setEditUser(null)
+                setIsConfirmModalOpened(false)
+                setIsDrawerOpen(false)
+                
             } else {
                 errorToast(actionData.message)
             }
@@ -90,6 +95,8 @@ const Users = () => {
                     </Button>
                 </div>
 
+                
+
                 {/* Users Table */}
                 <NewCustomTable
                     columns={UserColumns}
@@ -100,10 +107,10 @@ const Users = () => {
                 >
                     {users.map((user: any) => (
                         <TableRow key={user.id}>
-                            <TableCell className="text-xs">
+                           <TableCell>
                                 <p className="!text-xs">
                                     <User
-                                        avatarProps={{ radius: "sm", src: user.image }}
+                                        avatarProps={{ radius: "full", src: user.image }}
                                         name={
                                             <p className="font-nunito text-xs">
                                                 {user.fullName}
@@ -363,7 +370,7 @@ const Users = () => {
                             }, {
                                 method: "post"
                             })
-                            
+
                         }
                     }} >
                         Yes

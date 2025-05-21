@@ -3,11 +3,11 @@ import { BlogInterface } from "~/components/interface";
 import mongoose from "~/mongoose.server";
 
 const BlogSchema = new mongoose.Schema({
-    title: {
+    name: {
         required: true,
         type: String,
     },
-    subject: {
+    description: {
         required: true,
         type: String,
     },
@@ -21,7 +21,7 @@ const BlogSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
     },
     admin: {
-        ref: "registration",
+        ref: "Users",
         required: true,
         type: Schema.Types.ObjectId,
     },

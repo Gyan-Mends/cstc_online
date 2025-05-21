@@ -18,29 +18,25 @@ class CategoryController {
         }
     }
 
-    // async UpdateCat({
-    //     intent,
-    //     id,
-    //     name,
-    //     description,
-    // }: {
-    //     intent: string,
-    //     id: string,
-    //     name: string,
-    //     description: string,
-    // }) {
-    //     // Update Logic
-    //     if (intent === "update") {
+    async UpdateCat({
+        id,
+        name,
+        description,
+    }: {
+        id: string,
+        name: string,
+        description: string,
+    }) {
+        // Update Logic
 
-    //         const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
-    //         if (updateCategory) {
-    //             return json({ message: "Category updated successfully", success: true }, { status: 200 });
-    //         } else {
-    //             return json({ message: "Category not found", success: false }, { status: 404 });
-    //         }
+            const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
+            if (updateCategory) {
+                return json({ message: "Category updated successfully", success: true }, { status: 200 });
+            } else {
+                return json({ message: "Category not found", success: false }, { status: 404 });
+            }
 
-    //     }
-    // }
+    }
 
     async CategoryAdd(request: Request, name: string, description: string, admin: string, intent: string, id: string) {
         try {
@@ -125,7 +121,7 @@ class CategoryController {
                 .limit(limit)
                 .exec();
 
-            return { user, categories, totalPages };
+            return { user, categories, totalPages, totalEmployeeCount };
         } catch (error: any) {
             return {
                 message: error.message,

@@ -1,16 +1,22 @@
-import { Button, Divider, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@heroui/react"
+import { Button, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@heroui/react"
 import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
 import { Form, Link, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
-import { Plus } from "lucide-react"
+import { Plus, Upload, XIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
-import { BlogInterface } from "~/components/interface"
+import { BlogInterface, CategoryInterface } from "~/components/interface"
+
 import { BlogColumns, UserColumns } from "~/components/table/columns"
 import NewCustomTable from "~/components/table/newTable"
 import { errorToast, successToast } from "~/components/toast"
+import ConfirmModal from "~/components/ui/confirmModal"
 import CustomInput from "~/components/ui/CustomInput"
+import blog from "~/controllers/blog"
+import category from "~/controllers/categoryController"
+import { DeleteIcon } from "~/icons/DeleteIcon"
+import { EditIcon } from "~/icons/EditIcon"
 import AdminLayout from "~/Layout/AttendantLayout"
-
+import { getSession } from "~/session"
 export const links: LinksFunction = () => {
     return [{ rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" }];
 };
@@ -25,19 +31,19 @@ const Users = () => {
     const navigate = useNavigate()
     const [content, setContent] = useState("");
     const navigation = useNavigation()
-    // const {
-    //     user,
-    //     blogs,
-    //     totalPages,
-    //     categories
-    // } = useLoaderData<{
-    //     user: { _id: string },
-    //     blogs: BlogInterface[],
-    //     totalPages: number,
-    //     categories: CategoryInterface[]
-    // }>()
+    const {
+        user,
+        blogs,
+        totalPages,
+        categories
+    } = useLoaderData<{
+        user: { _id: string },
+        blogs: BlogInterface[],
+        totalPages: number,
+        categories: CategoryInterface[]
+    }>()
 
-
+    console.log(blogs);
 
 
     const handleCreateModalClosed = () => {
@@ -89,13 +95,13 @@ const Users = () => {
                 <Button className="border border-white/30 px-4 py-1 bg-pink-600 text-white" onPress={() => {
                     setIsCreateModalOpened(true)
                 }}>
-                    <Plus className="h-4 w-4 text-white" />
+                    <Plus />
                     Create Blog
                 </Button>
             </div>
             {/* table  */}
             {/* table  */}
-            {/* <NewCustomTable
+            <NewCustomTable
                 columns={BlogColumns}
                 loadingState={navigation.state === "loading" ? "loading" : "idle"}
                 totalPages={totalPages}
@@ -138,11 +144,11 @@ const Users = () => {
                         </TableCell>
                     </TableRow>
                 ))}
-            </NewCustomTable> */}
+            </NewCustomTable>
 
             {/* confirm modal */}
             {/* confirm modal */}
-            {/* <ConfirmModal className="dark:bg-[#333] border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal className="dark:bg-[#333] border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
@@ -161,12 +167,14 @@ const Users = () => {
                         Yes
                     </Button>
                 </div>
-            </ConfirmModal> */}
+            </ConfirmModal>
 
 
-            {/* {dataValue && (
-                <CreateModal modalTitle="Create New User" isOpen={isEditModalOpened} onOpenChange={handleEditModalClosed}
-                >
+            {dataValue && (
+                <div
+                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditModalOpened ? "translate-x-0" : "translate-x-full"
+                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+            >
                     <div className="flex justify-between gap-10 ">
                         <p className="font-nunito">Edit Blog</p>
                         <button
@@ -174,7 +182,7 @@ const Users = () => {
                                 handleEditModalClosed()
                             }}
                         >
-                            <CloseIcon className="h-4 w-4" />
+                            <XIcon className="h-4 w-4" />
                         </button>
                     </div>
                     <hr className=" border border-default-400 " />
@@ -252,7 +260,7 @@ const Users = () => {
                                     />
                                 ) : (
                                     <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                                        <FileUploader className="h-20 w-20 text-white" />
+                                        <Upload className="h-20 w-20 text-white" />
                                     </span>
                                 )}
                             </div>
@@ -268,37 +276,29 @@ const Users = () => {
                             <button className="font-montserrat w-40 bg-primary h-10 rounded-lg">Upload blog</button>
                         </div>
                     </Form>
-                </CreateModal>
-            )} */}
+                </div>
+            )}
 
             {/* Create Modal */}
 
 
             <div
                 className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isCreateModalOpened ? "translate-x-0" : "translate-x-full"
-                    } lg:w-[30vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-            >                <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Create New Blog</p>
+                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+            >                <div className="flex justify-between gap-10 ">
+                    <p className="font-nunito">Create a new Blog</p>
                     <button
-                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
-                        onClick={() => setIsCreateModalOpened(false)}
+                        onClick={() => {
+                            handleCreateModalClosed()
+                        }}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <XIcon className="h-4 w-4" />
                     </button>
                 </div>
-                <Divider className="mt-0.5" />
+                <hr className=" border border-default-400 " />
 
-                <Form method="post" className="flex flex-col gap-4 p-4">
-                    <Input
+                <Form method="post" className="flex flex-col gap-4">
+                    <CustomInput
                         label="Title"
                         isRequired
                         isClearable
@@ -306,10 +306,6 @@ const Users = () => {
                         placeholder=" "
                         type="text"
                         labelPlacement="outside"
-                        classNames={{
-                            label: "font-nunito text-sm text-default-100",
-                            inputWrapper: "bg-white shadow-sm dark:bg-[#333]  border border-black/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
-                        }}
                     />
 
                     <div className="">
@@ -345,7 +341,7 @@ const Users = () => {
 
 
 
-                    <div className="mt-8">
+                    <div className="mt-14 ">
                         <label className="font-nunito block text-sm" htmlFor="">Image</label>
                         <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-600 rounded-xl dark:border-white/30 mt-2">
                             <input
@@ -373,20 +369,20 @@ const Users = () => {
                                 />
                             ) : (
                                 <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                                    {/* <FileUploader className="h-20 w-20 text-white" /> */}
+                                    <Upload className="h-20 w-20 text-white" />
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    {/* <input hidden name="admin" value={user?._id} type="" /> */}
-                    <input name="intent" value="create" type="hidden" />
-                    <input name="base64Image" value={base64Image} type="hidden" />
+                    <input hidden name="admin" value={user?._id} type="" />
+                        <input name="intent" value="create" type="hidden" />
+                        <input name="base64Image" value={base64Image} type="hidden" />
 
                     <div className="flex gap-6 mt-6">
-                        <button className="font-montserrat w-40 bg-pink-600 h-10 rounded-lg text-white">Upload blog</button>
-                    </div>
-                </Form>
+                        <button className="font-montserrat w-40 bg-primary h-10 rounded-lg">Upload blog</button>
+                        </div>
+                    </Form>
             </div>
         </AdminLayout>
     )
@@ -408,31 +404,31 @@ export const action: ActionFunction = async ({ request }) => {
 
     switch (intent) {
         case "create":
-            // const user = await blog.BlogAdd({
-            //     name,
-            //     base64Image,
-            //     category,
-            //     description,
-            //     admin
-            // })
-            // return user
+            const user = await blog.BlogAdd({
+                name,
+                base64Image,
+                category,
+                description,
+                admin
+            })
+            return user
 
-        // case "delete":
-        //     const deleteUser = await blog.DeleteBlog({
-        //         intent,
-        //         id
-        //     })
-        //     return deleteUser
+        case "delete":
+            const deleteUser = await blog.DeleteBlog({
+                intent,
+                id
+            })
+            return deleteUser
 
-        // case "update":
-        //     const updateUser = await blog.UpdateCat({
-        //         name,
-        //         base64Image,
-        //         category,
-        //         description,
-        //         admin, id
-        //     })
-        //     return updateUser
+        case "update":
+            const updateUser = await blog.UpdateBlog({
+                name,
+                base64Image,
+                category,
+                description,
+                admin, id
+            })
+            return updateUser
         // case "logout":
         //     const logout = await usersController.logout(intent)
         //     return logout
@@ -445,53 +441,53 @@ export const action: ActionFunction = async ({ request }) => {
     }
 }
 
-// export const loader: LoaderFunction = async ({ request }) => {
-//     const url = new URL(request.url);
-//     const page = parseInt(url.searchParams.get("page") as string) || 1;
-//     const search_term = url.searchParams.get("search_term") as string;
+export const loader: LoaderFunction = async ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string;
 
-//     const session = await getSession(request.headers.get("Cookie"));
-//     const token = session.get("email");
-//     // if (!token) {
-//     //     return redirect("/")
-//     // }
-//     const { user, blogs, totalPages } = await blog.getBlogs({
-//         request,
-//         page,
-//         search_term
-//     });
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    // if (!token) {
+    //     return redirect("/")
+    // }
+    const { user, blogs, totalPages } = await blog.getBlogs({
+        request,
+        page,
+        search_term
+    });
 
-//     const { categories } = await category.getCategories({ request, page, search_term })
+    const { categories } = await category.getCategories({ request, page, search_term })
 
-//     return json({ user, blogs, totalPages, categories });
-// }
+    return json({ user, blogs, totalPages, categories });
+}
 
-// export const meta: MetaFunction = () => {
-//     return [
-//         { title: "Sales | Point of Sale" },
-//         {
-//             name: "description",
-//             content: ".",
-//         },
-//         {
-//             name: "author",
-//             content: "MendsGyan",
-//         },
-//         { name: "og:title", content: "Point of Sale" },
-//         {
-//             name: "og:description",
-//             content: "",
-//         },
-//         {
-//             name: "og:image",
-//             content:
-//                 "https://res.cloudinary.com/app-deity/image/upload/v1701282976/qfdbysyu0wqeugtcq9wq.jpg",
-//         },
-//         { name: "og:url", content: "https://marry-right.vercel.app" },
-//         {
-//             name: "keywords",
-//             content:
-//                 "point of sales in Ghana, online shops, sales, e-commerce",
-//         },
-//     ];
-// };
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Sales | Point of Sale" },
+        {
+            name: "description",
+            content: ".",
+        },
+        {
+            name: "author",
+            content: "MendsGyan",
+        },
+        { name: "og:title", content: "Point of Sale" },
+        {
+            name: "og:description",
+            content: "",
+        },
+        {
+            name: "og:image",
+            content:
+                "https://res.cloudinary.com/app-deity/image/upload/v1701282976/qfdbysyu0wqeugtcq9wq.jpg",
+        },
+        { name: "og:url", content: "https://marry-right.vercel.app" },
+        {
+            name: "keywords",
+            content:
+                "point of sales in Ghana, online shops, sales, e-commerce",
+        },
+    ];
+};

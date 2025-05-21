@@ -29,7 +29,7 @@ export interface UsersInterface {
 
 export interface BlogInterface {
     _id: string
-    title: string
+    name: string
     description: string
     category: string
     admin: string
@@ -40,4 +40,19 @@ export interface CategoryInterface {
     name: string
     description: string
     admin: string
+}
+export interface TrainingResponse {
+    success: boolean;
+    message: string;
+}
+
+export interface TrainingInterface {
+    _id: string;
+    title: string;
+    description: string;
+    date: string;
+    duration: string;
+    format: string;
+    image: string;
+    client: string;
 }

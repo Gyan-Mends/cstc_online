@@ -4,7 +4,8 @@ import {
     Input,
     Spinner,
 } from "@heroui/react";
-import { Link, useNavigation } from "@remix-run/react";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Link, useNavigate, useNavigation } from "@remix-run/react";
 import {
     ArrowLeft,
     Bell,
@@ -22,8 +23,16 @@ import logo from "~/components/image/logo.jpg";
 const AdminLayout = ({ children }: { children: ReactNode }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigation = useNavigation();
-
+    const navigate = useNavigate();
     const isLoading = navigation.state === "loading";
+    const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [data, setData] = useState([]);
 
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-[#000000]">
@@ -57,7 +66,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <ul className="flex flex-col">
                         <Link to="/admin">
                             <li className=" flex items-center gap-2">
-                                <LayoutDashboard className="h-5 w-5  " />
+                                <LayoutDashboard className="h-5 w-5 text-pink-500 " />
                                 Dashboard
                             </li>
                         </Link>
@@ -65,7 +74,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <ul className="flex flex-col">
                         <Link to="/admin/users">
                             <li className=" flex items-center gap-2">
-                                <Users className="h-5 w-5  " />
+                                <Users className="h-5 w-5 text-pink-500 " />
                                 Users
                             </li>
                         </Link>
@@ -73,7 +82,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <ul className="flex flex-col">
                         <Link to="/admin/contact">
                             <li className=" flex items-center gap-2">
-                                <Mail className="h-5 w-5  " />
+                                <Mail className="h-5 w-5 text-pink-500 " />
                                 Contact Us
                             </li>
                         </Link>
@@ -81,7 +90,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <ul className="flex flex-col">
                         <Link to="/admin/blogCategory">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5  " />
+                                <Book className="h-5 w-5 text-pink-500 " />
                                 Blog Category
                             </li>
                         </Link>
@@ -89,8 +98,16 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <ul className="flex flex-col">
                         <Link to="/admin/blog">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5  " />
+                                <Book className="h-5 w-5 text-pink-500 " />
                                 Blog
+                            </li>
+                        </Link>
+                    </ul>
+                    <ul className="flex flex-col">
+                        <Link to="/admin/training">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5 text-pink-500 " />
+                                Training
                             </li>
                         </Link>
                     </ul>
@@ -138,9 +155,10 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                             <Menu className="h-5 w-5" />
                         </Button>
                         <Button
+                            onClick={() => navigate(-1)}
                             variant="bordered"
                             size="sm"
-                            className=" md:flex rounded-md text-md h-[35px] border border-white/20"
+                            className=" md:flex rounded-md text-md h-[35px] border bg-pink-100 text-pink-500 border-white/20"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back
@@ -150,14 +168,20 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                     <div className="flex-1 max-w-md mx-4 rounded">
                         <Input
                             startContent={
-                                <Search className="h-4 w-4 text-default-400" />
+                                <Search className="h-4 w-4 text-pink-400" />
                             }
+                            onValueChange={(value) => {
+                                const timeoutId = setTimeout(() => {
+                                    navigate(`?search_term=${value}`);
+                                }, 100);
+                                return () => clearTimeout(timeoutId);
+                            }}
                             type="search"
                             placeholder="Search user..."
                             className="w-full"
                             classNames={{
                                 inputWrapper:
-                                    "border rounded-md border-black/20 ",
+                                    "border rounded-md border-black/20 bg-white shadow-md  ",
                             }}
                         />
                     </div>
@@ -166,7 +190,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                         <div className="relative h-10 w-10 rounded-full flex items-center justify-center border border-white/20">
                             <div>
                                 <Bell className="h-5 w-5" />
-                                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary-400"></span>
+                                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-pink-600"></span>
                             </div>
                         </div>
                     </div>
@@ -187,3 +211,13 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
 };
 
 export default AdminLayout;
+
+// search bar
+export const loader: LoaderFunction = async ({request}) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") as string) || 1;
+    const search_term = url.searchParams.get("search_term") as string; 
+    
+    return json({ page, search_term })
+}
+

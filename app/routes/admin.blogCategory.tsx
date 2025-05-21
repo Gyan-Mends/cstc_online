@@ -5,7 +5,7 @@ import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubm
 import { Toaster } from "react-hot-toast";
 
 import CustomInput from "~/components/ui/CustomInput";
-import {  Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { CategoryInterface } from "~/components/interface";
 import AdminLayout from "~/Layout/AttendantLayout";
 import category from "~/controllers/categoryController";
@@ -36,7 +36,12 @@ const Category = () => {
     useEffect(() => {
         if (actionData?.success) {
             successToast(actionData?.message)
-        }else{
+            setDataValue(null)
+            setConfirmModalOpened(false)
+            setEditModalOpened(false)
+            setCreateModalOpened(false)
+
+        } else {
             errorToast(actionData?.message)
         }
     }, [actionData])
@@ -76,7 +81,7 @@ const Category = () => {
 
     return (
         <AdminLayout >
-            <Toaster position="top-rights" />
+            <Toaster position="top-right" />
             <div className="flex justify-end">
                 <Button className="border border-white/30 px-4 py-1 bg-pink-600 text-white" onPress={() => {
                     setCreateModalOpened(true)
@@ -104,13 +109,13 @@ const Category = () => {
                                     setDataValue(categories)
 
                                 }}>
-                                    <EditIcon className="h-4 w-4 text-primary-600" /> 
+                                    <EditIcon className="h-4 w-4 text-primary-600" />
                                 </button>
-                                <button  onClick={() => {
+                                <button onClick={() => {
                                     setDataValue(categories)
                                     setConfirmModalOpened(true)
                                 }}>
-                                    <DeleteIcon className="h-4 w-4 text-danger-600"/>
+                                    <DeleteIcon className="h-4 w-4 text-danger-600" />
                                 </button>
 
                             </TableCell>
@@ -118,60 +123,71 @@ const Category = () => {
                     ))}
                 </NewCustomTable>
             </div>
-            {/* 
             {dataValue && (
-                <CreateModal modalTitle="Create New User" isOpen={editModalOpened} onOpenChange={handleEditModalClose}>
-                    <div className="flex justify-between gap-10 ">
-                        <p className="font-nunito">Edit  Category</p>
-                        <button
-                            onClick={() => {
-                                handleEditModalClose()
-                            }}
+
+            <div
+                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${editModalOpened ? "translate-x-0" : "translate-x-full"
+                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+            >
+                <div className="flex justify-between p-4">
+                    <p className="font-montserrat text-lg font-semibold">Edit Category</p>
+                    <button
+                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
+                        onClick={() => setEditModalOpened(false)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="h-6 w-6"
                         >
-                            <CloseIcon className="h-4 w-4" />
-                        </button>
-                    </div>
-                    <hr className=" border border-default-400 " />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Divider className="mt-0.5" />
 
-                    <Form method="post">
-                        <Input
-                            label="Name"
-                            name="name"
-                            defaultValue={setDataValue?.name}
-                            placeholder=" "
-                            type="text"
-                            labelPlacement="outside"
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
-                            }}
-                        />
-                        <input name="seller" value={user?._id} type="hidden" />
-                        <input name="intent" value="update" type="hidden" />
-                        <input name="id" value={setDataValue?._id} type="hidden" />
-                        <Textarea
-                            autoFocus
-                            label="Product description"
-                            labelPlacement="outside"
-                            placeholder=" "
-                            name="description"
-                            className="mt-4 font-nunito text-sm"
-                            defaultValue={setDataValue?.description}
-                            classNames={{
-                                label: "font-nunito text-sm text-default-100",
-                                inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-white/30 focus:bg-[#333] "
-                            }}
-                        />
+                <Form method="post" className="p-4">
+                    <Input
+                        label="Name"
+                        name="name"
+                        defaultValue={dataValue?.name}
+                        placeholder=" "
+                        type="text"
+                        labelPlacement="outside"
+                        classNames={{
+                            label: "font-nunito text-sm text-default-100",
+                            inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] "
+                        }}
+                    />
+                    {/* <input name="seller" value={user?._id} type="hidden" /> */}
+                    <input name="intent" value="update" type="hidden" />
+                    <input name="id" value={dataValue?._id} type="hidden" />
+                    <Textarea
+                        autoFocus
+                        label="Product description"
+                        labelPlacement="outside"
+                        placeholder=" "
+                        name="description"
+                        className="mt-4 font-nunito text-sm"
+                        defaultValue={dataValue?.description}
+                        classNames={{
+                            label: "font-nunito text-sm text-default-100",
+                            inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] "
+                        }}
+                    />
 
 
 
-                        <button onClick={() => {
-                        }} type="submit" className="mt-10 h-10 text-white bg-primary-400 rounded-xl font-nunito px-4">
-                            Update
-                        </button>
-                    </Form>
-                </CreateModal>
-            )} */}
+                    <button onClick={() => {
+                    }} type="submit" className="mt-10 h-10 text-white bg-primary-400 rounded-xl font-nunito px-4">
+                        Update
+                    </button>
+                </Form>
+            </div>
+            )}
 
 
             <ConfirmModal className="dark:bg-[#333] border border-white/5"
@@ -201,8 +217,8 @@ const Category = () => {
                 className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${createModalOpened ? "translate-x-0" : "translate-x-full"
                     } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
             >
-               {/* Close Button */}
-               <div className="flex justify-between p-4">
+                {/* Close Button */}
+                <div className="flex justify-between p-4">
                     <p className="font-montserrat text-lg font-semibold">Edit User</p>
                     <button
                         className="text-gray-600 hover:text-gray-900 focus:outline-none"
@@ -302,14 +318,14 @@ export const action: ActionFunction = async ({ request }) => {
             case "delete":
                 const deleteCat = await category.DeleteCat(intent, id)
                 return deleteCat
-            // case "update":
-            //     const updateCat = await category.UpdateCat({
-            //         intent,
-            //         id,
-            //         name,
-            //         description
-            //     })
-            //     return updateCat
+            case "update":
+                const updateCat = await category.UpdateCat({
+                    id,
+                    name,
+                    description
+                })
+                
+                return updateCat
             default:
                 break;
         }
