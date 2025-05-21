@@ -1,4 +1,4 @@
-import { Button, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@heroui/react"
+import { Button, Divider, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@heroui/react"
 import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
 import { Form, Link, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
 import { Plus, Upload, XIcon } from "lucide-react"
@@ -60,7 +60,8 @@ const Users = () => {
     }
 
 
-    const truncateText = (text, wordLimit) => {
+    const truncateText = (text: string | undefined, wordLimit: number): string => {
+        if (!text) return '';
         const words = text.split(" ");
         if (words.length > wordLimit) {
             return words.slice(0, wordLimit).join(" ") + "...";
@@ -117,7 +118,7 @@ const Users = () => {
                                     avatarProps={{ radius: "sm", src: blog?.image }}
                                     name={
                                         <p className="font-nunito text-xs">
-                                            {truncateText(blog?.name, 10)}
+                                            {truncateText(blog?.name, 7)}
                                         </p>
                                     }
                                 />
@@ -125,7 +126,7 @@ const Users = () => {
                         </TableCell>
                         <TableCell className="text-xs">{blog.category?.name}</TableCell>
                         <TableCell>
-                            <div dangerouslySetInnerHTML={{ __html: truncateText(blog.description, 15) }} />
+                            <div dangerouslySetInnerHTML={{ __html: truncateText(blog.description, 7) }} />
                         </TableCell>
                         <TableCell className="relative flex items-center gap-4 text-primary">
                             <button onClick={() => {
@@ -172,23 +173,32 @@ const Users = () => {
 
             {dataValue && (
                 <div
-                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditModalOpened ? "translate-x-0" : "translate-x-full"
-                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-            >
-                    <div className="flex justify-between gap-10 ">
-                        <p className="font-nunito">Edit Blog</p>
-                        <button
-                            onClick={() => {
-                                handleEditModalClosed()
-                            }}
+                    className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditModalOpened ? "translate-x-0" : "translate-x-full"
+                        } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+                >
+                    <div className="flex justify-between p-4">
+                    <p className="font-montserrat text-lg font-semibold">Edit User</p>
+                    <button
+                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
+                        onClick={() => setIsEditModalOpened(false)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="h-6 w-6"
                         >
-                            <XIcon className="h-4 w-4" />
-                        </button>
-                    </div>
-                    <hr className=" border border-default-400 " />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Divider className="mt-0.5" />
 
-                    <Form method="post" className="flex flex-col gap-4">
-                        <CustomInput
+
+                    <Form method="post" className="flex flex-col gap-4 p-4">
+                        <CustomInput    
                             label="Name"
                             isRequired
                             isClearable
@@ -210,7 +220,7 @@ const Users = () => {
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
                                     popoverContent: "focus:dark:bg-[#333] focus-bg-white bg-white shadow-sm dark:bg-[#333] border border-white/5 font-nunito",
-                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-white/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
+                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-black/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
                                 }}
                             >
                                 {categories.map((cat) => (
@@ -232,7 +242,7 @@ const Users = () => {
 
 
 
-                        <div className="mt-4 ">
+                        <div className="mt-10 ">
                             <label className="font-nunito block text-sm" htmlFor="">Image</label>
                             <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-600 rounded-xl dark:border-white/30 mt-2">
                                 <input
@@ -285,19 +295,28 @@ const Users = () => {
             <div
                 className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isCreateModalOpened ? "translate-x-0" : "translate-x-full"
                     } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-            >                <div className="flex justify-between gap-10 ">
-                    <p className="font-nunito">Create a new Blog</p>
+            >
+                <div className="flex justify-between p-4">
+                    <p className="font-montserrat text-lg font-semibold">Create Blog</p>
                     <button
-                        onClick={() => {
-                            handleCreateModalClosed()
-                        }}
+                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
+                        onClick={() => handleCreateModalClosed()}
                     >
-                        <XIcon className="h-4 w-4" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="h-6 w-6"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
-                <hr className=" border border-default-400 " />
+                <Divider className="mt-0.5" />
 
-                <Form method="post" className="flex flex-col gap-4">
+                <Form method="post" className="flex flex-col gap-4 p-4">
                     <CustomInput
                         label="Title"
                         isRequired
@@ -321,8 +340,9 @@ const Users = () => {
                                 trigger: "bg-white shadow-sm border border-gray-300 hover:border-primary focus:border-primary",
                             }}
                         >
-                            <SelectItem>Option 1</SelectItem>
-                            <SelectItem>Option 2</SelectItem>
+                            {categories.map((cat) => (
+                                <SelectItem key={cat._id}>{cat.name}</SelectItem>
+                            ))}
                         </Select>
 
                     </div>
@@ -376,13 +396,13 @@ const Users = () => {
                     </div>
 
                     <input hidden name="admin" value={user?._id} type="" />
-                        <input name="intent" value="create" type="hidden" />
-                        <input name="base64Image" value={base64Image} type="hidden" />
+                    <input name="intent" value="create" type="hidden" />
+                    <input name="base64Image" value={base64Image} type="hidden" />
 
                     <div className="flex gap-6 mt-6">
                         <button className="font-montserrat w-40 bg-primary h-10 rounded-lg">Upload blog</button>
-                        </div>
-                    </Form>
+                    </div>
+                </Form>
             </div>
         </AdminLayout>
     )

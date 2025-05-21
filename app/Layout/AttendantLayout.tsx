@@ -4,13 +4,14 @@ import {
     Input,
     Spinner,
 } from "@heroui/react";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Link, useNavigate, useNavigation } from "@remix-run/react";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import { Link, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
 import {
     ArrowLeft,
     Bell,
     Book,
     LayoutDashboard,
+    LogOut,
     Mail,
     Menu,
     Search,
@@ -19,8 +20,13 @@ import {
 } from "lucide-react";
 import { ReactNode, useState } from "react";
 import logo from "~/components/image/logo.jpg";
+import ConfirmModal from "~/components/ui/confirmModal";
+import logoutController from "~/controllers/logout";
+import usersController from "~/controllers/registration";
+import { getSession } from "~/session";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
+    const {user}= useLoaderData<typeof loader>()
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigation = useNavigation();
     const navigate = useNavigate();
@@ -33,6 +39,16 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [data, setData] = useState([]);
+    const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
+    const [dataValue, setDataValue] = useState<any>()
+    const submit = useSubmit()
+    const handleConfirmModalClosed = () => {
+        setIsConfirmModalOpened(false)
+    }
+
+
+
+
 
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-[#000000]">
@@ -47,7 +63,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                 <div className="flex items-center justify-between p-4 border-b border-b-black/20">
                     <div className="flex items-center">
                         <div className="h-8 w-8 rounded  flex items-center justify-center text-white font-bold font-montserrat">
-                           <img src={logo} alt="" />
+                            <img src={logo} alt="" />
                         </div>
                         <span className="ml-2 text-xl font-bold text-pink-400 font-montserrat">
                             CSTS
@@ -193,8 +209,45 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-pink-600"></span>
                             </div>
                         </div>
+
+                       <div 
+                       className="md:flex rounded-full flex items-center justify-center text-md !h-10 !w-10 border bg-pink-100 text-pink-500 border-white/20"
+                       >
+                       <button
+                            className="flex items-center justify-center"
+                            onClick={() => {
+                                setIsConfirmModalOpened(true)
+                            }}
+                        >
+                            <LogOut className=" h-4 w-4" />
+                        </button>
+                       </div>
+                       <div 
+                       className="md:flex rounded-full flex items-center justify-center text-md !h-10 !w-10 border  border-white/20"
+                       >
+                       <img className="rounded-full" src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="" />
+                       </div>
                     </div>
                 </header>
+                {/* confirm modal */}
+                {/* confirm modal */}
+                <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Logout" content="Are you sure to logout?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                <div className="flex gap-4">
+                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
+                        No
+                    </Button>
+                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
+                        handleConfirmModalClosed()
+                        submit({
+                            intent: "logout",
+                        }, {
+                            method: "post"
+                        })
+                    }} >
+                        Yes
+                    </Button>
+                </div>
+            </ConfirmModal>
 
                 <main className="flex-1 overflow-auto p-4 sm:p-6 bg-muted/30">
                     {isLoading ? (
@@ -212,12 +265,27 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
 
 export default AdminLayout;
 
+
+
 // search bar
-export const loader: LoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") as string) || 1;
-    const search_term = url.searchParams.get("search_term") as string; 
+    const search_term = url.searchParams.get("search_term") as string;
+
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/login")
+    }
     
-    return json({ page, search_term })
+    // const {user} = await usersController.FetchUsers({
+    //     request,
+    //     page,
+    //     search_term
+    // });
+    
+
+    return json({ user })
 }
 

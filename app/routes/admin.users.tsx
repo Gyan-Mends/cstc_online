@@ -21,6 +21,7 @@ import { UserColumns } from "~/components/table/columns";
 import NewCustomTable from "~/components/table/newTable";
 import { errorToast, successToast } from "~/components/toast";
 import ConfirmModal from "~/components/ui/confirmModal";
+import logoutController from "~/controllers/logout";
 import usersController from "~/controllers/registration";
 import { DeleteIcon } from "~/icons/DeleteIcon";
 import { EditIcon } from "~/icons/EditIcon";
@@ -422,6 +423,10 @@ export const action: ActionFunction = async ({ request }) => {
                 id,
             });
             return result3;
+
+        case "logout":
+            const result4 = await logoutController.logout()
+            return result4
 
         default:
             break;

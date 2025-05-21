@@ -99,11 +99,11 @@ class BlogController {
 
     async getBlogs({
         request,
-        page = 1,
+        page,
         search_term,
-        limit = 7,
+        limit = 9
     }: {
-        request?: Request;
+        request?: Request,
         page?: number;
         search_term?: string;
         limit?: number;
@@ -135,29 +135,23 @@ class BlogController {
             : {};
 
         try {
-            // Check if request exists
-            if (!request) {
-                throw new Error("Request object is required");
-            }
-
             // Get session and user information
-            const session = await getSession(request.headers.get("Cookie"));
+            const session = await getSession(request?.headers.get("Cookie"));
             const token = session.get("email");
             const user = await User.findOne({ email: token });
 
             // Get total employee count and calculate total pages       
-            const totalEmployeeCount = await Blog.countDocuments(searchFilter).exec();
-            const totalPages = Math.ceil(totalEmployeeCount / limit);
+            const blogCount = await Blog.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(blogCount / limit);
 
             // Find users with pagination and search filter
             const blogs = await Blog.find(searchFilter)
-                .populate("admin")
-                .populate("category")
                 .skip(skipCount)
                 .limit(limit)
+                .populate("category")
                 .exec();
 
-            return { user, blogs, totalPages };
+            return { user, blogs, totalPages, blogCount };
         } catch (error: any) {
             return {
                 message: error.message,

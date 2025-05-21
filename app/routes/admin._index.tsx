@@ -1,8 +1,9 @@
-import { json, LoaderFunction } from "@remix-run/node"
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { ArrowRight, BookOpen, Folder, MessageSquare, Tag, Users } from "lucide-react"
 import MetricCard from "~/components/ui/customCard"
 import dashboard from "~/controllers/dashboard"
+import logoutController from "~/controllers/logout"
 import usersController from "~/controllers/registration"
 import AdminLayout from "~/Layout/AttendantLayout"
 
@@ -64,6 +65,20 @@ const Admin = () => {
     )
 }
 export default Admin
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+    
+    switch (intent) {
+        case "logout":
+            const result = await logoutController.logout()
+            return result
+
+        default:
+            break;
+    }
+}
 
 
 export const loader: LoaderFunction = async () => {
