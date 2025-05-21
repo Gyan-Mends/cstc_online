@@ -455,7 +455,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
-        return redirect("/")
+        return redirect("/login")
     }
 
     const { trainings, totalPages } = await trainingController.FetchUsers({ request, page, search_term })

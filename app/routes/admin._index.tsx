@@ -1,4 +1,4 @@
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node"
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { ArrowRight, BookOpen, Folder, MessageSquare, Tag, Users } from "lucide-react"
 import MetricCard from "~/components/ui/customCard"
@@ -6,6 +6,7 @@ import dashboard from "~/controllers/dashboard"
 import logoutController from "~/controllers/logout"
 import usersController from "~/controllers/registration"
 import AdminLayout from "~/Layout/AttendantLayout"
+import { getSession } from "~/session"
 
 const Admin = () => {
     const data = useLoaderData<typeof loader>()
@@ -81,8 +82,14 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
     const dashboardData = await dashboard.getDashboardData()
+    
+    const session = await getSession(request.headers.get("Cookie"));
+    const token = session.get("email");
+    if (!token) {
+        return redirect("/login")
+    }
     
     if ('error' in dashboardData) {
         return json({ error: dashboardData.error }, { status: 500 })
@@ -91,3 +98,5 @@ export const loader: LoaderFunction = async () => {
     
     return dashboardData
 }
+
+

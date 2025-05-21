@@ -290,7 +290,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
     if (!token) {
-        return redirect("/")
+        return redirect("/login")
     }
 
     const { categories, user, totalPages } = await category.getCategories({ request, page, search_term })

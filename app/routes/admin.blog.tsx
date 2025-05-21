@@ -468,9 +468,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
-    // if (!token) {
-    //     return redirect("/")
-    // }
+    if (!token) {
+        return redirect("/login")
+    }
     const { user, blogs, totalPages } = await blog.getBlogs({
         request,
         page,

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 //connecting to the database 
-mongoose.connect(process.env.MONGODB_URI as string || "mongodb://localhost:27017/Addentech");
+mongoose.connect(process.env.MONGODB_URI as string );
 
 //creating a new instance of the database connection
 const db = mongoose.connection;
