@@ -26,7 +26,7 @@ export default function Navigation() {
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
                     <Link to="/" className="flex items-center">
-                        <img className="w-[10vw] h-10" src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746824751/CSTS_Logo_eu8gmg.png" alt="" />
+                        <img className="lg:w-[10vw] lg:h-10 w-[24vw] h-8" src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746824751/CSTS_Logo_eu8gmg.png" alt="" />
                     </Link>
                 </motion.div>
 
