@@ -81,10 +81,10 @@ export const ComplaintColumns = [
 
 ]
 export const ContactColumns = [
-    { title: "FullName", allowSort: true },
-    { title: "Email", allowSort: true },
-    { title: "Phone", allowSort: true },
-    { title: "message", allowSort: true },
+    { title: "Full Name", allowSort: true },
+    { title: "Number", allowSort: true },
+    { title: "Company", allowSort: true },
+    { title: "Description", allowSort: true },
     { title: "Action", allowSort: true },
  
 ]

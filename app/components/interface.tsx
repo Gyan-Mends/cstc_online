@@ -1,15 +1,14 @@
 export interface ContactInterface {
     _id: string,
-    name: string,
-    email: string,
-    phone: string,
-    message: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    number: string,
+    company:string,
+    description:string
 }
 
-export interface ContactResponse {
-    success: boolean;
-    message: string;
-}
+
 
 export interface LoginInterface {
     _id: string,

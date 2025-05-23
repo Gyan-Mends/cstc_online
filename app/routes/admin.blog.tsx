@@ -163,7 +163,7 @@ const Users = () => {
 
             {/* confirm modal */}
             {/* confirm modal */}
-            <ConfirmModal header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            {/* <ConfirmModal header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
@@ -182,7 +182,7 @@ const Users = () => {
                         Yes
                     </Button>
                 </div>
-            </ConfirmModal>
+            </ConfirmModal> */}
 
 
             {dataValue && (
@@ -260,7 +260,7 @@ const Users = () => {
                                     />
                                 ) : (
                                     <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                                        <FileUploader className="h-20 w-20 text-white" />
+                                        <Upload className="h-20 w-20 text-white" />
                                     </span>
                                 )}
                             </div>

@@ -24,6 +24,9 @@ const Category = () => {
     const navigate = useNavigate()
     const navigation = useNavigation()
 
+    console.log(contacts);
+    
+
 
     const handleConfirmModalClosed = () => {
         setConfirmModalOpened(false)
@@ -48,10 +51,10 @@ const Category = () => {
                     )}>
                     {contacts.map((contact: ContactInterface, index: number) => (
                         <TableRow key={index}>
-                            <TableCell>{contact?.name}</TableCell>
-                            <TableCell>{contact?.email}</TableCell>
-                            <TableCell>{contact?.phone}</TableCell>
-                            <TableCell>{contact?.message}</TableCell>
+                            <TableCell>{contact?.firstName + " "+contact?.middleName + " "+ contact?.lastName }</TableCell>
+                            <TableCell>{contact?.number}</TableCell>
+                            <TableCell>{contact?.company}</TableCell>
+                            <TableCell>{contact?.description}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
 
                                 <button onClick={() => {
