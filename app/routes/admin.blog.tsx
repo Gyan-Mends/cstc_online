@@ -1,18 +1,20 @@
-import { Button, Divider, Input, Select, SelectItem, Skeleton, TableCell, TableRow, Textarea, User } from "@heroui/react"
-import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node"
-import { Form, Link, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
-import { Plus, Upload, XIcon } from "lucide-react"
+import { Button,  Select, SelectItem, TableCell, TableRow, User } from "@heroui/react"
+import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction,  } from "@remix-run/node"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
+import { Plus, Upload } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import { BlogInterface, CategoryInterface } from "~/components/interface"
 
-import { BlogColumns, UserColumns } from "~/components/table/columns"
+import { BlogColumns } from "~/components/table/columns"
 import NewCustomTable from "~/components/table/newTable"
 import { errorToast, successToast } from "~/components/toast"
 import ConfirmModal from "~/components/ui/confirmModal"
 import CustomInput from "~/components/ui/CustomInput"
+import Drawer from "~/components/ui/drawer"
 import blog from "~/controllers/blog"
 import category from "~/controllers/categoryController"
+import usersController from "~/controllers/registration"
 import { DeleteIcon } from "~/icons/DeleteIcon"
 import { EditIcon } from "~/icons/EditIcon"
 import AdminLayout from "~/Layout/AttendantLayout"
@@ -29,6 +31,7 @@ const Users = () => {
     const [dataValue, setDataValue] = useState<BlogInterface>()
     const submit = useSubmit()
     const navigate = useNavigate()
+    const actionData = useActionData()
     const [content, setContent] = useState("");
     const navigation = useNavigation()
     const {
@@ -43,15 +46,12 @@ const Users = () => {
         categories: CategoryInterface[]
     }>()
 
-    console.log(blogs);
 
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
     }
-    const handleClick = () => {
-        setIsCreateModalOpened(true)
-    }
+   
     const handleConfirmModalClosed = () => {
         setIsConfirmModalOpened(false)
     }
@@ -60,8 +60,7 @@ const Users = () => {
     }
 
 
-    const truncateText = (text: string | undefined, wordLimit: number): string => {
-        if (!text) return '';
+    const truncateText = (text, wordLimit) => {
         const words = text.split(" ");
         if (words.length > wordLimit) {
             return words.slice(0, wordLimit).join(" ") + "...";
@@ -89,11 +88,25 @@ const Users = () => {
     }, [dataValue]);
 
 
-    return (
-        <AdminLayout >
+    useEffect(() => {
+        if (actionData) {
+            if (actionData.success) {
+                successToast(actionData.message)
+                setIsCreateModalOpened(false)
+                setIsConfirmModalOpened(false)
+                setIsEditModalOpened(false)
+            } else {
+                errorToast(actionData.message)
+            }
+        }
+    }, [actionData])
 
-            <div className="flex justify-end">
-                <Button className="border border-white/30 px-4 py-1 bg-pink-600 text-white" onPress={() => {
+    return (
+        <AdminLayout>
+            <Toaster position="top-right"/>
+          <div className="relative">
+          <div className="flex justify-end">
+                <Button className="border border-white/30 px-4 py-1 bg-pink-500 text-white" onClick={() => {
                     setIsCreateModalOpened(true)
                 }}>
                     <Plus />
@@ -118,7 +131,7 @@ const Users = () => {
                                     avatarProps={{ radius: "sm", src: blog?.image }}
                                     name={
                                         <p className="font-nunito text-xs">
-                                            {truncateText(blog?.name, 7)}
+                                            {truncateText(blog?.name, 10)}
                                         </p>
                                     }
                                 />
@@ -126,7 +139,7 @@ const Users = () => {
                         </TableCell>
                         <TableCell className="text-xs">{blog.category?.name}</TableCell>
                         <TableCell>
-                            <div dangerouslySetInnerHTML={{ __html: truncateText(blog.description, 7) }} />
+                            <div dangerouslySetInnerHTML={{ __html: truncateText(blog.description, 15) }} />
                         </TableCell>
                         <TableCell className="relative flex items-center gap-4 text-primary">
                             <button onClick={() => {
@@ -146,10 +159,11 @@ const Users = () => {
                     </TableRow>
                 ))}
             </NewCustomTable>
+          </div>
 
             {/* confirm modal */}
             {/* confirm modal */}
-            <ConfirmModal className="dark:bg-[#333] border border-white/5" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
@@ -172,33 +186,9 @@ const Users = () => {
 
 
             {dataValue && (
-                <div
-                    className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditModalOpened ? "translate-x-0" : "translate-x-full"
-                        } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-                >
-                    <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Edit User</p>
-                    <button
-                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
-                        onClick={() => setIsEditModalOpened(false)}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <Divider className="mt-0.5" />
-
-
-                    <Form method="post" className="flex flex-col gap-4 p-4">
-                        <CustomInput    
+              <Drawer isDrawerOpened={isEditModalOpened} handleDrawerClosed={handleEditModalClosed} title="Edit Blog">
+                <Form method="post" className="flex flex-col gap-4 p-4">
+                        <CustomInput
                             label="Name"
                             isRequired
                             isClearable
@@ -220,7 +210,7 @@ const Users = () => {
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
                                     popoverContent: "focus:dark:bg-[#333] focus-bg-white bg-white shadow-sm dark:bg-[#333] border border-white/5 font-nunito",
-                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-black/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
+                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-white/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
                                 }}
                             >
                                 {categories.map((cat) => (
@@ -242,7 +232,7 @@ const Users = () => {
 
 
 
-                        <div className="mt-10 ">
+                        <div className="mt-4 ">
                             <label className="font-nunito block text-sm" htmlFor="">Image</label>
                             <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-600 rounded-xl dark:border-white/30 mt-2">
                                 <input
@@ -270,7 +260,7 @@ const Users = () => {
                                     />
                                 ) : (
                                     <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                                        <Upload className="h-20 w-20 text-white" />
+                                        <FileUploader className="h-20 w-20 text-white" />
                                     </span>
                                 )}
                             </div>
@@ -283,39 +273,16 @@ const Users = () => {
 
 
                         <div className="flex gap-6 mt-6">
-                            <button className="font-montserrat w-40 bg-primary h-10 rounded-lg">Upload blog</button>
+                            <button className="font-montserrat w-40 bg-pink-500 text-white h-10 rounded-lg">Upload blog</button>
                         </div>
                     </Form>
-                </div>
+              </Drawer>
             )}
 
             {/* Create Modal */}
 
 
-            <div
-                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isCreateModalOpened ? "translate-x-0" : "translate-x-full"
-                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-            >
-                <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Create Blog</p>
-                    <button
-                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
-                        onClick={() => handleCreateModalClosed()}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <Divider className="mt-0.5" />
-
+            <Drawer isDrawerOpened={isCreateModalOpened} handleDrawerClosed={handleCreateModalClosed} title="Create New Blog">
                 <Form method="post" className="flex flex-col gap-4 p-4">
                     <CustomInput
                         label="Title"
@@ -340,9 +307,13 @@ const Users = () => {
                                 trigger: "bg-white shadow-sm border border-gray-300 hover:border-primary focus:border-primary",
                             }}
                         >
-                            {categories.map((cat) => (
-                                <SelectItem key={cat._id}>{cat.name}</SelectItem>
-                            ))}
+                            {
+                                categories.map((category: CategoryInterface) => (
+                                    <SelectItem key={category._id} value={category._id}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))
+                            }
                         </Select>
 
                     </div>
@@ -400,10 +371,10 @@ const Users = () => {
                     <input name="base64Image" value={base64Image} type="hidden" />
 
                     <div className="flex gap-6 mt-6">
-                        <button className="font-montserrat w-40 bg-primary h-10 rounded-lg">Upload blog</button>
+                        <button className="font-montserrat w-40 bg-pink-500 text-white h-10 rounded-lg">Upload blog</button>
                     </div>
                 </Form>
-            </div>
+            </Drawer>
         </AdminLayout>
     )
 }
@@ -441,7 +412,7 @@ export const action: ActionFunction = async ({ request }) => {
             return deleteUser
 
         case "update":
-            const updateUser = await blog.UpdateBlog({
+            const updateUser = await blog.UpdateCat({
                 name,
                 base64Image,
                 category,
@@ -450,7 +421,7 @@ export const action: ActionFunction = async ({ request }) => {
             })
             return updateUser
         // case "logout":
-        //     const logout = await usersController.logout(intent)
+        //     const logout = await usersController.(intent)
         //     return logout
         default:
             return json({
@@ -468,9 +439,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const session = await getSession(request.headers.get("Cookie"));
     const token = session.get("email");
-    if (!token) {
-        return redirect("/login")
-    }
+    // if (!token) {
+    //     return redirect("/")
+    // }
     const { user, blogs, totalPages } = await blog.getBlogs({
         request,
         page,

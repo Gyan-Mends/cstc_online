@@ -5,6 +5,8 @@ import { style } from "framer-motion/client"
 import { ArrowRight, Calendar, BookOpen, Briefcase, FileText, Users, Building, Phone, User } from "lucide-react"
 import ScrollAnimation from "~/components/animation"
 import RootLayout from "~/Layout/PublicLayout"
+import hero1 from "~/components/image/hero1_yet84f.avif"
+import im2 from "~/components/image/photo-1487058792275-0ad4aaf24ca7_qqlo0v.avif"
 
 
 export default function Home() {
@@ -13,25 +15,21 @@ export default function Home() {
       <div className="flex min-h-screen flex-col ">
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="py-16 md:py-24 lg:h-[90vh]">
+         <ScrollAnimation>
+         <section className="py-16 md:py-24 lg:h-[90vh]">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="grid gap-12 md:grid-cols-2 md:items-center">
                 <div className="max-w-xl">
-                  <ScrollAnimation direction="up" delay={0.2}>
-                    <h1 className="text-4xl font-bold tracking-tight font-montserrat text-gray-900 md:text-5xl">
+                    <h1 data-aos="fade-up" className="text-4xl font-bold  tracking-tight font-montserrat text-gray-900 md:text-5xl">
                       Corporate Excellence &<br />
                     </h1>
                     <h1 className="text-4xl mt-2 font-bold tracking-tight font-montserrat text-gray-900 md:text-5xl">
                       <span className="text-pink-500">Professional</span> Training
                     </h1>
-                  </ScrollAnimation>
-                  <ScrollAnimation direction="up" delay={0.4}>
                     <p className="mt-6 text-lg leading-relaxed text-gray-600">
                       Strengthening the capacity of companies and entrepreneurs in core areas such as corporate
                       governance, financial management, public and business administration.
                     </p>
-                  </ScrollAnimation>
-                  <ScrollAnimation direction="up" delay={0.6}>
                     <div className="mt-8 flex flex-wrap gap-4">
                       <Link
                         to="/corporate-services"
@@ -46,21 +44,18 @@ export default function Home() {
                         Contact Us <ArrowRight className="h-4 w-4 ml-4" />
                       </Link>
                     </div>
-                  </ScrollAnimation>
                 </div>
-                <ScrollAnimation direction="right" delay={0.8}>
                   <div className="relative h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px]">
                     <img
-                      src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746874760/hero1_yet84f.avif"
+                      src={hero1}
                       alt="Programming code on screen"
                       className="object-cover h-full transition-transform duration-300 hover:scale-105"
-                      loading="lazy"
                     />
                   </div>
-                </ScrollAnimation>
               </div>
             </div>
           </section>
+         </ScrollAnimation>
 
 
           {/* Who We Are Section */}
@@ -71,7 +66,7 @@ export default function Home() {
                 <ScrollAnimation direction="right" delay={0.8}>
                   <div className="h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px] hover:transform-3d">
                     <img
-                      src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746875215/photo-1487058792275-0ad4aaf24ca7_qqlo0v.avif"
+                      src={im2}
                       alt="Colorful programming code"
                       className="object-cover h-full transition-transform duration-300 hover:scale-105"
                       loading="lazy"
@@ -81,8 +76,10 @@ export default function Home() {
 
                 {/* Text Content Animation */}
                 <div className="max-w-xl">
+                  
+                   
                   <ScrollAnimation>
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+                    <h2 data-aos="fade-up" className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
                       Who We Are
                     </h2>
                   </ScrollAnimation>

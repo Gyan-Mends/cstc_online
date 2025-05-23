@@ -127,6 +127,14 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                             </li>
                         </Link>
                     </ul>
+                    {/* <ul className="flex flex-col">
+                        <Link to="/admin/event">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5 text-pink-500 " />
+                                Events
+                            </li>
+                        </Link>
+                    </ul> */}
                 </div>
 
                 {/* Profile Section

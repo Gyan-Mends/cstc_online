@@ -56,3 +56,14 @@ export interface TrainingInterface {
     image: string;
     client: string;
 }
+
+export interface EventInterface {
+    _id: string;
+    title: string;
+    description: string;
+    date: string;
+    duration: string;
+    location: string;
+    image: string;
+}
+

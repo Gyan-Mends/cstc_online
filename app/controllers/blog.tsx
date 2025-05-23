@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { BlogInterface, CategoryInterface, UsersInterface } from "~/components/interface";
+import { CategoryInterface, UsersInterface } from "~/components/interface";
 import Blog from "~/model/blog";
 import User from "~/model/users";
 import { getSession } from "~/session"
@@ -15,13 +15,13 @@ class BlogController {
         // Delete Logic
         const deleteBlog = await Blog.findByIdAndDelete(id);
         if (deleteBlog) {
-            return json({ message: "Blog deleted successfully", success: true }, { status: 200 });
+            return json({ message: "Category deleted successfully", success: true }, { status: 200 });
         } else {
-            return json({ message: "Blog not found", success: false }, { status: 404 });
+            return json({ message: "Category not found", success: false }, { status: 404 });
         }
     }
 
-    async UpdateBlog({
+    async UpdateCat({
         name,
         base64Image,
         category,
@@ -29,13 +29,13 @@ class BlogController {
         admin,
         id
     }: {
-        name: string,
-        base64Image: string,
-        category: string,
-        description: string,
-        admin: string,
-        id: string
-    }) {
+            name: string,
+            base64Image: string,
+            category: string,
+            description: string,
+            admin: string,
+            id: string
+        }) {    
 
         const updateBlog = await Blog.findByIdAndUpdate(id, {
             name,
@@ -47,9 +47,9 @@ class BlogController {
         });
         if (updateBlog) {
             return json({ message: "Blog updated successfully", success: true }, { status: 200 });
-        } else {
+            } else {
             return json({ message: "Blog not found", success: false }, { status: 404 });
-        }
+            }
 
 
     }
@@ -103,13 +103,13 @@ class BlogController {
         search_term,
         limit = 9
     }: {
-        request?: Request,
-        page?: number;
-        search_term?: string;
+            request?: Request,
+            page?: number;
+            search_term?: string;
         limit?: number;
     }): Promise<{
         user: UsersInterface[],
-        blogs: BlogInterface[],
+        categories: CategoryInterface[],
         totalPages: number
     } | any> {
         const skipCount = (page - 1) * limit; // Calculate the number of documents to skip
@@ -136,22 +136,23 @@ class BlogController {
 
         try {
             // Get session and user information
-            const session = await getSession(request?.headers.get("Cookie"));
+            const session = await getSession(request.headers.get("Cookie"));
             const token = session.get("email");
             const user = await User.findOne({ email: token });
 
             // Get total employee count and calculate total pages       
-            const blogCount = await Blog.countDocuments(searchFilter).exec();
-            const totalPages = Math.ceil(blogCount / limit);
+            const totalEmployeeCount = await Blog.countDocuments(searchFilter).exec();
+            const totalPages = Math.ceil(totalEmployeeCount / limit);
 
             // Find users with pagination and search filter
             const blogs = await Blog.find(searchFilter)
+                .populate("admin")
+                .populate("category")
                 .skip(skipCount)
                 .limit(limit)
-                .populate("category")
                 .exec();
 
-            return { user, blogs, totalPages, blogCount };
+            return { user, blogs, totalPages };
         } catch (error: any) {
             return {
                 message: error.message,

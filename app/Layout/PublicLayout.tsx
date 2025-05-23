@@ -17,14 +17,10 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html lang="en">
-            <body className="">
-                <div className="flex min-h-screen flex-col bg-gray-50 font-nunito">
-                    <Navigation />
-                    {children}
-                    <Footer />
-                </div>
-            </body>
-        </html>
+        <div className="flex min-h-screen flex-col bg-gray-50 font-nunito transition-all">
+            <Navigation />
+            {children}
+            <Footer />
+        </div>
     )
 }

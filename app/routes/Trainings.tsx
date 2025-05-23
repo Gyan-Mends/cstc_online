@@ -1,11 +1,23 @@
 "use client"
 
-import { Link } from "@remix-run/react"
+import { LoaderFunction } from "@remix-run/node"
+import { Link, useLoaderData } from "@remix-run/react"
 import { motion } from "framer-motion"
 import { BookOpen, Calendar, Clock, Users, Award, CheckCircle, User } from "lucide-react"
+import { TrainingInterface } from "~/components/interface"
+import trainingController from "~/controllers/training"
 import RootLayout from "~/Layout/PublicLayout"
 
 export default function TrainingsPage() {
+    const { trainings } = useLoaderData<{ trainings: TrainingInterface[] }>()
+
+    // highlight
+    const highlight = [
+        "Board effectiveness and accountability",
+        "Risk management and internal controls",
+        "Stakeholder engagement",
+        "Ethical leadership",
+    ]
     return (
         <RootLayout>
             <main className="flex-1">
@@ -35,68 +47,7 @@ export default function TrainingsPage() {
                         </motion.div>
 
                         <div className="mt-8 space-y-8 lg:grid">
-                            {[
-                                {
-                                    client: "Fan milk Limited",
-                                    title: "Development Enhancement Exit Programme (DEEP)",
-                                    date: "June 15-16, 2025",
-                                    duration: "2 days (16 hours)",
-                                    format: "In-person",
-                                    description:
-                                        "A comprehensive program designed to enhance employee development and prepare them for career transitions.",
-                                    highlights: [
-                                        "Board effectiveness and accountability",
-                                        "Risk management and internal controls",
-                                        "Stakeholder engagement",
-                                        "Ethical leadership",
-                                    ],
-                                },
-                                {
-                                    client: "Various Corporate Client",
-                                    title: "Managing Boardroom Dynamics under The New Companies Act of Ghana",
-                                    date: "July 10-12, 2025",
-                                    duration: "3 days (24 hours)",
-                                    format: "In-person",
-                                    description:
-                                        "Training focused on effective boardroom management in compliance with the new Companies Act of Ghana.",
-                                    highlights: [
-                                        "Understanding financial statements",
-                                        "Budgeting and forecasting",
-                                        "Financial decision-making",
-                                        "Performance measurement",
-                                    ],
-                                },
-                                {
-                                    title: "Company Secretary Training",
-                                    client: " Various Corporate Clients",
-                                    date: "August 5-7, 2025",
-                                    duration: "3 days (24 hours)",
-                                    format: "In-person",
-                                    description:
-                                        "Specialized training for company secretaries covering legal and regulatory requirements and best practices.",
-                                    highlights: [
-                                        "Strategic thinking and planning",
-                                        "Team building and motivation",
-                                        "Effective communication",
-                                        "Change management",
-                                    ],
-                                },
-                                {
-                                    client: "Corporate Clients",
-                                    title: "Tax Administration",
-                                    date: "September 20-24, 2025",
-                                    duration: "5 days (40 hours)",
-                                    format: "Hybrid (In-person & Virtual)",
-                                    description: "Training on tax compliance, administration, and optimization strategies for businesses.",
-                                    highlights: [
-                                        "Regulatory frameworks and requirements",
-                                        "Compliance risk assessment",
-                                        "Developing compliance programs",
-                                        "Monitoring and reporting",
-                                    ],
-                                },
-
-                            ].map((program, index) => (
+                            {trainings.map((program, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
@@ -146,7 +97,7 @@ export default function TrainingsPage() {
                                             <div className="mt-4">
                                                 <h4 className="text-sm font-medium text-gray-700">Program Highlights:</h4>
                                                 <ul className="mt-2 space-y-1">
-                                                    {program.highlights.map((highlight, i) => (
+                                                    {highlight.map((highlight, i) => (
                                                         <li key={i} className="flex items-start">
                                                             <CheckCircle className="mr-2 h-4 w-4 flex-shrink-0 text-pink-500" />
                                                             <span className="text-sm text-gray-600">{highlight}</span>
@@ -255,4 +206,12 @@ export default function TrainingsPage() {
             </main>
         </RootLayout>
     )
+}
+
+
+export const loader: LoaderFunction = async ({ request }) => {
+   
+
+    const { trainings } = await trainingController.FetchUsers({ request })
+    return { trainings }
 }

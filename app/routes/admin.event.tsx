@@ -14,8 +14,9 @@ import { TrainingColumns } from "~/components/table/columns"
 import { DeleteIcon } from "~/icons/DeleteIcon"
 import { EditIcon } from "~/icons/EditIcon"
 import ConfirmModal from "~/components/ui/confirmModal"
+import eventController from "~/controllers/events"
 
-const Training = () => {
+const Event = () => {
     const [updateModalOpened, setUpdateModalOpened] = useState(false)
     const [createModalOpened, setCreateModalOpened] = useState(false)
     const [base64Image, setBase64Image] = useState<string | null>(null);
@@ -51,7 +52,7 @@ const Training = () => {
                     setCreateModalOpened(true)
                 }}>
                     <Plus className="text-white h-4 w-4" />
-                    Create Training
+                    Create Event
                 </Button>
             </div>
 
@@ -115,7 +116,7 @@ const Training = () => {
             >
                 {/* Close Button */}
                 <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Create Training</p>
+                    <p className="font-montserrat text-lg font-semibold">Create Event</p>
                     <button
                         className="text-gray-600 hover:text-gray-900 focus:outline-none"
                         onClick={() => setCreateModalOpened(false)}
@@ -184,9 +185,9 @@ const Training = () => {
                     />
 
                     <Input
-                        label="Format"
-                        name="format"
-                        placeholder="e.g., Online or In-person"
+                        label="location"
+                        name="location"
+                        placeholder="Enter location"
                         type="text"
                         labelPlacement="outside"
                         classNames={{
@@ -195,17 +196,7 @@ const Training = () => {
                         }}
                     />
 
-                    <Input
-                        label="Client"
-                        name="client"
-                        placeholder="Client Name"
-                        type="text"
-                        labelPlacement="outside"
-                        classNames={{
-                            label: "font-nunito text-sm text-default-100",
-                            inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
-                        }}
-                    />
+                 
 
                     {/* Image */}
                     <div className=" ">
@@ -378,7 +369,7 @@ const Training = () => {
                 </div>
             )}
 
-            <ConfirmModal className="dark:bg-[#333] border border-white/5"
+            {/* <ConfirmModal className="dark:bg-[#333] border border-white/5"
                 content="Are you sure to delete category" header="Comfirm Delete" isOpen={confirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="danger" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
@@ -399,11 +390,11 @@ const Training = () => {
                         Yes
                     </Button>
                 </div>
-            </ConfirmModal>
+            </ConfirmModal> */}
         </AdminLayout>
     )
 }
-export default Training
+export default Event
 
 export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
@@ -412,32 +403,29 @@ export const action: ActionFunction = async ({ request }) => {
     const description = formData.get("description") as string;
     const date = formData.get("date") as string;
     const duration = formData.get("duration") as string;
-    const format = formData.get("format") as string;
-    const client = formData.get("client") as string;
+    const location = formData.get("location") as string;
     const base64Image = formData.get("base64Image") as string;
     const id = formData.get("id") as string;
 
     switch (intent) {
         case "create":
-            const training = await trainingController.CreateTraining({
+            const training = await eventController.CreateEvent({
                 title,
                 description,
                 date,
                 duration,
-                format,
-                client,
+                location,
                 base64Image,
             });
             return training;
         case "update":
-            const updateTraining = await trainingController.UpdateTraining({
+            const updateTraining = await eventController.UpdateTraining({
                 id,
                 title,
                 description,
                 date,
                 duration,
-                format,
-                client,
+               location
             });
             return updateTraining;
         case "delete":
