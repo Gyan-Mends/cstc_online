@@ -76,6 +76,13 @@ const Users = () => {
         setEditUser(null)
     }
 
+    useEffect(() => {
+        if (editUser?.image) {
+            setBase64Image(editUser.image); // Set the image from the database as the initial value
+        }
+    }, [editUser]);
+    
+
     
 
     
@@ -339,6 +346,43 @@ const Users = () => {
                             placeholder=" "
                             className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
                         />
+                    </div>
+
+                    <div className=" ">
+                        <input name="base64Image" value={base64Image} type="hidden" />
+                        <label className="font-nunito block text-sm !text-black" htmlFor="">
+                            Image
+                        </label>
+                        <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-400 rounded-xl dark:border-white/30 mt-2">
+                            <input
+                                name="image"
+                                placeholder=" "
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                type="file"
+                                onChange={(event: any) => {
+                                    const file = event.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            setBase64Image(reader.result as string);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                            />
+                            {/* Display the default image or the uploaded image */}
+                            {base64Image ? (
+                                <img
+                                    src={base64Image}
+                                    alt="Preview"
+                                    className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                                />
+                            ) : (
+                                <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                                    <Upload className="h-14 w-14 text-gray-400" />
+                                </span>
+                            )}
+                        </div>
                     </div>
 
 
