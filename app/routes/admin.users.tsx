@@ -21,6 +21,7 @@ import { UserColumns } from "~/components/table/columns";
 import NewCustomTable from "~/components/table/newTable";
 import { errorToast, successToast } from "~/components/toast";
 import ConfirmModal from "~/components/ui/confirmModal";
+import Drawer from "~/components/ui/drawer";
 import logoutController from "~/controllers/logout";
 import usersController from "~/controllers/registration";
 import { DeleteIcon } from "~/icons/DeleteIcon";
@@ -64,7 +65,7 @@ const Users = () => {
                 setEditUser(null)
                 setIsConfirmModalOpened(false)
                 setIsDrawerOpen(false)
-                
+
             } else {
                 errorToast(actionData.message)
             }
@@ -81,12 +82,6 @@ const Users = () => {
             setBase64Image(editUser.image); // Set the image from the database as the initial value
         }
     }, [editUser]);
-    
-
-    
-
-    
-
 
     return (
         <AdminLayout>
@@ -103,7 +98,8 @@ const Users = () => {
                     </Button>
                 </div>
 
-                
+
+
 
                 {/* Users Table */}
                 <NewCustomTable
@@ -115,7 +111,7 @@ const Users = () => {
                 >
                     {users.map((user: any) => (
                         <TableRow key={user.id}>
-                           <TableCell>
+                            <TableCell>
                                 <p className="!text-xs">
                                     <User
                                         avatarProps={{ radius: "full", src: user.image }}
@@ -155,157 +151,114 @@ const Users = () => {
                 </NewCustomTable>
 
             </div>
-
-            {/* create user Drawer */}
-            <div
-                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
-                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 `}
-            >
-                {/* Close Button */}
-                <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Add New User</p>
-                    <button
-                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
-                        onClick={() => setIsDrawerOpen(false)}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <Divider className="mt-0.5" />
-
-                {/* Drawer Content */}
-                <Form method="post" className="p-4 space-y-4">
-                    <div>
-                        <label htmlFor="fullName" className="font-nunito text-sm !text-black">Full Name</label>
-                        <input
-                            name="fullName"
-                            placeholder=" "
-                            className="dark:bg-default-50 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="email" className="font-nunito text-sm !text-black">Email</label>
-                        <input
-                            name="email"
-                            placeholder=" "
-                            className="dark:bg-default-50 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="phone" className="font-nunito text-sm !text-black">Phone</label>
-                        <input
-                            name="phone"
-                            placeholder=" "
-                            className="dark:bg-default-50 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="position" className="font-nunito text-sm !text-black">Position</label>
-                        <input
-                            name="position"
-                            placeholder=" "
-                            className="dark:bg-default-50 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
-                        />
-                    </div>
-                    {/* Password */}
-                    <div>
-                        <label htmlFor="password" className="font-nunito text-sm !text-black">Password</label>
-                        <input
-                            name="password"
-                            placeholder=" "
-                            className="dark:bg-default-50 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
-                        />
-                    </div>
-                    {/* Image */}
-                    <div className=" ">
-                        <input name="base64Image" value={base64Image} type="hidden" />
-                        <label className="font-nunito block text-sm !text-black" htmlFor="">
-                            Image
-                        </label>
-                        <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-400 rounded-xl dark:border-white/30 mt-2">
+            {/* Create User Drawer */}
+            <Drawer
+                isDrawerOpened={isDrawerOpen}
+                handleDrawerClosed={() => setIsDrawerOpen(false)}
+                title="Create User"
+                children={
+                    <Form method="post" className="p-4 space-y-4">
+                        <div>
+                            <label htmlFor="fullName" className="font-nunito text-sm !text-black">Full Name</label>
                             <input
-                                name="image"
+                                name="fullName"
                                 placeholder=" "
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                type="file"
-                                onChange={(event: any) => {
-                                    const file = event.target.files[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                            setBase64Image(reader.result as string);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }
-                                }}
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
                             />
-                            {/* Display the default image or the uploaded image */}
-                            {base64Image ? (
-                                <img
-                                    src={base64Image}
-                                    alt="Preview"
-                                    className="absolute inset-0 w-full h-full object-cover rounded-xl"
-                                />
-                            ) : (
-                                <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                                    <Upload className="h-14 w-14 text-gray-400" />
-                                </span>
-                            )}
                         </div>
-                    </div>
+                        <div>
+                            <label htmlFor="email" className="font-nunito text-sm !text-black">Email</label>
+                            <input
+                                name="email"
+                                placeholder=" "
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                            />
+                        </div>
 
-                    <input type="hidden" name="intent" value="create" />
+                        <div>
+                            <label htmlFor="phone" className="font-nunito text-sm !text-black">Phone</label>
+                            <input
+                                name="phone"
+                                placeholder=" "
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="position" className="font-nunito text-sm !text-black">Position</label>
+                            <input
+                                name="position"
+                                placeholder=" "
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                            />
+                        </div>
+                        {/* Password */}
+                        <div>
+                            <label htmlFor="password" className="font-nunito text-sm !text-black">Password</label>
+                            <input
+                                name="password"
+                                placeholder=" "
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                            />
+                        </div>
+                        {/* Image */}
+                        <div className=" ">
+                            <input name="base64Image" value={base64Image} type="hidden" />
+                            <label className="font-nunito block text-sm !text-black" htmlFor="">
+                                Image
+                            </label>
+                            <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-400 rounded-xl dark:border-white/30 mt-2">
+                                <input
+                                    name="image"
+                                    placeholder=" "
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    type="file"
+                                    onChange={(event: any) => {
+                                        const file = event.target.files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                setBase64Image(reader.result as string);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                                {/* Display the default image or the uploaded image */}
+                                {base64Image ? (
+                                    <img
+                                        src={base64Image}
+                                        alt="Preview"
+                                        className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                                    />
+                                ) : (
+                                    <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                                        <Upload className="h-14 w-14 text-gray-400" />
+                                    </span>
+                                )}
+                            </div>
+                        </div>
 
-                    {/* Submit Button */}
-                    <div>
-                        <button
-                            type="submit"
-                            className="bg-pink-700 hover:bg-pink-800 text-white  text-sm font-semibold py-2 px-4 rounded font-montserrat"
-                        >
-                            Add User
-                        </button>
-                    </div>
-                </Form>
-            </div>
+                        <input type="hidden" name="intent" value="create" />
+
+                        {/* Submit Button */}
+                        <div>
+                            <button
+                                className="bg-pink-700 hover:bg-pink-800 text-white  text-sm font-semibold py-2 px-4 rounded font-montserrat"
+                            >
+                                Add User
+                            </button>
+                        </div>
+                    </Form>
+                }
+            />
 
             {/* Edit User Drawer */}
-            <div
-                className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${isEditDrawerOpen ? "translate-x-0" : "translate-x-full"
-                    } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
-            >
-                {/* Close Button */}
-                <div className="flex justify-between p-4">
-                    <p className="font-montserrat text-lg font-semibold">Edit User</p>
-                    <button
-                        className="text-gray-600 hover:text-gray-900 focus:outline-none"
-                        onClick={() => setIsEditDrawerOpen(false)}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="h-6 w-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <Divider className="mt-0.5" />
-
-                {/* Drawer Content */}
-                <Form method="post" className="p-4 space-y-4">
+            <Drawer
+                isDrawerOpened={isEditDrawerOpen}
+                handleDrawerClosed={() => setIsEditDrawerOpen(false)}
+                title="Edit User"
+                children={
+                    <Form method="post" className="p-4 space-y-4">
                     <div>
                         <label htmlFor="fullName" className="font-nunito text-sm !text-black">Full Name</label>
                         <input
@@ -350,23 +303,25 @@ const Users = () => {
 
                     <div className=" ">
                         <input name="base64Image" value={base64Image} type="hidden" />
-                        <label className="font-nunito block text-sm !text-black" htmlFor="">
+                        <label className="font-nunito block text-sm !text-black" htmlFor="image">
                             Image
                         </label>
                         <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-400 rounded-xl dark:border-white/30 mt-2">
+                            {/* The file input */}
                             <input
                                 name="image"
-                                placeholder=" "
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                id="image"
                                 type="file"
-                                onChange={(event: any) => {
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                accept="image/*"
+                                onChange={(event) => {
                                     const file = event.target.files[0];
                                     if (file) {
                                         const reader = new FileReader();
                                         reader.onloadend = () => {
-                                            setBase64Image(reader.result as string);
+                                            setBase64Image(reader.result as string); // Update state with new image data
                                         };
-                                        reader.readAsDataURL(file);
+                                        reader.readAsDataURL(file); // Convert file to base64
                                     }
                                 }}
                             />
@@ -386,6 +341,7 @@ const Users = () => {
                     </div>
 
 
+
                     <input type="hidden" name="intent" value="update" />
                     <input type="hidden" name="id" value={editUser?._id} />
 
@@ -399,8 +355,9 @@ const Users = () => {
                         </button>
                     </div>
                 </Form>
-            </div>
-
+                }
+            />  
+                
             <ConfirmModal className=" h-40 bg-white shadow-lg" header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
@@ -459,8 +416,10 @@ export const action: ActionFunction = async ({ request }) => {
                 phone,
                 position,
                 id,
+                base64Image, // Include this parameter if image updates are possible
             });
             return result2;
+
 
         case "delete":
             const result3 = await usersController.DeleteUser({

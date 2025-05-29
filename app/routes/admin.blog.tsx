@@ -200,21 +200,26 @@ const Users = () => {
                         />
 
                         <div className="">
-                            <Select
-                                label="Category"
-                                labelPlacement="outside"
-                                defaultSelectedKeys={[dataValue.category]}
-                                placeholder=" "
+                        <Select
                                 isRequired
-                                name="category"
+                                className="max-w-xs"
+                                label="Department"
+                                labelPlacement="outside"
+                                placeholder="Select Department"
+                                name="department"
+                                defaultSelectedKeys={[dataValue.category]}
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
-                                    popoverContent: "focus:dark:bg-[#333] focus-bg-white bg-white shadow-sm dark:bg-[#333] border border-white/5 font-nunito",
-                                    trigger: "bg-white shadow-sm dark:bg-[#333]  border border-white/30 focus:bg-[#333]  focus focus:bg-[#333] hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full   "
+                                    popoverContent:
+                                        "z-[10000] bg-white shadow-sm dark:bg-default-50 border border-black/5 font-nunito",
+                                    trigger:
+                                        "shadow-sm border border-black/5 hover:border-b-primary hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full !bg-white",
                                 }}
                             >
-                                {categories.map((cat) => (
-                                    <SelectItem key={cat._id}>{cat?.name}</SelectItem>
+                                {categories.map((category) => (
+                                    <SelectItem key={category._id} value={category._id}>
+                                        {category.name}
+                                    </SelectItem>
                                 ))}
                             </Select>
                         </div>

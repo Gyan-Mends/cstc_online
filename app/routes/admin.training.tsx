@@ -146,7 +146,6 @@ const Training = () => {
                             inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                         }}
                     />
-
                     <Textarea
                         label="Description"
                         name="description"

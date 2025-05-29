@@ -103,48 +103,70 @@ class UsersController {
             }
     }
 
-    async UpdateUser(
-        {
-         fullName,
-         email,
-         phone,
-         position,
-         id,
-        }: {
-            fullName?: string,
-            email?: string,
-            phone?: string,
-            position?: string,
-            id: string,
-           
-        }
-    ) {
+    async  UpdateUser({
+        fullName,
+        email,
+        phone,
+        position,
+        id,
+        base64Image, // New parameter for image data
+    }: {
+        fullName?: string;
+        email?: string;
+        phone?: string;
+        position?: string;
+        id: string;
+        base64Image?: string; // Optional
+    }) {
         try {
-            const updateUser = await User.findByIdAndUpdate(id, {
-               fullName,
-               email,
-               phone,
-               position,
-            });
-
-            if (updateUser) {
+            // Fetch existing user
+            const existingUser = await User.findById(id);
+            if (!existingUser) {
+                return json({
+                    message: "User not found",
+                    success: false,
+                    status: 404,
+                });
+            }
+    
+            // Handle image update logic
+            let updatedImage = existingUser.image; // Retain current image
+            if (base64Image) {
+                updatedImage = base64Image; // Replace with new image if provided
+            }
+    
+            // Update user record
+            const updatedUser = await User.findByIdAndUpdate(
+                id,
+                {
+                    fullName,
+                    email,
+                    phone,
+                    position,
+                    image: updatedImage, // Update image field
+                },
+                { new: true } // Return updated document
+            );
+    
+            if (updatedUser) {
                 return json({
                     message: "User updated successfully",
                     success: true,
-                    status: 200
+                    status: 200,
+                    data: updatedUser, // Return updated user for frontend use
                 });
             } else {
                 return json({
                     message: "Unable to update this record",
                     success: false,
-                    status: 500
+                    status: 500,
                 });
             }
         } catch (error: any) {
             return json({
                 message: error.message,
                 success: false,
-                status: 500
+                status: 500,
             });
         }
     }

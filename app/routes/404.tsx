@@ -15,11 +15,11 @@ const NotFound = () => {
     }, [location.pathname]);
 
     return (
-        <div className="min-h-screen font-nunito flex flex-col items-center justify-center bg-gradient-to-b from-background to-secondary px-6 text-center">
+        <div className="min-h-screen font-nunito flex flex-col items-center justify-center  px-6 text-center">
             <div className="space-y-10 max-w-lg">
                 {/* Animated 404 number */}
                 <ScrollAnimation>
-                    <h1 className="text-9xl lg:-mt-20 font-extrabold tracking-tighter animate-pulse bg-clip-text  bg-gradient-to-r from-primary to-blue-500">
+                    <h1 className="text-9xl lg:-mt-20 font-extrabold tracking-tighter animate-pulse bg-clip-text ">
                         404
                     </h1>
 
@@ -27,7 +27,7 @@ const NotFound = () => {
                 {/* Illustration */}
                 <ScrollAnimation>
                     <div className="relative">
-                        <div className="w-24 h-24 mx-auto rounded-full bg-secondary flex items-center justify-center border-4 border-primary/20 shadow-lg">
+                        <div className="w-24 h-24 mx-auto rounded-full  flex items-center justify-center border-4 border-primary/20 shadow-lg">
                             <Search className="w-12 h-12 text-pink-500/70 animate-spin" />
                         </div>
                         <div className="absolute top-full left-1/2 -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-primary/30 to-transparent"></div>
@@ -43,7 +43,7 @@ const NotFound = () => {
                         </p>
                         <p className="text-sm text-muted-foreground">
                             You tried to access:{" "}
-                            <span className="font-mono bg-secondary px-2 py-1 rounded">
+                            <span className="font-mono  px-2 py-1 rounded">
                                 {location.pathname}
                             </span>
                         </p>

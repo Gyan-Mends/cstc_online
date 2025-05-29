@@ -27,7 +27,7 @@ const Login = () => {
             <div className="p-20 rounded-lg">
                 <div className="flex flex-col justify-center items-center w-full gap-6">
                     <img className="h-10 w-10" src={logo} alt="Logo" />
-                    <h5 className="font-nunito dark:dark-text text-2xl font-bold">Sign in</h5>
+                    <h5 className="font-nunito dark:dark-text text-2xl font-semibold">Welcome Back</h5>
                 </div>
                 <Form
                     className="mt-6 flex flex-col gap-6"
@@ -39,7 +39,7 @@ const Login = () => {
                     <div>
                         <label
                             htmlFor="email"
-                            className="block w-80 font-medium text-light-text dark:dark-text font-nunito text-lg"
+                            className="block text-md w-80 font-medium text-light-text dark:dark-text font-nunito "
                         >
                             Email
                         </label>
@@ -49,7 +49,7 @@ const Login = () => {
                             name="email"
                             placeholder="Enter email"
                             required
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm shadow-md"
+                            className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm shadow-md"
                         />
                         {emailError && (
                             <p className="text-red-500 text-sm mt-1">{emailError}</p>
@@ -58,7 +58,7 @@ const Login = () => {
                     <div>
                         <label
                             htmlFor="password"
-                            className="block w-80 font-medium text-light-text dark:dark-text font-nunito text-lg"
+                            className="block w-80 text-md font-medium text-light-text dark:dark-text font-nunito"
                         >
                             Password
                         </label>
@@ -68,7 +68,7 @@ const Login = () => {
                             name="password"
                             placeholder="Enter password"
                             required
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm"
+                            className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm"
                         />
                         {passwordError && (
                             <p className="text-red-500 text-sm mt-1">{passwordError}</p>
@@ -103,4 +103,3 @@ export const action: ActionFunction = async ({ request }) => {
     return signin;
     
 };
-

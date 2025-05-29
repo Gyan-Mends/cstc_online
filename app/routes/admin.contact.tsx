@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, TableRow, TableCell } from "@heroui/react";
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
@@ -10,6 +10,9 @@ import { DeleteIcon } from "~/icons/DeleteIcon";
 import { getSession } from "~/session";
 import contactController from "~/controllers/contact";
 import ConfirmModal from "~/components/ui/confirmModal";
+import { successToast } from "~/components/toast";
+import { errorToast } from "~/components/toast copy";
+import { Toaster } from "react-hot-toast";
 
 
 
@@ -24,22 +27,25 @@ const Category = () => {
     const navigate = useNavigate()
     const navigation = useNavigation()
 
-    console.log(contacts);
-    
-
-
     const handleConfirmModalClosed = () => {
         setConfirmModalOpened(false)
     }
-
-  
-
+    useEffect(() => {
+        if (actionData) {
+            if (actionData.success) {
+                successToast(actionData.message)
+                setConfirmModalOpened(false)
+            } else {
+                errorToast(actionData.message)
+            }
+        }
+    }, [actionData])
 
 
 
     return (
         <AdminLayout >
-
+            <Toaster position="top-right" />
             <div className="">
                 <NewCustomTable
                     columns={ContactColumns}
