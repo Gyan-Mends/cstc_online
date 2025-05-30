@@ -54,25 +54,29 @@ export default function DirectorsBankPage() {
     // ]
 
     // Get all unique expertise areas for filtering
-    const allExpertiseAreas = Array.from(new Set(directors.flatMap((director) => director.expertise))).sort()
+    const allExpertiseAreas = directors ? Array.from(new Set(directors.flatMap((director) => director.expertise || []) || [])).sort() : []
 
     // Handle search and filtering
     const handleSearch = () => {
+        if (!directors) return;
+        
         let results = [...directors]
 
         // Filter by search query
         if (searchQuery) {
             results = results.filter(
                 (director) =>
-                    director.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    director.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    director.expertise.some((skill) => skill.toLowerCase().includes(searchQuery.toLowerCase())),
+                    director?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    director?.position?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    director?.expertise?.some((skill) => skill?.toLowerCase().includes(searchQuery.toLowerCase())),
             )
         }
-
+        
         // Filter by expertise if any are selected
         if (expertiseFilter.length > 0) {
-            results = results.filter((director) => director.expertise.some((skill) => expertiseFilter.includes(skill)))
+            results = results.filter((director) => 
+                director?.expertise?.some((skill) => expertiseFilter.includes(skill))
+            )
         }
 
         setFilteredDirectors(results)
@@ -102,7 +106,7 @@ export default function DirectorsBankPage() {
     }, [searchQuery, expertiseFilter])
 
     // Directors to display based on filter state
-    const directorsToDisplay = filterActive ? filteredDirectors : directors
+    const directorsToDisplay = filterActive ? filteredDirectors : directors || []
 
     return (
         <RootLayout>
@@ -211,11 +215,10 @@ export default function DirectorsBankPage() {
                             <ScrollAnimation key={index} delay={0.1 * index}>
                                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
                                     <div className="relative w-full">
-                                        {director.image ? (
+                                        {director?.image ? (
                                             <img
                                                 src={director.image || "/placeholder.svg"}
-                                                alt={director.name}
-
+                                                alt={director?.name || "Director profile"}
                                                 className="object-cover h-[50vh] w-full"
                                             />
                                         ) : (
@@ -225,19 +228,19 @@ export default function DirectorsBankPage() {
                                         )}
                                     </div>
                                     <div className="p-6">
-                                        <h3 className="text-xl font-semibold text-gray-900">{director.name}</h3>
-                                        <p className="text-sm font-medium text-pink-500">{director.position}</p>
+                                        <h3 className="text-xl font-semibold text-gray-900">{director?.name || 'Unnamed Director'}</h3>
+                                        <p className="text-sm font-medium text-pink-500">{director?.position || 'No Position Specified'}</p>
                                         <div className="mt-4">
                                             <h4 className="text-sm font-medium text-gray-700">Areas of Expertise:</h4>
                                             <div className="mt-2 flex flex-wrap gap-2">
-                                                {director.expertise.map((skill, i) => (
+                                                {director?.expertise?.map((skill, i) => (
                                                     <span
                                                         key={i}
                                                         className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800"
                                                     >
                                                         {skill}
                                                     </span>
-                                                ))}
+                                                )) || <span className="text-gray-400 text-xs">No expertise listed</span>}
                                             </div>
                                         </div>
                                     </div>
