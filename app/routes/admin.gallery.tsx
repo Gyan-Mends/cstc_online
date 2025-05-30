@@ -144,19 +144,18 @@ const Gallery = () => {
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="type" className="font-nunito text-sm">Type</label>
-                            <select 
-                                name="type" 
-                                className="bg-white shadow-sm border border-black/30 rounded-md p-2"
-                                value={""} // Default empty value for new item
-                                onChange={(e) => {}} // Placeholder onChange for new item
+                            <Input
+                                label="Type"
+                                name="type"
+                                placeholder=" "
+                                type="text"
                                 required
-                            >
-                                <option value="">Select Type</option>
-                                <option value="banner">Banner</option>
-                                <option value="gallery">Gallery</option>
-                                <option value="carousel">Carousel</option>
-                            </select>
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm ",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
+                                }}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-2">
@@ -217,19 +216,20 @@ const Gallery = () => {
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="type" className="font-nunito text-sm">Type</label>
-                            <select 
-                                name="type" 
-                                className="bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] rounded-md p-2"
+                            <Input
+                                label="Type"
+                                name="type"
                                 value={dataValue?.type || ""}
                                 onChange={(e) => setDataValue({...dataValue, type: e.target.value})}
+                                placeholder=" "
+                                type="text"
                                 required
-                            >
-                                <option value="">Select Type</option>
-                                <option value="banner">Banner</option>
-                                <option value="gallery">Gallery</option>
-                                <option value="carousel">Carousel</option>
-                            </select>
+                                labelPlacement="outside"
+                                classNames={{
+                                    label: "font-nunito text-sm",
+                                    inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
+                                }}
+                            />
                         </div>
 
                         <div className="flex flex-col gap-2">
