@@ -15,10 +15,10 @@ export default function Home() {
       <div className="flex min-h-screen flex-col ">
         <main className="flex-1">
           {/* Hero Section */}
-         <ScrollAnimation>
-         <section className="py-16 md:py-24 lg:h-[90vh]">
+         <section className="py-16 md:py-24 lg:h-[90vh] transition-all ">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="grid gap-12 md:grid-cols-2 md:items-center">
+                <ScrollAnimation delay={0.8}>
                 <div className="max-w-xl">
                     <h1 data-aos="fade-up" className="text-4xl font-bold  tracking-tight font-montserrat text-gray-900 md:text-5xl">
                       Corporate Excellence &<br />
@@ -45,17 +45,20 @@ export default function Home() {
                       </Link>
                     </div>
                 </div>
-                  <div className="relative h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px]">
+                  </ScrollAnimation>
+                <ScrollAnimation delay={0.8}>
+
+                  <div className="relative h-[300px] overflow-hidden transition-all  rounded-lg shadow-xl sm:h-[400px]">
                     <img
                       src={hero1}
                       alt="Programming code on screen"
                       className="object-cover h-full transition-transform duration-300 hover:scale-105"
                     />
                   </div>
+                </ScrollAnimation>
               </div>
             </div>
           </section>
-         </ScrollAnimation>
 
 
           {/* Who We Are Section */}
@@ -63,7 +66,7 @@ export default function Home() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="grid gap-12 md:grid-cols-2 md:items-center">
                 {/* Image Animation */}
-                <ScrollAnimation direction="right" delay={0.8}>
+                <ScrollAnimation  delay={0.8}>
                   <div className="h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px] hover:transform-3d">
                     <img
                       src={im2}
@@ -78,26 +81,26 @@ export default function Home() {
                 <div className="max-w-xl">
                   
                    
-                  <ScrollAnimation>
+                  <ScrollAnimation  delay={0.8}>
                     <h2 data-aos="fade-up" className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
                       Who We Are
                     </h2>
                   </ScrollAnimation>
-                  <ScrollAnimation>
+                  <ScrollAnimation delay={0.8}>
                     <p className="mt-6 text-lg leading-relaxed text-gray-600">
                       CSTS is an organization set up to strengthen the capacity of companies and entrepreneurs in core areas such
                       as corporate governance, financial management, public and business administration to ensure that these
                       entities become competitive in their various industries.
                     </p>
                   </ScrollAnimation>
-                  <ScrollAnimation>
+                  <ScrollAnimation delay={0.8}>
                     <p className="mt-6 text-lg leading-relaxed text-gray-600">
                       Our long-established background in corporate learning enables us to design and deliver bespoke learning
                       programmes that blend next-generation learning technologies and techniques in a way that drives performance
                       and inspires a culture of lifelong learning.
                     </p>
                   </ScrollAnimation>
-                  <ScrollAnimation>
+                  <ScrollAnimation delay={0.8}>
                     <div className="mt-8">
                       <Link
                         to="/who-we-are"
@@ -309,7 +312,7 @@ export default function Home() {
                   },
                 ].map((testimonial, index) => (
                   <ScrollAnimation key={index} delay={0.1 * index}>
-                    <div className="rounded-lg hover:transform-3d border border-gray-200 h-[35vh] bg-white p-6 shadow-sm">
+                    <div className="rounded-lg hover:transform-3d transition-all border border-gray-200 h-[35vh] bg-white p-6 shadow-sm">
                       <div className="mb-2">
                         <p><User className="text-pink-500" /></p>
                       </div>
