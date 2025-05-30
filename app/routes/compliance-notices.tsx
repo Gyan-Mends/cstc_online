@@ -47,7 +47,7 @@ export default function ComplianceNoticesPage() {
                                         <h3 className="mb-2 text-xl font-semibold text-gray-900">{resource.title}</h3>
                                         {/* <p className="text-gray-500">{resource.date}</p> */}
                                     </div>
-                                    <p dangerouslySetInnerHTML={{ __html: truncateText(resource.description, 100) }} />
+                                    <p dangerouslySetInnerHTML={{ __html: truncateText(resource.description, 300) }} />
                                     <div className="mt-4">
                                         <Link
                                             to="/404"
