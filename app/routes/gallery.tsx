@@ -2,73 +2,78 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import RootLayout from "~/Layout/PublicLayout";
+import { json, LoaderFunction } from "@remix-run/node";
+import Gallery from "~/model/gallery";
+import { useLoaderData } from "@remix-run/react";
+import { GalleryInterface } from "~/components/interface";
 
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
+    const { galleryImages } = useLoaderData<{ galleryImages: GalleryInterface[] }>();
 
-    const galleryImages = [
-        {
-            title: "Corporate Governance Summit",
-            category: "Events",
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900373/b2_yzywg9.avif",
-        },
-        {
-            title: "Financial Management Workshop",
-            category: "Training",
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746890121/WHO-WE-ARE_cnkjpy.avif",
-        },
-        {
-            title: "Leadership Development Program",
-            category: "Training",
-            image: "https://via.placeholder.com/600x400?text=Leadership+Development+Program",
-        },
-        {
-            title: "Annual Corporate Conference",
-            category: "Events",
-            image: "https://via.placeholder.com/600x400?text=Annual+Corporate+Conference",
-        },
-        {
-            title: "Business Strategy Workshop",
-            category: "Training",
-            image: "https://via.placeholder.com/600x400?text=Business+Strategy+Workshop",
-        },
-        {
-            title: "Compliance Roundtable",
-            category: "Events",
-            image: "https://via.placeholder.com/600x400?text=Compliance+Roundtable",
-        },
-        {
-            title: "Team Building Retreat",
-            category: "Corporate",
-            image: "https://via.placeholder.com/600x400?text=Team+Building+Retreat",
-        },
-        {
-            title: "Board Meeting",
-            category: "Corporate",
-            image: "https://via.placeholder.com/600x400?text=Board+Meeting",
-        },
-        {
-            title: "Executive Training Session",
-            category: "Training",
-            image: "https://via.placeholder.com/600x400?text=Executive+Training+Session",
-        },
-        {
-            title: "Networking Event",
-            category: "Events",
-            image: "https://via.placeholder.com/600x400?text=Networking+Event",
-        },
-        {
-            title: "Office Headquarters",
-            category: "Corporate",
-            image: "https://via.placeholder.com/600x400?text=Office+Headquarters",
-        },
-        {
-            title: "Client Consultation",
-            category: "Services",
-            image: "https://via.placeholder.com/600x400?text=Client+Consultation",
-        },
-    ];
+    // const galleryImages = [
+    //     {
+    //         title: "Corporate Governance Summit",
+    //         category: "Events",
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900373/b2_yzywg9.avif",
+    //     },
+    //     {
+    //         title: "Financial Management Workshop",
+    //         category: "Training",
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746890121/WHO-WE-ARE_cnkjpy.avif",
+    //     },
+    //     {
+    //         title: "Leadership Development Program",
+    //         category: "Training",
+    //         image: "https://via.placeholder.com/600x400?text=Leadership+Development+Program",
+    //     },
+    //     {
+    //         title: "Annual Corporate Conference",
+    //         category: "Events",
+    //         image: "https://via.placeholder.com/600x400?text=Annual+Corporate+Conference",
+    //     },
+    //     {
+    //         title: "Business Strategy Workshop",
+    //         category: "Training",
+    //         image: "https://via.placeholder.com/600x400?text=Business+Strategy+Workshop",
+    //     },
+    //     {
+    //         title: "Compliance Roundtable",
+    //         category: "Events",
+    //         image: "https://via.placeholder.com/600x400?text=Compliance+Roundtable",
+    //     },
+    //     {
+    //         title: "Team Building Retreat",
+    //         category: "Corporate",
+    //         image: "https://via.placeholder.com/600x400?text=Team+Building+Retreat",
+    //     },
+    //     {
+    //         title: "Board Meeting",
+    //         category: "Corporate",
+    //         image: "https://via.placeholder.com/600x400?text=Board+Meeting",
+    //     },
+    //     {
+    //         title: "Executive Training Session",
+    //         category: "Training",
+    //         image: "https://via.placeholder.com/600x400?text=Executive+Training+Session",
+    //     },
+    //     {
+    //         title: "Networking Event",
+    //         category: "Events",
+    //         image: "https://via.placeholder.com/600x400?text=Networking+Event",
+    //     },
+    //     {
+    //         title: "Office Headquarters",
+    //         category: "Corporate",
+    //         image: "https://via.placeholder.com/600x400?text=Office+Headquarters",
+    //     },
+    //     {
+    //         title: "Client Consultation",
+    //         category: "Services",
+    //         image: "https://via.placeholder.com/600x400?text=Client+Consultation",
+    //     },
+    // ];
 
     // Filter images based on the selected category
     const filteredImages =
@@ -141,7 +146,7 @@ export default function GalleryPage() {
                                     </div>
                                     <div className="p-4 bg-white">
                                         <p className="text-sm font-medium text-pink-500">
-                                            {image.category}
+                                            {image.type}
                                         </p>
                                         <h3 className="text-lg font-semibold text-gray-900">
                                             {image.title}
@@ -174,4 +179,9 @@ export default function GalleryPage() {
             </main>
         </RootLayout>
     );
+}
+
+export const loader: LoaderFunction = async () => {
+    const galleryImages = await Gallery.find()
+    return json({ galleryImages })
 }

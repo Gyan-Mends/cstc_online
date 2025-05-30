@@ -5,58 +5,63 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar, User, ArrowRight, Search } from "lucide-react";
 import RootLayout from "~/Layout/PublicLayout";
+import { json, LoaderFunction } from "@remix-run/node";
+import Blog from "~/model/blog";
+import { useLoaderData } from "@remix-run/react";
+import { BlogInterface } from "~/components/interface";
 
 export default function BlogPage() {
     const [searchQuery, setSearchQuery] = useState("");
+    const { articles } = useLoaderData<{ articles: BlogInterface[] }>()
 
-    const articles = [
-        {
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900373/b2_yzywg9.avif",
-            title: "Understanding the New Companies Act of Ghana",
-            excerpt:
-                "A comprehensive guide to the key changes in the new Companies Act and how they affect businesses in Ghana",
-            date: "April 15, 2025",
-            author: "John Mensah",
-            category: "Corporate Governance",
-            readTime: "5 min read",
-        },
-        {
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900683/b3_ov52nd.jpg",
-            title: "Tax Compliance for SMEs in Ghana",
-            excerpt:
-                "Essential tax compliance practices that every small and medium enterprise in Ghana should implement.",
-            date: "March 28, 2025",
-            author: "By Abena Owusu",
-            category: "Tax Administration",
-            readTime: "7 min read",
-        },
-        {
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746901014/b4_h6fkeq.avif",
-            title: "Building Effective Boards for Corporate Success",
-            excerpt:
-                "How to constitute and manage effective boards that drive corporate success and good governance.",
-            date: "February 10, 2025",
-            author: "Michael Asante",
-            category: "Corporate Governance",
-            readTime: "6 min read",
-        },
-        {
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746901244/b5_pv9wq0.avif",
-            title: "Foreign Investment Opportunities in Ghana",
-            excerpt:
-                "Exploring the vast investment opportunities available to foreign investors in Ghana's growing economy.",
-            date: "January 22, 2025",
-            author: " Sarah Johnson",
-            category: "Investment",
-            readTime: "8 min read",
-        },
+    // const articles = [
+    //     {
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900373/b2_yzywg9.avif",
+    //         title: "Understanding the New Companies Act of Ghana",
+    //         excerpt:
+    //             "A comprehensive guide to the key changes in the new Companies Act and how they affect businesses in Ghana",
+    //         date: "April 15, 2025",
+    //         author: "John Mensah",
+    //         category: "Corporate Governance",
+    //         readTime: "5 min read",
+    //     },
+    //     {
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746900683/b3_ov52nd.jpg",
+    //         title: "Tax Compliance for SMEs in Ghana",
+    //         excerpt:
+    //             "Essential tax compliance practices that every small and medium enterprise in Ghana should implement.",
+    //         date: "March 28, 2025",
+    //         author: "By Abena Owusu",
+    //         category: "Tax Administration",
+    //         readTime: "7 min read",
+    //     },
+    //     {
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746901014/b4_h6fkeq.avif",
+    //         title: "Building Effective Boards for Corporate Success",
+    //         excerpt:
+    //             "How to constitute and manage effective boards that drive corporate success and good governance.",
+    //         date: "February 10, 2025",
+    //         author: "Michael Asante",
+    //         category: "Corporate Governance",
+    //         readTime: "6 min read",
+    //     },
+    //     {
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746901244/b5_pv9wq0.avif",
+    //         title: "Foreign Investment Opportunities in Ghana",
+    //         excerpt:
+    //             "Exploring the vast investment opportunities available to foreign investors in Ghana's growing economy.",
+    //         date: "January 22, 2025",
+    //         author: " Sarah Johnson",
+    //         category: "Investment",
+    //         readTime: "8 min read",
+    //     },
 
-    ];
+    // ];
 
     const filteredArticles = articles.filter(
         (article) =>
-            article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            article.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+            article.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            article.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -109,30 +114,37 @@ export default function BlogPage() {
                                         >
                                             <Link to="/404">
                                                 <div className="group">
-                                                    <div className="mb-4 h-60 w-full rounded-lg bg-gray-200">
-                                                        <img className="rounded-lg h-full w-full" src={article.image} alt="" /></div>
+                                                    <div className="mb-4 h-60 w-full rounded-lg bg-gray-200 overflow-hidden">
+                                                        {article.image ? (
+                                                            <img className="rounded-lg h-full w-full object-cover" src={article.image} alt={article.name || "Blog post"} />
+                                                        ) : (
+                                                            <div className="h-full w-full flex items-center justify-center bg-gray-200">
+                                                                <p className="text-gray-500">No image available</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                     <div className="">
                                                         <span className="text-sm font-medium text-pink-500">
-                                                            {article.category}
+                                                            {typeof article.category === 'object' ? article.category.name : article.category}
                                                         </span>
                                                         <h3 className="mt-2 text-xl font-semibold text-gray-900 group-hover:text-pink-500">
-                                                            {article.title}
+                                                            {article.name}
                                                         </h3>
-                                                        <p className="mt-3 text-gray-600">
-                                                            {article.excerpt}
+                                                        <p className="mt-3 text-gray-600 line-clamp-3">
+                                                            {article.description?.replace(/<[^>]*>/g, '').substring(0, 150)}...
                                                         </p>
                                                         <div className="mt-4 flex items-center text-sm text-gray-500">
                                                             <div className="flex items-center">
                                                                 <Calendar className="mr-1 h-4 w-4" />
-                                                                <span>{article.date}</span>
+                                                                <span>{new Date().toLocaleDateString()}</span>
                                                             </div>
                                                             <span className="mx-2">•</span>
                                                             <div className="flex items-center">
                                                                 <User className="mr-1 h-4 w-4" />
-                                                                <span>{article.author}</span>
+                                                                <span>{typeof article.admin === 'object' ? article.admin.name || 'Admin' : 'Admin'}</span>
                                                             </div>
                                                             <span className="mx-2">•</span>
-                                                            <span>{article.readTime}</span>
+                                                            <span>{Math.max(1, Math.ceil((article.description?.length || 0) / 1000))} min read</span>
                                                         </div>
                                                         <Link to="/404" className="mt-4">
                                                             <span className="inline-flex items-center text-sm font-medium text-pink-500 group-hover:text-pink-600">
@@ -244,4 +256,10 @@ export default function BlogPage() {
             </main>
         </RootLayout>
     );
+}
+
+
+export const loader: LoaderFunction = async () => {
+    const articles = await Blog.find()
+    return json({ articles })
 }

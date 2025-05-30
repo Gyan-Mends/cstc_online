@@ -1,11 +1,22 @@
 "use client"
 
-import { Link } from "@remix-run/react"
+import { json, LoaderFunction } from "@remix-run/node"
+import { Link, useLoaderData } from "@remix-run/react"
 import { motion } from "framer-motion"
 import { FileText, AlertTriangle, Info, Calendar } from "lucide-react"
+import { ComplianceNoticeInterface } from "~/components/interface"
 import RootLayout from "~/Layout/PublicLayout"
+import Notice from "~/model/notice"
 
 export default function ComplianceNoticesPage() {
+    const { notices } = useLoaderData<{ notices: ComplianceNoticeInterface[] }>();
+
+    const truncateText = (text: string, maxLength: number) => {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '...';
+        }
+        return text;
+    };
     return (
         <RootLayout>
             <main className="flex-1">
@@ -24,28 +35,7 @@ export default function ComplianceNoticesPage() {
                         </motion.div>
 
                         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
-                            {[
-                                {
-                                    title: "Annual Returns Filing Deadline Extension",
-                                    description: "The Registrar of Companies has extended the deadline for filing Annual Returns by companies to July 31, 2025.",
-                                    date: "May 1, 2025",
-                                },
-                                {
-                                    title: "New Tax Compliance Requirements",
-                                    description: "The Ghana Revenue Authority has announced new tax compliance requirements for all businesses operating in Ghana.",
-                                    date: "April 15, 2025",
-                                },
-                                {
-                                    title: "Updated Companies Act Regulations",
-                                    description: "Important updates to the Companies Act regulations have been released, affecting corporate governance requirements.",
-                                    date: "March 20, 2025",
-                                },
-                                {
-                                    title: "Foreign Exchange Control Updates",
-                                    description: "Bank of Ghana has issued new guidelines on foreign exchange controls that affect international businesses.",
-                                    date: "February 10, 2025",
-                                },
-                            ].map((resource, index) => (
+                            {notices.map((resource, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
@@ -55,9 +45,9 @@ export default function ComplianceNoticesPage() {
                                 >
                                     <div className="flex justify-between items-center">
                                         <h3 className="mb-2 text-xl font-semibold text-gray-900">{resource.title}</h3>
-                                        <p className="text-gray-500">{resource.date}</p>
+                                        {/* <p className="text-gray-500">{resource.date}</p> */}
                                     </div>
-                                    <p className="text-gray-600">{resource.description}</p>
+                                    <p dangerouslySetInnerHTML={{ __html: truncateText(resource.description, 100) }} />
                                     <div className="mt-4">
                                         <Link
                                             to="/404"
@@ -77,3 +67,32 @@ export default function ComplianceNoticesPage() {
         </RootLayout>
     )
 }
+
+export const loader: LoaderFunction = async () => {
+    const notices = await Notice.find()
+    return json({ notices })
+}
+
+
+// [
+//     {
+//         title: "Annual Returns Filing Deadline Extension",
+//         description: "The Registrar of Companies has extended the deadline for filing Annual Returns by companies to July 31, 2025.",
+//         date: "May 1, 2025",
+//     },
+//     {
+//         title: "New Tax Compliance Requirements",
+//         description: "The Ghana Revenue Authority has announced new tax compliance requirements for all businesses operating in Ghana.",
+//         date: "April 15, 2025",
+//     },
+//     {
+//         title: "Updated Companies Act Regulations",
+//         description: "Important updates to the Companies Act regulations have been released, affecting corporate governance requirements.",
+//         date: "March 20, 2025",
+//     },
+//     {
+//         title: "Foreign Exchange Control Updates",
+//         description: "Bank of Ghana has issued new guidelines on foreign exchange controls that affect international businesses.",
+//         date: "February 10, 2025",
+//     },
+// ]

@@ -1,11 +1,14 @@
 "use client"
 
-import { Link } from "@remix-run/react"
+import { json, LoaderFunction } from "@remix-run/node"
+import { Link, useLoaderData } from "@remix-run/react"
 import { motion } from "framer-motion"
 import { Calendar, MapPin, Clock, Users, ArrowRight } from "lucide-react"
 import RootLayout from "~/Layout/PublicLayout"
+import Event from "~/model/events"
 
 export default function EventsPage() {
+    const { events } = useLoaderData<{ events: Event[] }>();
     return (
         <RootLayout>
             <main className="flex-1">
@@ -32,40 +35,7 @@ export default function EventsPage() {
 
 
                                 <div className=" mt-10 lg:grid lg:grid-cols-3 gap-10">
-                                    {[
-                                        {
-                                            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1747005405/e3_ypmjut.jpg",
-                                            title: "Corporate Governance Workshop",
-                                            description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members",
-                                            location: "Kempinski Hotel, Accra",
-                                            date: "June 15, 2025"
-
-                                        },
-                                        {
-                                            image: "https://img.freepik.com/premium-photo/woman-giving-presentation-her-colleagues-conference-room_693425-35463.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
-                                            title: "Corporate Governance Workshop",
-                                            description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members.",
-                                            location: "Kempinski Hotel, Accra",
-                                            date: "July 10, 2025"
-
-                                        },
-                                        {
-                                            image: "https://img.freepik.com/premium-photo/young-african-american-businessman-giving-presentation-colleagues_605022-14327.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
-                                            title: "Entrepreneurship Training Series",
-                                            description: "A week-long training series focused on equipping entrepreneurs with essential skills in various areas including product development, marketing, and financial management.",
-                                            location: "CSTS Training Center, Madina, Accra",
-                                            date: "August 5-12, 2025"
-
-                                        },
-                                        {
-                                            image: "https://img.freepik.com/premium-photo/middle-aged-african-american-businesswoman-work-desk-modern-office_100800-29031.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
-                                            title: "Company Secretary Masterclass",
-                                            description: "An advanced training program for company secretaries covering the latest regulatory changes and best practices in corporate governance.",
-                                            location: "Movenpick Ambassador Hotel, Accra",
-                                            date: "September 20, 2025"
-
-                                        },
-                                    ].map((article, index) => (
+                                    {events.map((article, index) => (
                                         <motion.div
                                             key={index}
                                             initial={{ opacity: 0, y: 20 }}
@@ -136,3 +106,43 @@ export default function EventsPage() {
         </RootLayout>
     )
 }
+
+export const loader: LoaderFunction = async () => {
+    const events = await Event.find()
+    return json({ events })
+}
+
+// [
+//     {
+//         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1747005405/e3_ypmjut.jpg",
+//         title: "Corporate Governance Workshop",
+//         description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members",
+//         location: "Kempinski Hotel, Accra",
+//         date: "June 15, 2025"
+
+//     },
+//     {
+//         image: "https://img.freepik.com/premium-photo/woman-giving-presentation-her-colleagues-conference-room_693425-35463.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
+//         title: "Corporate Governance Workshop",
+//         description: "A comprehensive workshop on corporate governance best practices under the new Companies Act of Ghana, tailored for executives and board members.",
+//         location: "Kempinski Hotel, Accra",
+//         date: "July 10, 2025"
+
+//     },
+//     {
+//         image: "https://img.freepik.com/premium-photo/young-african-american-businessman-giving-presentation-colleagues_605022-14327.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
+//         title: "Entrepreneurship Training Series",
+//         description: "A week-long training series focused on equipping entrepreneurs with essential skills in various areas including product development, marketing, and financial management.",
+//         location: "CSTS Training Center, Madina, Accra",
+//         date: "August 5-12, 2025"
+
+//     },
+//     {
+//         image: "https://img.freepik.com/premium-photo/middle-aged-african-american-businesswoman-work-desk-modern-office_100800-29031.jpg?ga=GA1.1.902371846.1746942933&semt=ais_hybrid&w=740",
+//         title: "Company Secretary Masterclass",
+//         description: "An advanced training program for company secretaries covering the latest regulatory changes and best practices in corporate governance.",
+//         location: "Movenpick Ambassador Hotel, Accra",
+//         date: "September 20, 2025"
+
+//     },
+// ]

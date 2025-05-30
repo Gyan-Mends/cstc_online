@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react"
 import { Users, Search, Filter, CheckCircle } from "lucide-react"
 import ScrollAnimation from "~/components/animation"
-import { Link } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import RootLayout from "~/Layout/PublicLayout"
+import { json, LoaderFunction } from "@remix-run/node"
+import DirectorsBank from "~/model/directorsBank"
 
 export default function DirectorsBankPage() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -22,33 +24,34 @@ export default function DirectorsBankPage() {
         availability: string
         image?: string
     }
+    const { directors } = useLoaderData<{ directors: Director[] }>()
 
-    const directors: Director[] = [
-        {
-            name: "Dr. Elizabeth Mensah",
-            position: "Corporate Governance Expert",
-            expertise: ["Financial Governance", "Compliance", "Risk Management"],
-            experience: "15+ years in corporate governance and financial management",
-            availability: "Available for 2 board positions",
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966223/bd3_tf4pxr.avif",
-        },
-        {
-            name: "Samuel Osei",
-            position: "Legal Consultant",
-            expertise: ["Business Law", "Corporate Strategy", "Regulatory Affairs"],
-            experience: "20+ years in corporate legal practice",
-            availability: "Available for 1 board position",
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966224/bd4_iigv3b.avif",
-        },
-        {
-            name: "Grace Afolabi",
-            position: "Corporate Secretary",
-            expertise: ["Regulatory Affairs", "Board Management", "Governance"],
-            experience: "18+ years in corporate secretarial roles",
-            availability: "Available for 2 board positions",
-            image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966224/bd5_dfyknh.avif",
-        },
-    ]
+    // const directors: Director[] = [
+    //     {
+    //         name: "Dr. Elizabeth Mensah",
+    //         position: "Corporate Governance Expert",
+    //         expertise: ["Financial Governance", "Compliance", "Risk Management"],
+    //         experience: "15+ years in corporate governance and financial management",
+    //         availability: "Available for 2 board positions",
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966223/bd3_tf4pxr.avif",
+    //     },
+    //     {
+    //         name: "Samuel Osei",
+    //         position: "Legal Consultant",
+    //         expertise: ["Business Law", "Corporate Strategy", "Regulatory Affairs"],
+    //         experience: "20+ years in corporate legal practice",
+    //         availability: "Available for 1 board position",
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966224/bd4_iigv3b.avif",
+    //     },
+    //     {
+    //         name: "Grace Afolabi",
+    //         position: "Corporate Secretary",
+    //         expertise: ["Regulatory Affairs", "Board Management", "Governance"],
+    //         experience: "18+ years in corporate secretarial roles",
+    //         availability: "Available for 2 board positions",
+    //         image: "https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966224/bd5_dfyknh.avif",
+    //     },
+    // ]
 
     // Get all unique expertise areas for filtering
     const allExpertiseAreas = Array.from(new Set(directors.flatMap((director) => director.expertise))).sort()
@@ -433,4 +436,9 @@ export default function DirectorsBankPage() {
         </main>
         </RootLayout>
     )
+}
+
+export const loader: LoaderFunction = async () => {
+    const directors = await DirectorsBank.find()
+    return json({ directors })
 }
