@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Textarea, TableRow, TableCell, Tooltip, Skeleton, Divider } from "@heroui/react";
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react";
 import { Toaster } from "react-hot-toast";
 
 import CustomInput from "~/components/ui/CustomInput";
@@ -32,6 +32,13 @@ const Category = () => {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
     const navigation = useNavigation()
+    const [searchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const handlePageChange = (page: number) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        navigate(`?${newSearchParams.toString()}`);
+    };
 
     useEffect(() => {
         if (actionData?.success) {
@@ -95,7 +102,7 @@ const Category = () => {
                     columns={CategoryColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
                     totalPages={totalPages}
-                    page={1}
+                    page={currentPage}
                     setPage={(page) => (
                         navigate(`?page=${page}`)
                     )}>

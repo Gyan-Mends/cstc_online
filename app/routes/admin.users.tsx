@@ -11,7 +11,7 @@ import {
 
 } from "@heroui/react";
 import { ActionFunction, json, LinksFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react";
 import axios from "axios";
 import { Delete, Edit, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,30 +32,36 @@ import { getSession } from "~/session";
 
 
 
-const Users = () => {
-    const navigation = useNavigation();
-    const navigate = useNavigate();
+export default function Users() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false);
+    const [editUser, setEditUser] = useState<any>(null);
     const [base64Image, setBase64Image] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [editUser, setEditUser] = useState<UsersInterface | null>(null);
-    const submit = useSubmit()
+    const navigation = useNavigation();
+    const navigate = useNavigate();
+    const submit = useSubmit();
+    const [searchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    
     const actionData = useActionData<{
         message: string;
         success: boolean;
         status: number;
-    }>()
-    const {
-        user,
-        users,
-        totalPages
-    } = useLoaderData<{
+    }>();
+    
+    const { user, users, totalPages } = useLoaderData<{
         user: { _id: string },
         users: UsersInterface[],
         totalPages: number
-    }>()
+    }>();
+
+    // Update the URL when the page changes
+    const handlePageChange = (page: number) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        navigate(`?${newSearchParams.toString()}`);
+    };
 
     useEffect(() => {
         if (actionData) {
@@ -80,6 +86,8 @@ const Users = () => {
     useEffect(() => {
         if (editUser?.image) {
             setBase64Image(editUser.image); // Set the image from the database as the initial value
+        } else {
+            setBase64Image(null);
         }
     }, [editUser]);
 
@@ -106,8 +114,8 @@ const Users = () => {
                     columns={UserColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
                     totalPages={totalPages}
-                    page={1}
-                    setPage={(page) => navigate(`?page=${page}`)}
+                    page={currentPage}
+                    setPage={handlePageChange}
                 >
                     {users.map((user: any) => (
                         <TableRow key={user.id}>
@@ -202,7 +210,7 @@ const Users = () => {
                         </div>
                         {/* Image */}
                         <div className=" ">
-                            <input name="base64Image" value={base64Image} type="hidden" />
+                            {base64Image && <input type="hidden" name="image" value={base64Image} />}
                             <label className="font-nunito block text-sm !text-black" htmlFor="">
                                 Image
                             </label>
@@ -213,10 +221,10 @@ const Users = () => {
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     type="file"
                                     onChange={(event: any) => {
-                                        const file = event.target.files[0];
+                                        const file = event.target.files?.[0];
                                         if (file) {
                                             const reader = new FileReader();
-                                            reader.onloadend = () => {
+                                            reader.onload = () => {
                                                 setBase64Image(reader.result as string);
                                             };
                                             reader.readAsDataURL(file);
@@ -383,8 +391,6 @@ const Users = () => {
 
     );
 };
-
-export default Users;
 
 export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();

@@ -67,12 +67,11 @@ export default function Home() {
               <div className="grid gap-12 md:grid-cols-2 md:items-center">
                 {/* Image Animation */}
                 <ScrollAnimation  delay={0.8}>
-                  <div className="h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px] hover:transform-3d">
+                <div className="relative h-[300px] overflow-hidden transition-all  rounded-lg shadow-xl sm:h-[400px]">
                     <img
                       src={im2}
-                      alt="Colorful programming code"
+                      alt="Programming code on screen"
                       className="object-cover h-full transition-transform duration-300 hover:scale-105"
-                      loading="lazy"
                     />
                   </div>
                 </ScrollAnimation>
@@ -360,7 +359,7 @@ export default function Home() {
                 </ScrollAnimation>
 
                 <ScrollAnimation direction="left" delay={0.2}>
-                  <div className="relative h-[300px] overflow-hidden rounded-lg sm:h-[400px] hover:transform-3d">
+                  <div className="relative h-[300px] transition-all overflow-hidden rounded-lg sm:h-[400px] hover:transform-3d">
                     <div className="absolute inset-0 flex items-center justify-center  bg-white shadow-sm p-8">
                       <div className="text-center">
                         <Phone className="mx-auto h-12 w-12 text-pink-500" />

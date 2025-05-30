@@ -1,6 +1,6 @@
 import { Button,  Select, SelectItem, TableCell, TableRow, User } from "@heroui/react"
 import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction,  } from "@remix-run/node"
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
 import { Plus, Upload } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
@@ -34,6 +34,13 @@ const Users = () => {
     const actionData = useActionData()
     const [content, setContent] = useState("");
     const navigation = useNavigation()
+    const [searchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const handlePageChange = (page: number) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        navigate(`?${newSearchParams.toString()}`);
+    };
     const {
         user,
         blogs,
@@ -119,7 +126,7 @@ const Users = () => {
                 columns={BlogColumns}
                 loadingState={navigation.state === "loading" ? "loading" : "idle"}
                 totalPages={totalPages}
-                page={1}
+                page={currentPage}
                 setPage={(page) => (
                     navigate(`?page=${page}`)
                 )}>

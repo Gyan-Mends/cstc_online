@@ -63,7 +63,7 @@ export default function NewCustomTable(
                     <Pagination
                         page={page}
                         total={totalPages}
-                        onChange={(page: number) => setPage(page)}
+                        onChange={setPage}
                         color="primary"
                         showControls
                         showShadow

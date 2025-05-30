@@ -1,6 +1,6 @@
 import { Button, Divider, Input, TableCell, TableRow, Textarea, User } from "@heroui/react"
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
 import { Plus, Upload } from "lucide-react"
 import { useState, useEffect } from "react"
 import { successToast, errorToast } from "~/components/toast"
@@ -26,7 +26,13 @@ const Training = () => {
     const [confirmModalOpened, setConfirmModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<TrainingInterface | null>(null)
     const { trainings, totalPages } = useLoaderData<{ trainings: TrainingInterface[], totalPages: number | any }>()
-
+    const [searchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const handlePageChange = (page: number) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        navigate(`?${newSearchParams.toString()}`);
+    };
     const handleConfirmModalClosed = () => {
         setConfirmModalOpened(false)
     }
@@ -60,7 +66,7 @@ const Training = () => {
                     columns={TrainingColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
                     totalPages={totalPages}
-                    page={1}
+                    page={currentPage}
                     setPage={(page) => (
                         navigate(`?page=${page}`)
                     )}>

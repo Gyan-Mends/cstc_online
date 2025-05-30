@@ -14,7 +14,7 @@ export default function CorporateServicesPage() {
                 {/* Hero Section */}
                 <section className=" py-16 md:py-24">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <ScrollAnimation>
+                        <ScrollAnimation delay={0.2}>
                             <div className="text-center">
                                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
                                     Corporate Services
@@ -30,7 +30,7 @@ export default function CorporateServicesPage() {
                 {/* Company Secretarial Services Section */}
                 <section className="py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <ScrollAnimation direction="right">
+                        <ScrollAnimation direction="right" delay={0.1}>
                             <h2 className="text-3xl font-bold text-gray-900">Company Secretarial Services</h2>
                         </ScrollAnimation>
 

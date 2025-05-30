@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, TableRow, TableCell } from "@heroui/react";
 import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react";
 import { ContactInterface } from "~/components/interface";
 import AdminLayout from "~/Layout/AttendantLayout";
 import NewCustomTable from "~/components/table/newTable";
@@ -26,6 +26,13 @@ const Category = () => {
     const [confirmModalOpened, setConfirmModalOpened] = useState(false)
     const navigate = useNavigate()
     const navigation = useNavigation()
+    const [searchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const handlePageChange = (page: number) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        navigate(`?${newSearchParams.toString()}`);
+    };
 
     const handleConfirmModalClosed = () => {
         setConfirmModalOpened(false)
@@ -51,7 +58,7 @@ const Category = () => {
                     columns={ContactColumns}
                     loadingState={navigation.state === "loading" ? "loading" : "idle"}
                     totalPages={totalPages}
-                    page={1}
+                    page={currentPage}
                     setPage={(page) => (
                         navigate(`?page=${page}`)
                     )}>

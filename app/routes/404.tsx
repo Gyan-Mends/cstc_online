@@ -37,7 +37,7 @@ const NotFound = () => {
                 {/* Message */}
                 <ScrollAnimation>
                     <div className="space-y-4">
-                        <h2 className="text-3xl font-bold text-primary">Page Not Found</h2>
+                        <h2 className="text-3xl font-bold text-pink-500">Page Not Found</h2>
                         <p className="text-muted-foreground text-lg">
                             Oops! The page you're looking for seems to have wandered off into the digital void.
                         </p>

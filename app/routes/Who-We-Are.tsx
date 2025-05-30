@@ -9,7 +9,7 @@ export default function WhoWeArePage() {
             <main className="flex-1">
                 <div className="bg-gray-50 py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <ScrollAnimation>
+                        <ScrollAnimation delay={0.7}>
                             <div className="text-center">
                                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Who We Are</h1>
                                 <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
@@ -23,7 +23,7 @@ export default function WhoWeArePage() {
                 <section className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="grid gap-12 md:grid-cols-2 md:items-center">
-                            <ScrollAnimation direction="right">
+                            <ScrollAnimation delay={0.8}>
                                 <div>
                                     <h2 className="text-3xl font-bold tracking-tight text-gray-900">Our Story</h2>
                                     <div className="mt-6 space-y-6 text-lg text-gray-600">
@@ -51,7 +51,7 @@ export default function WhoWeArePage() {
                                 </div>
                             </ScrollAnimation>
 
-                            <ScrollAnimation direction="left" delay={0.2}>
+                            <ScrollAnimation delay={0.8}>
                                 <div className="relative h-[300px] overflow-hidden rounded-lg shadow-xl sm:h-[400px]">
                                     <img src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746890121/WHO-WE-ARE_cnkjpy.avif" alt="Our team" className="object-cover h-full" />
                                 </div>
@@ -110,7 +110,7 @@ export default function WhoWeArePage() {
                                 // },
                             ].map((value, index) => (
                                 <ScrollAnimation key={index} delay={0.1 * index}>
-                                    <div className="rounded-lg border border-gray-200 bg-white p-6 h-80 text-center shadow-sm">
+                                    <div className="rounded-lg hover:transform-3d transition-all border border-gray-200 bg-white px-6 h-60 pt-6 text-center shadow-sm">
                                         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-pink-50">
                                             {value.icon}
                                         </div>
@@ -126,7 +126,7 @@ export default function WhoWeArePage() {
                 <section>
                     <div className="lg:grid lg:grid-cols-2 gap-20 py-40 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                        <ScrollAnimation>
-                         <div className="border h-80 w-full bg-white rounded-lg shadow-md p-10 hover:transform-3d">
+                         <div className="border h-80 w-full bg-white rounded-lg shadow-md transition-all p-10 hover:transform-3d">
                             <div className="flex justify-between items-center">
                                 <h4 className="text-2xl font-montserrat font-bold">
                                     Mission
@@ -141,7 +141,7 @@ export default function WhoWeArePage() {
                         </div>
                        </ScrollAnimation>
                         <ScrollAnimation>
-                            <div className="border h-80 w-full bg-white rounded-lg shadow-md p-10 hover:transform-3d">
+                            <div className="border h-80 w-full bg-white rounded-lg shadow-md transition-all p-10 hover:transform-3d">
                             <div className="flex justify-between items-center">
                                 <h4 className="text-2xl font-montserrat font-bold">
                                     Vission

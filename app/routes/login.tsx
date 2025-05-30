@@ -3,6 +3,7 @@ import { ActionFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigate, useNavigation } from "@remix-run/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { EnvelopeIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import logo from "~/components/image/logo.jpg";
 import login from "~/controllers/users";
 
@@ -43,14 +44,19 @@ const Login = () => {
                         >
                             Email
                         </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Enter email"
-                            required
-                            className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm shadow-md"
-                        />
+                        <div className="relative mt-1 rounded-md shadow-sm">
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                <EnvelopeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter email"
+                                required
+                                className="block w-full rounded-xl border border-gray-300 pl-2 pr-10 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm shadow-md"
+                            />
+                        </div>
                         {emailError && (
                             <p className="text-red-500 text-sm mt-1">{emailError}</p>
                         )}
@@ -62,24 +68,50 @@ const Login = () => {
                         >
                             Password
                         </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter password"
-                            required
-                            className="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm"
-                        />
+                        <div className="relative mt-1 rounded-md shadow-sm">
+                            <input
+                                type={isVisible ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                placeholder="Enter password"
+                                required
+                                className="block w-full rounded-xl border border-gray-300 pl-2 pr-10 py-2 text-gray-900 shadow-sm focus:border-pink-500/40 focus:outline-none focus:ring-1 focus:ring-pink-500/20 dark:bg-[#111111] dark:border dark:border-[#333333] placeholder:text-sm"
+                            />
+                            
+                            <button
+                                type="button"
+                                className="absolute inset-y-0 right-0 flex items-center pr-3"
+                                onClick={() => setIsVisible(!isVisible)}
+                            >
+                                {isVisible ? (
+                                    <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" aria-hidden="true" />
+                                )}
+                            </button>
+                        </div>
                         {passwordError && (
                             <p className="text-red-500 text-sm mt-1">{passwordError}</p>
                         )}
                     </div>
-                   
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <input
+                                id="rememberMe"
+                                name="rememberMe"
+                                type="checkbox"
+                                className="h-4 w-4 rounded-xl border-gray-300 text-pink-500 focus:ring-pink-500 bg-pink-500"
+                            />
+                            <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                Remember me
+                            </label>
+                        </div>
+                    </div>
                     <div>
                         <button
                             disabled={navigation.state !== "idle"}
                             type="submit"
-                            className="mt-1 block w-full rounded-md px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 font-montserrat focus:outline-none bg-pink-500 text-white focus:ring-1 focus:ring-pink-500"
+                            className="mt-1 block w-full rounded-xl px-4 py-2 text-gray-900 shadow-sm focus:border-pink-500 font-montserrat focus:outline-none bg-pink-500 text-white focus:ring-1 focus:ring-pink-500"
                         >
                             {navigation.state === "idle" ? "Login" : "Logging in..."}
                         </button>
