@@ -65,4 +65,24 @@ export interface EventInterface {
     location: string;
     image: string;
 }
+export interface ComplianceNoticeInterface {
+    _id: string;
+    title: string;
+    description: string;
+}
+
+export interface GalleryInterface {
+    _id: string;
+    title: string;
+    type: string;
+    image: string;
+}
+
+export interface DirectorsBankInterface {
+    _id: string;
+    name: string;
+    position: string;
+    image: string;
+    areasOfExpertise: string[];
+}
 

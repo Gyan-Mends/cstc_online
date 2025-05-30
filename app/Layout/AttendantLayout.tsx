@@ -127,14 +127,38 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                             </li>
                         </Link>
                     </ul>
-                    {/* <ul className="flex flex-col">
+                     <ul className="flex flex-col">
                         <Link to="/admin/event">
                             <li className=" flex items-center gap-2">
                                 <Book className="h-5 w-5 text-pink-500 " />
                                 Events
                             </li>
                         </Link>
-                    </ul> */}
+                    </ul> 
+                     <ul className="flex flex-col">
+                        <Link to="/admin/compliance-notice">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5 text-pink-500 " />
+                                Compliance Notice
+                            </li>
+                        </Link>
+                    </ul> 
+                     <ul className="flex flex-col">
+                        <Link to="/admin/gallery">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5 text-pink-500 " />
+                                Gallery
+                            </li>
+                        </Link>
+                    </ul> 
+                     <ul className="flex flex-col">
+                        <Link to="/admin/directors-bank">
+                            <li className=" flex items-center gap-2">
+                                <Book className="h-5 w-5 text-pink-500 " />
+                                Directors Bank
+                            </li>
+                        </Link>
+                    </ul> 
                 </div>
 
                 {/* Profile Section
@@ -287,11 +311,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/login")
     }
     
-    // const {user} = await usersController.FetchUsers({
-    //     request,
-    //     page,
-    //     search_term
-    // });
+    const {user} = await usersController.FetchUsers({
+        request,
+        page,
+        search_term
+    });
     
 
     return json({ user })

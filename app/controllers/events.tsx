@@ -8,35 +8,52 @@ class EventController {
         title,
         description,
         date,
-        duration,
         location,
-        base64Image,
+        base64Image
     }: {
         title: string;
         description: string;
         date: string;
-        duration: string;
         location: string;
-        base64Image: string;
+        base64Image: string | null;
     }) {
-        const newEvent = new Event({
-            title,
-            description,
-            date,
-            duration,
-            location,
-            image: base64Image,
-        });
-    
         try {
-            const response = await newEvent.save();
-            if (response) {
-                return json({ message: "Event created successfully", success: true });
-            } else {
-                return json({ message: "Event creation failed", success: false });
+            // Validate required fields
+            if (!title || !description || !date || !location) {
+                return json({
+                    message: "Please fill in all required fields",
+                    success: false
+                }, { status: 400 });
             }
-        } catch (error) {
-            return json({ message: "An error occurred while creating the event", success: false, error });
+
+            // Validate image if it's required
+            if (!base64Image) {
+                return json({
+                    message: "Please upload an image for the event",
+                    success: false
+                }, { status: 400 });
+            }
+
+            const newEvent = new Event({
+                title,
+                description,
+                date,
+                location,
+                image: base64Image,
+            });
+
+            const response = await newEvent.save();
+            return json({
+                message: "Event created successfully",
+                success: true
+            }, { status: 201 });
+
+        } catch (error: any) {
+            console.error("Error creating event:", error);
+            return json({
+                message: error.message || "An error occurred while creating the event",
+                success: false
+            }, { status: 500 });
         }
     }
 
@@ -47,16 +64,16 @@ class EventController {
         limit = 7,
     }: {
         request?: Request;
-            page?: number;
+        page?: number;
         search_term?: string;
         limit?: number;
-        }) {
-        const skipCount = (page - 1) * (limit); 
+    }) {
+        const skipCount = (page - 1) * (limit);
 
         const searchFilter = search_term
             ? {
                 $or: [
-                   
+
                     {
                         title: {
                             $regex: new RegExp(
@@ -95,19 +112,19 @@ class EventController {
             : {};
 
         try {
-            
+
             // Get total employee count and calculate total pages       
-            const totalEmployeeCount = await Training.countDocuments(searchFilter).exec();
+            const totalEmployeeCount = await Event.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalEmployeeCount / (limit || 9));
 
             // Find users with pagination and search filter
-            const trainings = await Training.find(searchFilter)
+            const events = await Event.find(searchFilter)
                 .skip(skipCount)
                 .limit(limit || 9)
                 .exec()
                 ;
 
-            return { trainings, totalPages };
+            return { events, totalPages };
         } catch (error: any) {
             return {
                 message: error.message,
@@ -117,16 +134,15 @@ class EventController {
         }
     }
 
-    async DeleteCat(intent: string, id: string) {
+    async DeleteCat(id: string) {
         // Delete Logic
-        if (intent === "delete") {
-            const deleteCategory = await Training.findByIdAndDelete(id);
-            if (deleteCategory) {
-                return json({ message: "Training deleted successfully", success: true }, { status: 200 });
-            } else {
-                return json({ message: "Training not found", success: false }, { status: 404 });
-            }
+        const deleteCategory = await Event.findByIdAndDelete(id);
+        if (deleteCategory) {
+            return json({ message: "Event deleted successfully", success: true }, { status: 200 });
+        } else {
+            return json({ message: "Event not found", success: false }, { status: 404 });
         }
+
     }
 
     async UpdateTraining({
@@ -134,44 +150,62 @@ class EventController {
         title,
         description,
         date,
-        duration,
         location,
+        base64Image
     }: {
         id: string;
         title: string;
         description: string;
         date: string;
-        duration: string;
         location: string;
+        base64Image?: string; // Optional
+
     }) {
         try {
-            const updatedTraining = await Training.findByIdAndUpdate(
+
+            const existingUser = await Event.findById(id);
+            if (!existingUser) {
+                return json({
+                    message: "User not found",
+                    success: false,
+                    status: 404,
+                });
+            }
+
+              // Handle image update logic
+              let updatedImage = existingUser.image; // Retain current image
+              if (base64Image) {
+                  updatedImage = base64Image; // Replace with new image if provided
+              }
+      
+
+            const updatedTraining = await Event.findByIdAndUpdate(
                 id,
-                { title, description, date, duration, location },
+                { title, description, date, location, base64Image:updatedImage },
                 { new: true } // Returns the updated document
             );
-    
+
             if (updatedTraining) {
                 return json(
-                    { message: "Training updated successfully", success: true },
+                    { message: "Event updated successfully", success: true },
                     { status: 200 }
                 );
             } else {
                 return json(
-                    { message: "Training not found", success: false },
+                    { message: "Event not found", success: false },
                     { status: 404 }
                 );
             }
         } catch (error) {
             console.error(error);
             return json(
-                { message: "Error updating training", success: false, error },
+                { message: "Error updating event", success: false, error },
                 { status: 500 }
             );
         }
     }
-    
-    
+
+
 }
 
 

@@ -99,3 +99,32 @@ export const TrainingColumns = [
     { title: "Action", key: "action", allowSort: false },
 ];
 
+export const EventColumns = [
+    { title: "Title", allowSort: true },
+    { title: "Description", allowSort: true },
+    { title: "Location", allowSort: true },
+    { title: "Date", allowSort: true },
+    { title: "Action", allowSort: true },
+]
+
+export const ComplianceNoticeColumns = [
+    { title: "Title", allowSort: true },
+    { title: "Description", allowSort: true },
+    { title: "Action", allowSort: true },
+]
+
+export const GalleryColumns = [
+    { title: "Image", allowSort: false },
+    { title: "Title", allowSort: true },
+    { title: "Type", allowSort: true },
+    { title: "Action", allowSort: true },
+]
+
+export const DirectorsBankColumns = [
+    { title: "Image", allowSort: false },
+    { title: "Name", allowSort: true },
+    { title: "Position", allowSort: true },
+    { title: "Areas of Expertise", allowSort: true },
+    { title: "Action", allowSort: true },
+]
+

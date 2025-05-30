@@ -1,12 +1,13 @@
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import { ArrowRight, BookOpen, Folder, MessageSquare, Tag, Users } from "lucide-react"
+import { ArrowRight, BookOpen, Camera, CalendarCheck, FileText, Folder, MessageSquare, Tag, Users } from "lucide-react"
 import MetricCard from "~/components/ui/customCard"
 import dashboard from "~/controllers/dashboard"
 import logoutController from "~/controllers/logout"
 import usersController from "~/controllers/registration"
 import AdminLayout from "~/Layout/AttendantLayout"
 import { getSession } from "~/session"
+import { Card, CardBody, CardHeader } from "@heroui/react"
 
 const Admin = () => {
     const data = useLoaderData<typeof loader>()
@@ -21,7 +22,194 @@ const Admin = () => {
         )
     }
 
-    const { totalUsers, totalCategories, totalBlogs, totalTrainings, totalMessages } = data
+    const { 
+        totalUsers, 
+        totalCategories, 
+        totalBlogs, 
+        totalTrainings, 
+        totalMessages,
+        totalEvents,
+        totalNotices,
+        totalGalleryItems,
+        totalDirectors,
+        monthlyStats,
+        contentDistribution,
+        userActivity
+    } = data
+    
+    // Import Chart.js dynamically for client-side only
+    const renderCharts = () => {
+        if (typeof window === 'undefined') return null;
+        
+        // Import modules dynamically for client-side only
+        const {
+            Chart,
+            CategoryScale,
+            LinearScale,
+            PointElement,
+            LineElement,
+            BarElement,
+            ArcElement,
+            Title,
+            Tooltip,
+            Legend,
+            Filler
+        } = require('chart.js');
+        
+        const { Line, Bar, Doughnut } = require('react-chartjs-2');
+        
+        // Register ChartJS components
+        Chart.register(
+            CategoryScale,
+            LinearScale,
+            PointElement,
+            LineElement,
+            BarElement,
+            ArcElement,
+            Title,
+            Tooltip,
+            Legend,
+            Filler
+        );
+        
+        // Chart configurations
+        const monthlyChartConfig = {
+            labels: monthlyStats.labels,
+            datasets: [
+                {
+                    label: 'Trainings',
+                    data: monthlyStats.trainings,
+                    borderColor: 'rgb(219, 39, 119)',
+                    backgroundColor: 'rgba(219, 39, 119, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'Blogs',
+                    data: monthlyStats.blogs,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                },
+                {
+                    label: 'Events',
+                    data: monthlyStats.events,
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                },
+            ],
+        };
+        
+        const contentDistChartConfig = {
+            labels: contentDistribution.labels,
+            datasets: [
+                {
+                    data: contentDistribution.data,
+                    backgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(219, 39, 119)',
+                        'rgb(16, 185, 129)',
+                        'rgb(249, 115, 22)',
+                        'rgb(139, 92, 246)',
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        };
+        
+        const userActivityChartConfig = {
+            labels: userActivity.labels,
+            datasets: [
+                {
+                    label: 'User Activity',
+                    data: userActivity.data,
+                    backgroundColor: 'rgb(219, 39, 119)',
+                    borderColor: 'rgb(219, 39, 119)',
+                    borderWidth: 1,
+                },
+            ],
+        };
+        
+        return (
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <Card className="col-span-3 lg:col-span-2 border border-black/20">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <h3 className="text-lg font-medium">Content Growth Over Time</h3>
+                    </CardHeader>
+                    <CardBody className="p-6">
+                        <Line 
+                            data={monthlyChartConfig} 
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }} 
+                        />
+                    </CardBody>
+                </Card>
+                
+                <Card className="border border-black/20">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <h3 className="text-lg font-medium">Content Distribution</h3>
+                    </CardHeader>
+                    <CardBody className="p-6">
+                        <Doughnut 
+                            data={contentDistChartConfig} 
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                },
+                            }} 
+                        />
+                    </CardBody>
+                </Card>
+                
+                <Card className="border border-black/20">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <h3 className="text-lg font-medium">User Activity (Last 7 Days)</h3>
+                    </CardHeader>
+                    <CardBody className="p-6">
+                        <Bar 
+                            data={userActivityChartConfig} 
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        display: false,
+                                    },
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }} 
+                        />
+                    </CardBody>
+                </Card>
+            </div>
+        );
+    };
     
     return (
         <AdminLayout>
@@ -61,7 +249,30 @@ const Admin = () => {
                     icon={<MessageSquare className="h-4 w-4"/>}
                     trend="up"
                 />
+                <MetricCard
+                    title="Events"
+                    value={totalEvents}
+                    description="+5 from last month"
+                    icon={<CalendarCheck className="h-4 w-4"/>}
+                    trend="up"
+                />
+                <MetricCard
+                    title="Compliance Notices"
+                    value={totalNotices}
+                    description="+3 from last month"
+                    icon={<FileText className="h-4 w-4"/>}
+                    trend="up"
+                />
+                <MetricCard
+                    title="Gallery Items"
+                    value={totalGalleryItems}
+                    description="New feature"
+                    icon={<Camera className="h-4 w-4"/>}
+                    trend="neutral"
+                />
             </div>
+            
+            {typeof window !== 'undefined' && renderCharts()}
         </AdminLayout>
     )
 }
