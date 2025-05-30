@@ -79,6 +79,8 @@ const ComplianceNotice = () => {
     useEffect(() => {
         if (dataValue?.description) {
             setContent(dataValue.description);
+        } else {
+            setContent("");
         }
     }, [dataValue]);
 
@@ -180,12 +182,12 @@ const ComplianceNotice = () => {
                         <Input
                             label="Title"
                             name="title"
-                            defaultValue={dataValue?.title}
+                            defaultValue={dataValue?.title || ""}
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-nunito text-sm text-default-100",
+                                label: "font-nunito text-sm",
                                 inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                             }}
                         />
@@ -194,7 +196,7 @@ const ComplianceNotice = () => {
 
 
                         <div>
-                            <label htmlFor="" className="font-nunito">Subject</label>
+                            <label htmlFor="" className="font-nunito">Description</label>
                             <input type="hidden" name="description" value={content} />
                             <ReactQuill
                                 value={content} // Bind editor content to state
@@ -213,7 +215,7 @@ const ComplianceNotice = () => {
 
 
                         <div className="flex gap-6 mt-6">
-                            <button className="font-montserrat w-40 bg-pink-500 text-white h-10 rounded-lg">Upload blog</button>
+                            <button className="font-montserrat w-40 bg-pink-500 text-white h-10 rounded-lg">Update Notice</button>
                         </div>
                     </Form>
                 </Drawer>
@@ -221,7 +223,7 @@ const ComplianceNotice = () => {
 
 
             <ConfirmModal className="dark:bg-[#333] border border-white/5"
-                content="Are you sure to delete category" header="Comfirm Delete" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+                content="Are you sure you want to delete this compliance notice?" header="Confirm Delete" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
                 <div className="flex gap-4">
                     <Button size="sm" color="danger" className="font-montserrat font-semibold" onPress={() => setIsConfirmModalOpened(false)}>
                         No
@@ -284,8 +286,6 @@ export const action: ActionFunction = async ({ request }) => {
         const id = formData.get("id") as string;
         const intent = formData.get("intent") as string;
 
-
-
         switch (intent) {
             case 'create':
                 const categories = await notice.NoticeAdd({
@@ -293,20 +293,20 @@ export const action: ActionFunction = async ({ request }) => {
                     description,
                 });
                 return categories;
-            // case "logout":
-            //     const logout = await usersController.logout(intent)
-            //     return logout
+                
             case "delete":
                 const deleteCat = await notice.NoticeDelete(intent, id)
                 return deleteCat
-            // case "update":
-            //     const updateCat = await category.UpdateCat({
-            //         id,
-            //         name,
-            //         description
-            //     })
-
-            // return updateCat
+                
+            case "update":
+                // Add the update case for compliance notice
+                const updateNotice = await notice.UpdateCat({
+                    id,
+                    name: title, // Using title instead of name to match the notice schema
+                    description
+                });
+                return updateNotice;
+                
             default:
                 break;
         }

@@ -96,7 +96,7 @@ const Gallery = () => {
                             <img 
                                 src={item.image} 
                                 alt={item.title} 
-                                className="w-16 h-16 object-cover rounded"
+                                className="w-10 h-10 object-cover rounded"
                             />
                         </TableCell>
                         <TableCell className="text-xs">
@@ -105,7 +105,7 @@ const Gallery = () => {
                         <TableCell className="text-xs">
                             {item.type}
                         </TableCell>
-                        <TableCell className="relative flex items-center gap-4 text-primary">
+                        <TableCell className="relative flex items-center gap-4 mt-4 text-primary">
                             <button onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(item)
@@ -138,16 +138,18 @@ const Gallery = () => {
                             required
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-nunito text-sm text-default-100",
+                                label: "font-nunito text-sm ",
                                 inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                             }}
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="type" className="font-nunito text-sm text-default-100">Type</label>
+                            <label htmlFor="type" className="font-nunito text-sm">Type</label>
                             <select 
                                 name="type" 
-                                className="bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] rounded-md p-2"
+                                className="bg-white shadow-sm border border-black/30 rounded-md p-2"
+                                value={""} // Default empty value for new item
+                                onChange={(e) => {}} // Placeholder onChange for new item
                                 required
                             >
                                 <option value="">Select Type</option>
@@ -158,7 +160,7 @@ const Gallery = () => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="image" className="font-nunito text-sm text-default-100">Image</label>
+                            <label htmlFor="image" className="font-nunito text-sm ">Image</label>
                             <input 
                                 type="file" 
                                 name="image" 
@@ -184,7 +186,7 @@ const Gallery = () => {
                                 className="bg-pink-700 hover:bg-pink-800 text-white text-sm font-semibold py-2 px-4 rounded font-montserrat"
                                 type="submit"
                             >
-                                Add Gallery Item
+                                Create Gallery Item
                             </button>
                         </div>
                     </Form>
@@ -202,23 +204,25 @@ const Gallery = () => {
                         <Input
                             label="Title"
                             name="title"
-                            defaultValue={dataValue?.title}
+                            value={dataValue?.title || ""}
+                            onChange={(e) => setDataValue({...dataValue, title: e.target.value})}
                             placeholder=" "
                             type="text"
                             required
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-nunito text-sm text-default-100",
+                                label: "font-nunito text-sm",
                                 inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                             }}
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="type" className="font-nunito text-sm text-default-100">Type</label>
+                            <label htmlFor="type" className="font-nunito text-sm">Type</label>
                             <select 
                                 name="type" 
                                 className="bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] rounded-md p-2"
-                                defaultValue={dataValue?.type}
+                                value={dataValue?.type || ""}
+                                onChange={(e) => setDataValue({...dataValue, type: e.target.value})}
                                 required
                             >
                                 <option value="">Select Type</option>
@@ -229,7 +233,7 @@ const Gallery = () => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="image" className="font-nunito text-sm text-default-100">Image</label>
+                            <label htmlFor="image" className="font-nunito text-sm ">Image</label>
                             <input 
                                 type="file" 
                                 name="image" 

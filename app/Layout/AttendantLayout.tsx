@@ -1,29 +1,41 @@
-
 import {
     Button,
     Input,
     Spinner,
-} from "@heroui/react";
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { Link, useLoaderData, useNavigate, useNavigation, useSubmit } from "@remix-run/react";
+    Avatar,
+    Dropdown,
+    DropdownTrigger,
+    DropdownMenu,
+    DropdownItem,
+} from "@heroui/react"
+import { Form, Link, useLoaderData, useLocation, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
+import { useEffect, useState, type ReactNode } from "react"
 import {
-    ArrowLeft,
-    Bell,
     Book,
-    LayoutDashboard,
-    LogOut,
-    Mail,
-    Menu,
+    Home,
+    MenuIcon,
+    Phone,
     Search,
+    User,
     Users,
     X,
+    ChevronDown,
+    Calendar,
+    FileText,
+    Camera as ImageIcon,
+    LayoutDashboard,
+    Mail,
+    Menu,
+    ArrowLeft,
+    Bell,
+    LogOut,
 } from "lucide-react";
-import { ReactNode, useState } from "react";
 import logo from "~/components/image/logo.jpg";
 import ConfirmModal from "~/components/ui/confirmModal";
 import logoutController from "~/controllers/logout";
 import usersController from "~/controllers/registration";
 import { getSession } from "~/session";
+import { json, LoaderFunction, redirect } from "@remix-run/node";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
     const {user}= useLoaderData<typeof loader>()
@@ -130,7 +142,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                      <ul className="flex flex-col">
                         <Link to="/admin/event">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
+                                <Calendar className="h-5 w-5 text-pink-500 " />
                                 Events
                             </li>
                         </Link>
@@ -138,7 +150,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                      <ul className="flex flex-col">
                         <Link to="/admin/compliance-notice">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
+                                <FileText className="h-5 w-5 text-pink-500 " />
                                 Compliance Notice
                             </li>
                         </Link>
@@ -146,7 +158,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                      <ul className="flex flex-col">
                         <Link to="/admin/gallery">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
+                                <ImageIcon className="h-5 w-5 text-pink-500 " />
                                 Gallery
                             </li>
                         </Link>
@@ -154,7 +166,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                      <ul className="flex flex-col">
                         <Link to="/admin/directors-bank">
                             <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
+                                <Users className="h-5 w-5 text-pink-500 " />
                                 Directors Bank
                             </li>
                         </Link>

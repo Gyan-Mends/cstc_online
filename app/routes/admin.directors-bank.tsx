@@ -122,7 +122,7 @@ const DirectorsBank = () => {
                             <img 
                                 src={director.image} 
                                 alt={director.name} 
-                                className="w-16 h-16 object-cover rounded-full"
+                                className="w-10 h-10 object-cover rounded-full"
                             />
                         </TableCell>
                         <TableCell className="text-xs">
@@ -140,7 +140,7 @@ const DirectorsBank = () => {
                                 ))}
                             </div>
                         </TableCell>
-                        <TableCell className="relative flex items-center gap-4 text-primary">
+                        <TableCell className="relative flex items-center mt-4 gap-4 text-primary">
                             <button onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(director)
@@ -236,7 +236,7 @@ const DirectorsBank = () => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="image" className="font-nunito text-sm ">Image</label>
+                            <label htmlFor="image" className="font-nunito text-sm">Image</label>
                             <input 
                                 type="file" 
                                 name="image" 
@@ -280,13 +280,14 @@ const DirectorsBank = () => {
                         <Input
                             label="Name"
                             name="name"
-                            defaultValue={dataValue?.name}
+                            value={dataValue?.name || ""}
+                            onChange={(e) => setDataValue({...dataValue, name: e.target.value})}
                             placeholder=" "
                             type="text"
                             required
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-nunito text-sm text-default-100",
+                                label: "font-nunito text-sm",
                                 inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                             }}
                         />
@@ -294,19 +295,20 @@ const DirectorsBank = () => {
                         <Input
                             label="Position"
                             name="position"
-                            defaultValue={dataValue?.position}
+                            value={dataValue?.position || ""}
+                            onChange={(e) => setDataValue({...dataValue, position: e.target.value})}
                             placeholder=" "
                             type="text"
                             required
                             labelPlacement="outside"
                             classNames={{
-                                label: "font-nunito text-sm text-default-100",
+                                label: "font-nunito text-sm",
                                 inputWrapper: "bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333]"
                             }}
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="areasOfExpertise" className="font-nunito text-sm text-default-100">
+                            <label htmlFor="areasOfExpertise" className="font-nunito text-sm">
                                 Areas of Expertise
                             </label>
                             <div className="flex gap-2">
@@ -350,7 +352,7 @@ const DirectorsBank = () => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="image" className="font-nunito text-sm text-default-100">Image</label>
+                            <label htmlFor="image" className="font-nunito text-sm">Image</label>
                             <input 
                                 type="file" 
                                 name="image" 

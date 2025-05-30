@@ -29,14 +29,17 @@ class CategoryController {
         description: string,
     }) {
         // Update Logic
-
-            const updateCategory = await Category.findByIdAndUpdate(id, { name, description });
-            if (updateCategory) {
-                return json({ message: "Category updated successfully", success: true }, { status: 200 });
+        try {
+            // Use Notice model instead of Category model
+            const updateNotice = await Notice.findByIdAndUpdate(id, { title: name, description });
+            if (updateNotice) {
+                return json({ message: "Notice updated successfully", success: true }, { status: 200 });
             } else {
-                return json({ message: "Category not found", success: false }, { status: 404 });
+                return json({ message: "Notice not found", success: false }, { status: 404 });
             }
-
+        } catch (error: any) {
+            return json({ message: error.message, success: false }, { status: 400 });
+        }
     }
 
     async NoticeAdd({
