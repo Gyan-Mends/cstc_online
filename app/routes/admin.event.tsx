@@ -64,7 +64,7 @@ const Event = () => {
     }, [dataValue]);
 
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
             <Toaster position="top-right" />
             <div className="relative">
                 {/* Create User Button */}

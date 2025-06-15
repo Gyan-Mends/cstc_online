@@ -8,7 +8,7 @@ import {
     DropdownMenu,
     DropdownItem,
 } from "@heroui/react"
-import { Form, Link, useLoaderData, useLocation, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
+import { Form, Link, useLocation, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
 import { useEffect, useState, type ReactNode } from "react"
 import {
     Book,
@@ -34,11 +34,11 @@ import logo from "~/components/image/logo.jpg";
 import ConfirmModal from "~/components/ui/confirmModal";
 import logoutController from "~/controllers/logout";
 import usersController from "~/controllers/registration";
-import { getSession } from "~/session";
-import { json, LoaderFunction, redirect } from "@remix-run/node";
 
-const AdminLayout = ({ children }: { children: ReactNode }) => {
-    const {user}= useLoaderData<typeof loader>()
+
+const AdminLayout = ({ children, user }: { children: ReactNode, user?: any }) => {
+    
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigation = useNavigation();
     const navigate = useNavigate();
@@ -99,30 +99,31 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                             </li>
                         </Link>
                     </ul>
-                    <ul className="flex flex-col">
-                        <Link to="/admin/users">
-                            <li className=" flex items-center gap-2">
-                                <Users className="h-5 w-5 text-pink-500 " />
-                                Users
-                            </li>
-                        </Link>
-                    </ul>
-                    <ul className="flex flex-col">
-                        <Link to="/admin/contact">
-                            <li className=" flex items-center gap-2">
-                                <Mail className="h-5 w-5 text-pink-500 " />
-                                Contact Us
-                            </li>
-                        </Link>
-                    </ul>
-                    <ul className="flex flex-col">
-                        <Link to="/admin/blogCategory">
-                            <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
-                                Blog Category
-                            </li>
-                        </Link>
-                    </ul>
+                    
+                    {/* Admin-only navigation items */}
+                    {user?.role === 'admin' && (
+                        <>
+                            <ul className="flex flex-col">
+                                <Link to="/admin/users">
+                                    <li className=" flex items-center gap-2">
+                                        <Users className="h-5 w-5 text-pink-500 " />
+                                        Users
+                                    </li>
+                                </Link>
+                            </ul>
+                            <ul className="flex flex-col">
+                                <Link to="/admin/contact">
+                                    <li className=" flex items-center gap-2">
+                                        <Mail className="h-5 w-5 text-pink-500 " />
+                                        Contact Us
+                                    </li>
+                                </Link>
+                            </ul>
+                        </>
+                    )}
+                    
+                    {/* Navigation items available to both admin and staff */}
+                   
                     <ul className="flex flex-col">
                         <Link to="/admin/blog">
                             <li className=" flex items-center gap-2">
@@ -269,7 +270,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
                        <div 
                        className="md:flex rounded-full flex items-center justify-center text-md !h-10 !w-10 border  border-white/20"
                        >
-                       <img className="rounded-full" src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="" />
+                       <img className="rounded-full h-10 w-10" src={user?.image || "https://i.pravatar.cc/150?u=a04258114e29026702d"} alt="User Avatar" />
                        </div>
                     </div>
                 </header>
@@ -311,25 +312,5 @@ export default AdminLayout;
 
 
 
-// search bar
-export const loader: LoaderFunction = async ({ request }) => {
-    const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") as string) || 1;
-    const search_term = url.searchParams.get("search_term") as string;
 
-    const session = await getSession(request.headers.get("Cookie"));
-    const token = session.get("email");
-    if (!token) {
-        return redirect("/login")
-    }
-    
-    const {user} = await usersController.FetchUsers({
-        request,
-        page,
-        search_term
-    });
-    
-
-    return json({ user })
-}
 

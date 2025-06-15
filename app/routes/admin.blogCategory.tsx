@@ -87,7 +87,7 @@ const Category = () => {
     }, [])
 
     return (
-        <AdminLayout >
+        <AdminLayout user={user}>
             <Toaster position="top-right" />
             <div className="flex justify-end">
                 <Button className="border border-white/30 px-4 py-1 bg-pink-600 text-white" onPress={() => {

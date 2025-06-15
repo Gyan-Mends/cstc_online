@@ -161,6 +161,31 @@ class BlogController {
             };
         }
     }
+
+    async getBlogById(id: string) {
+        try {
+            const blog = await Blog.findById(id)
+                .populate("admin", "fullName email")
+                .populate("category", "name description")
+                .exec();
+            
+            if (!blog) {
+                return {
+                    message: "Blog not found",
+                    success: false,
+                    status: 404
+                };
+            }
+
+            return { blog, success: true };
+        } catch (error: any) {
+            return {
+                message: error.message,
+                success: false,
+                status: 500
+            };
+        }
+    }
 }
 
 const blog = new BlogController

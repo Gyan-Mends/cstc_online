@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Search, Filter, CheckCircle } from "lucide-react"
+import { Users, Search, Filter, CheckCircle, User } from "lucide-react"
 import ScrollAnimation from "~/components/animation"
 import { Link, useLoaderData } from "@remix-run/react"
 import RootLayout from "~/Layout/PublicLayout"
@@ -216,11 +216,9 @@ export default function DirectorsBankPage() {
                                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
                                     <div className="relative w-full">
                                         {director?.image ? (
-                                            <img
-                                                src={director.image || "/placeholder.svg"}
-                                                alt={director?.name || "Director profile"}
-                                                className="object-cover h-[50vh] w-full"
-                                            />
+                                           <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                                            <User className="h-40 w-40 text-gray-400" />
+                                           </div>
                                         ) : (
                                             <div className="flex h-full w-full items-center justify-center bg-gray-200">
                                                 <Users className="h-16 w-16 text-gray-400" />

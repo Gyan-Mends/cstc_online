@@ -15,6 +15,7 @@ import { DeleteIcon } from "~/icons/DeleteIcon"
 import { EditIcon } from "~/icons/EditIcon"
 import { getSession } from "~/session"
 import directorsBankController from "~/controllers/directorsBank"
+import User from "~/model/users"
 
 const DirectorsBank = () => {
     const { directors, user, totalPages } = useLoaderData<{ directors: DirectorsBankInterface[], user: { user: string }, totalPages: number | any }>()
@@ -91,7 +92,7 @@ const DirectorsBank = () => {
     }, [dataValue]);
 
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
             <Toaster position="top-right" />
             <div className="flex justify-end">
                 <Button
@@ -426,11 +427,28 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/admin");
     }
 
-    return directorsBankController.getDirectors({
+    const user = await User.findOne({ email }).lean();
+    if (!user) {
+        return redirect("/admin/login");
+    }
+
+    const userData = {
+        _id: user._id.toString(),
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role || 'admin',
+        position: user.position,
+        phone: user.phone,
+        image: user.image
+    };
+
+    const directorsData = await directorsBankController.getDirectors({
         request,
         page,
         search_term
     });
+
+    return { ...directorsData, user: userData };
 };
 
 export const action: ActionFunction = async ({ request }) => {

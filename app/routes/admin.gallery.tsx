@@ -69,7 +69,7 @@ const Gallery = () => {
     }, [dataValue]);
 
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
             <Toaster position="top-right" />
             <div className="flex justify-end">
                 <Button

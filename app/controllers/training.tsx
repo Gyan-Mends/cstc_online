@@ -1,5 +1,6 @@
 import { json } from "@remix-run/node";
 import Training from "~/model/training";
+import TrainingType from "~/model/trainingType";
 import { getSession } from "~/session";
 
 class TrainingController {
@@ -11,6 +12,7 @@ class TrainingController {
         format,
         client,
         base64Image,
+        trainingTypeId,
     }: {
         title: string;
         description: string;
@@ -19,8 +21,9 @@ class TrainingController {
         format: string;
         client: string;
         base64Image: string;
+        trainingTypeId?: string;
     }) {
-        const newTraining = new Training({
+        const trainingData: any = {
             title,
             description,
             date,
@@ -28,7 +31,13 @@ class TrainingController {
             format,
             client,
             image: base64Image,
-        });
+        };
+
+        if (trainingTypeId) {
+            trainingData.trainingTypeId = trainingTypeId;
+        }
+
+        const newTraining = new Training(trainingData);
     
         try {
             const response = await newTraining.save();
@@ -47,18 +56,25 @@ class TrainingController {
         page = 1,
         search_term,
         limit = 7,
+        trainingTypeId,
     }: {
         request?: Request;
-            page?: number;
+        page?: number;
         search_term?: string;
         limit?: number;
-        }) {
+        trainingTypeId?: string;
+    }) {
         const skipCount = (page - 1) * (limit); 
 
-        const searchFilter = search_term
-            ? {
+        let searchFilter: any = {};
+
+        if (trainingTypeId) {
+            searchFilter.trainingTypeId = trainingTypeId;
+        }
+
+        if (search_term) {
+            const searchConditions = {
                 $or: [
-                   
                     {
                         title: {
                             $regex: new RegExp(
@@ -93,23 +109,83 @@ class TrainingController {
                         },
                     },
                 ],
+            };
+
+            if (Object.keys(searchFilter).length > 0) {
+                searchFilter = { ...searchFilter, ...searchConditions };
+            } else {
+                searchFilter = searchConditions;
             }
-            : {};
+        }
 
         try {
-            
-            // Get total employee count and calculate total pages       
             const totalEmployeeCount = await Training.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalEmployeeCount / (limit || 9));
 
-            // Find users with pagination and search filter
             const trainings = await Training.find(searchFilter)
+                .populate({
+                    path: 'trainingTypeId',
+                    select: 'name description category',
+                    options: { strictPopulate: false }
+                })
                 .skip(skipCount)
                 .limit(limit || 9)
-                .exec()
-                ;
+                .exec();
 
             return { trainings, totalPages };
+        } catch (error: any) {
+            console.error("Error fetching trainings:", error);
+            return {
+                message: error.message,
+                success: false,
+                status: 500,
+                trainings: [],
+                totalPages: 1
+            };
+        }
+    }
+
+    async GetTrainingsByType(trainingTypeId: string) {
+        try {
+            console.log("GetTrainingsByType called with typeId:", trainingTypeId);
+            
+            const trainings = await Training.find({ trainingTypeId })
+                .populate({
+                    path: 'trainingTypeId',
+                    select: 'name description category',
+                    options: { strictPopulate: false } // Don't fail if reference is missing
+                })
+                .exec();
+            
+            console.log("Found trainings for type:", trainings.length);
+            
+            return { trainings, success: true };
+        } catch (error: any) {
+            console.error("Error in GetTrainingsByType:", error);
+            return {
+                message: error.message,
+                success: false,
+                status: 500,
+                trainings: [] // Add trainings array to error response
+            };
+        }
+    }
+
+    async GetTrainingById(id: string) {
+        try {
+            const training = await Training.findById(id)
+                .populate('trainingTypeId', 'name description category')
+                .exec();
+            
+            if (!training) {
+                return {
+                    message: "Training not found",
+                    success: false,
+                    status: 404
+                };
+            }
+
+            return { training, success: true };
         } catch (error: any) {
             return {
                 message: error.message,
@@ -120,7 +196,6 @@ class TrainingController {
     }
 
     async DeleteCat(intent: string, id: string) {
-        // Delete Logic
         if (intent === "delete") {
             const deleteCategory = await Training.findByIdAndDelete(id);
             if (deleteCategory) {
@@ -139,6 +214,7 @@ class TrainingController {
         duration,
         format,
         client,
+        trainingTypeId,
     }: {
         id: string;
         title: string;
@@ -147,12 +223,26 @@ class TrainingController {
         duration: string;
         format: string;
         client: string;
+        trainingTypeId?: string;
     }) {
         try {
+            const updateData: any = {
+                title,
+                description,
+                date,
+                duration,
+                format,
+                client,
+            };
+
+            if (trainingTypeId) {
+                updateData.trainingTypeId = trainingTypeId;
+            }
+
             const updatedTraining = await Training.findByIdAndUpdate(
                 id,
-                { title, description, date, duration, format, client },
-                { new: true } // Returns the updated document
+                updateData,
+                { new: true }
             );
     
             if (updatedTraining) {
@@ -174,11 +264,7 @@ class TrainingController {
             );
         }
     }
-    
-    
 }
 
-
-
-const trainingController = new TrainingController
-export default trainingController
+const trainingController = new TrainingController();
+export default trainingController;

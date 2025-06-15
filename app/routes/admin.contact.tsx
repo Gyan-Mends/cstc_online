@@ -9,6 +9,7 @@ import { ContactColumns } from "~/components/table/columns";
 import { DeleteIcon } from "~/icons/DeleteIcon";
 import { getSession } from "~/session";
 import contactController from "~/controllers/contact";
+import { requireAdminRole } from "~/utils/roleCheck";
 import ConfirmModal from "~/components/ui/confirmModal";
 import { successToast } from "~/components/toast";
 import { errorToast } from "~/components/toast copy";
@@ -19,7 +20,7 @@ import { Toaster } from "react-hot-toast";
 
 
 const Category = () => {
-    const { contacts, totalPages } = useLoaderData<{ contacts: ContactInterface[], user: { user: string }, totalPages: number | any }>()
+    const { contacts, totalPages, user } = useLoaderData<{ contacts: ContactInterface[], user: any, totalPages: number | any }>()
     const actionData = useActionData<any>()
     const submit = useSubmit()
     const [dataValue, setDataValue] = useState<ContactInterface>();
@@ -51,7 +52,7 @@ const Category = () => {
 
 
     return (
-        <AdminLayout >
+        <AdminLayout user={user}>
             <Toaster position="top-right" />
             <div className="">
                 <NewCustomTable
@@ -116,18 +117,15 @@ const Category = () => {
 export default Category;
 
 export const loader: LoaderFunction = async ({ request }) => {
+    // Require admin role to access this page
+    const user = await requireAdminRole(request);
+    
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") as string) || 1;
     const search_term = url.searchParams.get("search_term") as string;
 
-    const session = await getSession(request.headers.get("Cookie"));
-    const token = session.get("email");
-    if (!token) {
-        return redirect("/login")
-    }
-
     const { contacts, totalPages } = await contactController.getContacts({ request, page, search_term })
-    return { contacts, totalPages }
+    return { contacts, totalPages, user }
 };
 
 export const action: ActionFunction = async ({ request }) => {

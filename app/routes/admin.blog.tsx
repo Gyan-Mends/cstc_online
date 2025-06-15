@@ -109,10 +109,16 @@ const Users = () => {
     }, [actionData])
 
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
             <Toaster position="top-right"/>
           <div className="relative">
-          <div className="flex justify-end">
+          <div className="flex  gap-4 justify-end">
+                <Button className="border border-white/30 px-4 py-1 bg-pink-500 text-white" onClick={() => {
+                    navigate("/admin/blogCategory")
+                }}>
+                    <Plus />
+                    Blog Category
+                </Button>
                 <Button className="border border-white/30 px-4 py-1 bg-pink-500 text-white" onClick={() => {
                     setIsCreateModalOpened(true)
                 }}>

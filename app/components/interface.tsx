@@ -17,10 +17,12 @@ export interface LoginInterface {
 }
 
 export interface UsersInterface {
+    _id?: string;
     fullName: string;
     email: string;
     phone: string;
     position: string;
+    role?: 'admin' | 'staff';
     password: string;
     base64Image?: string;
     image?: File;
@@ -30,8 +32,9 @@ export interface BlogInterface {
     _id: string
     name: string
     description: string
-    category: string
-    admin: string
+    image: string
+    category: string | { _id: string; name: string; description: string }
+    admin: string | { _id: string; fullName: string; email: string }
 }
 
 export interface CategoryInterface {
@@ -54,6 +57,22 @@ export interface TrainingInterface {
     format: string;
     image: string;
     client: string;
+    trainingType?: string;
+    trainingTypeId?: string;
+}
+
+export interface TrainingTypeInterface {
+    _id: string;
+    name: string;
+    description: string;
+    image: string;
+    category: string;
+    isActive: boolean;
+}
+
+export interface TrainingTypeResponse {
+    success: boolean;
+    message: string;
 }
 
 export interface EventInterface {

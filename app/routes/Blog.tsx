@@ -112,7 +112,7 @@ export default function BlogPage() {
                                             }}
                                             className="border-b border-gray-300 pb-10 last:border-0"
                                         >
-                                            <Link to="/404">
+                                            <Link to={`/blog/${article._id}`}>
                                                 <div className="group">
                                                     <div className="mb-4 h-60 w-full rounded-lg bg-gray-200 overflow-hidden">
                                                         {article.image ? (
@@ -146,7 +146,7 @@ export default function BlogPage() {
                                                             <span className="mx-2">•</span>
                                                             <span>{Math.max(1, Math.ceil((article.description?.length || 0) / 1000))} min read</span>
                                                         </div>
-                                                        <Link to="/404" className="mt-4">
+                                                        <Link to={`/blog/${article._id}`} className="mt-4">
                                                             <span className="inline-flex items-center text-sm font-medium text-pink-500 group-hover:text-pink-600">
                                                                 Read more
                                                                 <ArrowRight className="ml-1 h-4 w-4" />

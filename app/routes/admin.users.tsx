@@ -28,6 +28,7 @@ import { DeleteIcon } from "~/icons/DeleteIcon";
 import { EditIcon } from "~/icons/EditIcon";
 import AdminLayout from "~/Layout/AttendantLayout";
 import { getSession } from "~/session";
+import { requireAdminRole } from "~/utils/roleCheck";
 
 
 
@@ -92,7 +93,7 @@ export default function Users() {
     }, [editUser]);
 
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
             <div className="relative">
                 <Toaster position="top-right" />
                 {/* Create User Button */}
@@ -134,6 +135,15 @@ export default function Users() {
                             <TableCell className="text-xs">{user.email}</TableCell>
                             <TableCell>{user.phone}</TableCell>
                             <TableCell>{user.position}</TableCell>
+                            <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    user.role === 'admin' 
+                                        ? 'bg-pink-100 text-pink-800' 
+                                        : 'bg-blue-100 text-blue-800'
+                                }`}>
+                                    {user.role || 'admin'}
+                                </span>
+                            </TableCell>
                             <TableCell className="relative flex items-center gap-4">
                                 <button
                                     className="text-primary"
@@ -199,6 +209,16 @@ export default function Users() {
                                 className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
                             />
                         </div>
+                        <div>
+                            <label htmlFor="role" className="font-nunito text-sm !text-black">Role</label>
+                            <select
+                                name="role"
+                                className="dark:bg-default-50 pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                            >
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                            </select>
+                        </div>
                         {/* Password */}
                         <div>
                             <label htmlFor="password" className="font-nunito text-sm !text-black">Password</label>
@@ -210,7 +230,7 @@ export default function Users() {
                         </div>
                         {/* Image */}
                         <div className=" ">
-                            {base64Image && <input type="hidden" name="image" value={base64Image} />}
+                            {base64Image && <input type="hidden" name="base64Image" value={base64Image} />}
                             <label className="font-nunito block text-sm !text-black" htmlFor="">
                                 Image
                             </label>
@@ -308,6 +328,18 @@ export default function Users() {
                             className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
                         />
                     </div>
+                    <div>
+                        <label htmlFor="role" className="font-nunito text-sm !text-black">Role</label>
+                        <select
+                            onChange={(e) => setEditUser(prev => prev ? { ...prev, role: e.target.value as 'admin' | 'staff' } : null)}
+                            value={editUser?.role || 'admin'}
+                            name="role"
+                            className="dark:bg-default-50 text-gray-600 font-nunito text-sm pl-2 shadow-sm rounded-md w-full h-10  border border-black/20 hover:border-black/20 focus:border-black/20    hover:transition-all hover:duration-300 hover:ease-in-out hover:bg-white max-w-full"
+                        >
+                            <option value="admin">Admin</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
 
                     <div className=" ">
                         <input name="base64Image" value={base64Image} type="hidden" />
@@ -398,6 +430,7 @@ export const action: ActionFunction = async ({ request }) => {
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
     const position = formData.get("position") as string;
+    const role = formData.get("role") as string;
     const password = formData.get("password") as string;
     const base64Image = formData.get("base64Image") as string;
     const intent = formData.get("intent") as string;
@@ -410,6 +443,7 @@ export const action: ActionFunction = async ({ request }) => {
                 email,
                 phone,
                 position,
+                role,
                 password,
                 base64Image,
             });
@@ -421,6 +455,7 @@ export const action: ActionFunction = async ({ request }) => {
                 email,
                 phone,
                 position,
+                role,
                 id,
                 base64Image, // Include this parameter if image updates are possible
             });
@@ -444,26 +479,20 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+    // Require admin role to access this page
+    await requireAdminRole(request);
+    
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") as string) || 1;
     const search_term = url.searchParams.get("search_term") as string;
 
-    const session = await getSession(request.headers.get("Cookie"));
-    const token = session.get("email");
-    if (!token) {
-        return redirect("/login")
-    }
     const { user, users, totalPages } = await usersController.FetchUsers({
         request,
         page,
         search_term
     });
 
-
-
-
     return json({ user, users, totalPages });
-
 }
 
 

@@ -48,14 +48,7 @@ export default function ComplianceNoticesPage() {
                                         {/* <p className="text-gray-500">{resource.date}</p> */}
                                     </div>
                                     <p dangerouslySetInnerHTML={{ __html: truncateText(resource.description, 300) }} />
-                                    <div className="mt-4">
-                                        <Link
-                                            to="/404"
-                                            className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg hover:transform-3d"
-                                        >
-                                            Read Full Notice
-                                        </Link>
-                                    </div>
+                                   
                                 </motion.div>
                             ))}
                         </div>

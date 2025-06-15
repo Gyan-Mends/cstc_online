@@ -1,15 +1,17 @@
-import { Button, Divider, Input, TableCell, TableRow, Textarea, User } from "@heroui/react"
+import { Button, Divider, Input, TableCell, TableRow, Textarea, User, Select, SelectItem } from "@heroui/react"
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
 import { Plus, Upload } from "lucide-react"
 import { useState, useEffect } from "react"
 import { successToast, errorToast } from "~/components/toast"
-import { TrainingInterface, TrainingResponse } from "~/components/interface"
+import { TrainingInterface, TrainingResponse, TrainingTypeInterface } from "~/components/interface"
 import trainingController from "~/controllers/training"
+import trainingTypeController from "~/controllers/trainingType"
 import AdminLayout from "~/Layout/AttendantLayout"
 import { Toaster } from "react-hot-toast"
 import { getSession } from "~/session"
 import NewCustomTable from "~/components/table/newTable"
+import UserModel from "~/model/users"
 import { TrainingColumns } from "~/components/table/columns"
 import { DeleteIcon } from "~/icons/DeleteIcon"
 import { EditIcon } from "~/icons/EditIcon"
@@ -19,13 +21,32 @@ const Training = () => {
     const [updateModalOpened, setUpdateModalOpened] = useState(false)
     const [createModalOpened, setCreateModalOpened] = useState(false)
     const [base64Image, setBase64Image] = useState<string | null>(null);
+    const [selectedTrainingType, setSelectedTrainingType] = useState<string>("");
+    const [selectedUpdateTrainingType, setSelectedUpdateTrainingType] = useState<string>("");
     const actionData = useActionData<TrainingResponse>();
     const navigation = useNavigation();
     const navigate = useNavigate();
     const submit = useSubmit()
     const [confirmModalOpened, setConfirmModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<TrainingInterface | null>(null)
-    const { trainings, totalPages } = useLoaderData<{ trainings: TrainingInterface[], totalPages: number | any }>()
+    const loaderData = useLoaderData<{ 
+        trainings: TrainingInterface[], 
+        totalPages: number, 
+        trainingTypes: TrainingTypeInterface[],
+        user: any
+    }>()
+    
+    // Add safety checks for the data
+    const trainings = loaderData?.trainings || []
+    const totalPages = loaderData?.totalPages || 1
+    const trainingTypes = loaderData?.trainingTypes || []
+    const user = loaderData?.user
+    
+    // Debug logging
+    console.log("Received loader data:", loaderData);
+    console.log("Trainings array:", trainings);
+    console.log("Training types array:", trainingTypes);
+    
     const [searchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get('page') || '1', 10);
     const handlePageChange = (page: number) => {
@@ -49,27 +70,51 @@ const Training = () => {
         }
     }, [actionData])
 
-    return (
-        <AdminLayout>
-            <Toaster position="top-right" />
-            <div className="flex justify-end">
-                <Button className="border border-white/30 px-4 py-1 bg-pink-600 text-white" onPress={() => {
-                    setCreateModalOpened(true)
-                }}>
-                    <Plus className="text-white h-4 w-4" />
-                    Create Training
-                </Button>
-            </div>
+    // Initialize selected training type when dataValue changes
+    useEffect(() => {
+        if (dataValue?.trainingTypeId) {
+            setSelectedUpdateTrainingType(dataValue.trainingTypeId);
+        }
+    }, [dataValue])
 
-            <div className="">
+    // Clear selected training type when create modal is closed
+    useEffect(() => {
+        if (!createModalOpened) {
+            setSelectedTrainingType("");
+        }
+    }, [createModalOpened])
+
+    return (
+        <AdminLayout user={user}>
+            <Toaster />
+            <div className="p-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold">Trainings</h1>
+                   <div className="flex gap-4">
+                   <Button
+                        onPress={() => navigate("/admin/trainingType")}
+                        className="bg-pink-600 text-white"
+                        startContent={<Plus className="h-4 w-4" />}
+                    >
+                        Training Types
+                    </Button>
+                    <Button
+                        onPress={() => setCreateModalOpened(true)}
+                        className="bg-pink-600 text-white"
+                        startContent={<Plus className="h-4 w-4" />}
+                    >
+                        Add Training
+                    </Button>
+                   </div>
+                </div>
+
                 <NewCustomTable
                     columns={TrainingColumns}
-                    loadingState={navigation.state === "loading" ? "loading" : "idle"}
-                    totalPages={totalPages}
                     page={currentPage}
-                    setPage={(page) => (
-                        navigate(`?page=${page}`)
-                    )}>
+                    totalPages={totalPages}
+                    setPage={handlePageChange}
+                    loadingState={navigation.state === "loading" ? "loading" : "idle"}
+                >
                     {trainings.map((training: TrainingInterface, index: number) => (
                         <TableRow key={index}>
                             <TableCell>
@@ -90,7 +135,6 @@ const Training = () => {
                             <TableCell>{training?.format}</TableCell>
                             <TableCell>{training?.client}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
-
                                 <div className="flex gap-4">
                                     <button onClick={() => {
                                         setDataValue(training)
@@ -105,21 +149,17 @@ const Training = () => {
                                         <DeleteIcon className="text-danger" />
                                     </button>
                                 </div>
-
                             </TableCell>
                         </TableRow>
                     ))}
                 </NewCustomTable>
             </div>
 
-
-            {/* create modal */}
             {/* create modal */}
             <div
                 className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${createModalOpened ? "translate-x-0" : "translate-x-full"
                     } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
             >
-                {/* Close Button */}
                 <div className="flex justify-between p-4">
                     <p className="font-montserrat text-lg font-semibold">Create Training</p>
                     <button
@@ -141,6 +181,28 @@ const Training = () => {
                 <Divider className="mt-0.5" />
 
                 <Form method="post" className="p-4 flex flex-col gap-4">
+                    <Select
+                        label="Training Type"
+                        placeholder="Select training type"
+                        labelPlacement="outside"
+                        selectedKeys={selectedTrainingType ? [selectedTrainingType] : []}
+                        onSelectionChange={(keys) => {
+                            const key = Array.from(keys)[0] as string;
+                            setSelectedTrainingType(key);
+                        }}
+                        classNames={{
+                            label: "font-nunito text-sm text-default-100",
+                            trigger: "bg-white shadow-sm dark:bg-[#333] border border-black/30"
+                        }}
+                    >
+                        {trainingTypes.map((type) => (
+                            <SelectItem key={type._id}>
+                                {type.name}
+                            </SelectItem>
+                        ))}
+                    </Select>
+                    <input type="hidden" name="trainingTypeId" value={selectedTrainingType} />
+
                     <Input
                         label="Title"
                         name="title"
@@ -213,8 +275,8 @@ const Training = () => {
                     />
 
                     {/* Image */}
-                    <div className=" ">
-                        <input name="base64Image" value={base64Image} type="hidden" />
+                    <div className="">
+                        <input name="base64Image" value={base64Image || ''} type="hidden" />
                         <label className="font-nunito block text-sm !text-black" htmlFor="">
                             Image
                         </label>
@@ -235,7 +297,6 @@ const Training = () => {
                                     }
                                 }}
                             />
-                            {/* Display the default image or the uploaded image */}
                             {base64Image ? (
                                 <img
                                     src={base64Image}
@@ -262,14 +323,12 @@ const Training = () => {
 
             </div>
 
-
             {/* update modal */}
             {dataValue && (
                 <div
                     className={`overflow-scroll fixed top-0 right-0 z-50 h-full bg-white shadow-lg transition-transform transform ${updateModalOpened ? "translate-x-0" : "translate-x-full"
-                        } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm `}
+                        } lg:w-[25vw] w-[100vw]  border-l border-l-black/10 backdrop-blur-sm`}
                 >
-                    {/* Close Button */}
                     <div className="flex justify-between p-4">
                         <p className="font-montserrat text-lg font-semibold">Update Training</p>
                         <button
@@ -291,6 +350,28 @@ const Training = () => {
                     <Divider className="mt-0.5" />
 
                     <Form method="post" className="p-4 flex flex-col gap-4">
+                        <Select
+                            label="Training Type"
+                            placeholder="Select training type"
+                            labelPlacement="outside"
+                            selectedKeys={selectedUpdateTrainingType ? [selectedUpdateTrainingType] : []}
+                            onSelectionChange={(keys) => {
+                                const key = Array.from(keys)[0] as string;
+                                setSelectedUpdateTrainingType(key);
+                            }}
+                            classNames={{
+                                label: "font-nunito text-sm text-default-100",
+                                trigger: "bg-white shadow-sm dark:bg-[#333] border border-black/30"
+                            }}
+                        >
+                            {trainingTypes.map((type) => (
+                                <SelectItem key={type._id}>
+                                    {type.name}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                        <input type="hidden" name="trainingTypeId" value={selectedUpdateTrainingType} />
+
                         <Input
                             label="Title"
                             name="title"
@@ -370,7 +451,7 @@ const Training = () => {
                         />
 
                         <input hidden name="intent" value="update" type="hidden" />
-                        <input hidden name="id" value={dataValue?.id} type="hidden" />
+                        <input hidden name="id" value={dataValue?._id} type="hidden" />
 
                         <button
                             type="submit"
@@ -383,31 +464,22 @@ const Training = () => {
                 </div>
             )}
 
-            <ConfirmModal className="dark:bg-[#333] border border-white/5"
-                content="Are you sure to delete category" header="Comfirm Delete" isOpen={confirmModalOpened} onOpenChange={handleConfirmModalClosed}>
-                <div className="flex gap-4">
-                    <Button size="sm" color="danger" className="font-montserrat font-semibold" onPress={handleConfirmModalClosed}>
-                        No
-                    </Button>
-                    <Button size="sm" color="primary" className="font-montserrat font-semibold" onClick={() => {
-                        setConfirmModalOpened(false)
-                        if (dataValue) {
-                            submit({
-                                intent: "delete",
-                                id: dataValue?._id
-
-                            }, {
-                                method: "post"
-                            })
-                        }
-                    }} >
-                        Yes
-                    </Button>
-                </div>
-            </ConfirmModal>
+            <ConfirmModal
+                isOpen={confirmModalOpened}
+                onClose={handleConfirmModalClosed}
+                onConfirm={() => {
+                    submit(
+                        { intent: "delete", id: dataValue?._id || "" },
+                        { method: "post" }
+                    )
+                }}
+                title="Delete Training"
+                message="Are you sure you want to delete this training?"
+            />
         </AdminLayout>
     )
 }
+
 export default Training
 
 export const action: ActionFunction = async ({ request }) => {
@@ -421,9 +493,22 @@ export const action: ActionFunction = async ({ request }) => {
     const client = formData.get("client") as string;
     const base64Image = formData.get("base64Image") as string;
     const id = formData.get("id") as string;
+    const trainingTypeId = formData.get("trainingTypeId") as string;
+
+    // Debug logging
+    console.log("Form data received:");
+    console.log("intent:", intent);
+    console.log("trainingTypeId:", trainingTypeId);
+    console.log("title:", title);
+    
+    // Log all form data for debugging
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
 
     switch (intent) {
         case "create":
+            console.log("Creating training with trainingTypeId:", trainingTypeId);
             const training = await trainingController.CreateTraining({
                 title,
                 description,
@@ -432,6 +517,7 @@ export const action: ActionFunction = async ({ request }) => {
                 format,
                 client,
                 base64Image,
+                trainingTypeId,
             });
             return training;
         case "update":
@@ -443,6 +529,7 @@ export const action: ActionFunction = async ({ request }) => {
                 duration,
                 format,
                 client,
+                trainingTypeId,
             });
             return updateTraining;
         case "delete":
@@ -451,21 +538,64 @@ export const action: ActionFunction = async ({ request }) => {
         default:
             return json({ message: "Invalid intent", success: false });
     }
-
-
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") as string) || 1;
-    const search_term = url.searchParams.get("search_term") as string;
-
     const session = await getSession(request.headers.get("Cookie"));
-    const token = session.get("email");
-    if (!token) {
-        return redirect("/login")
+    
+    if (!session.has("email")) {
+        return redirect("/admin/login");
     }
 
-    const { trainings, totalPages } = await trainingController.FetchUsers({ request, page, search_term })
-    return { trainings, totalPages }
+    const email = session.get("email");
+    const user = await UserModel.findOne({ email }).lean();
+    if (!user) {
+        return redirect("/admin/login");
+    }
+
+    const userData = {
+        _id: user._id.toString(),
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role || 'admin',
+        position: user.position,
+        phone: user.phone,
+        image: user.image
+    };
+
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const search_term = url.searchParams.get('search') || '';
+
+    try {
+        console.log("Fetching trainings with page:", page, "search:", search_term);
+        
+        const { trainings, totalPages } = await trainingController.FetchUsers({ 
+            request, 
+            page, 
+            search_term 
+        });
+        
+        console.log("Fetched trainings:", trainings?.length || 0, "Total pages:", totalPages);
+        
+        const trainingTypesResult = await trainingTypeController.GetActiveTrainingTypes();
+        const trainingTypes = trainingTypesResult?.trainingTypes || [];
+        
+        console.log("Fetched training types:", trainingTypes?.length || 0);
+
+        return { 
+            trainings: trainings || [], 
+            totalPages: totalPages || 1, 
+            trainingTypes,
+            user: userData
+        };
+    } catch (error) {
+        console.error("Error loading training data:", error);
+        return { 
+            trainings: [], 
+            totalPages: 1, 
+            trainingTypes: [],
+            user: userData
+        };
+    }
 }

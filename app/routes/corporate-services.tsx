@@ -2,6 +2,7 @@ import { useState } from "react"
 import { CheckCircle, Building, FileText, Users, Calendar, ArrowRight } from "lucide-react"
 import { Link } from "@remix-run/react"
 import RootLayout from "~/Layout/PublicLayout"
+import service from "~/components/image/sec.jpg"
 
 export default function CorporateServicesPage() {
     const [activeTab, setActiveTab] = useState("RGD")
@@ -32,9 +33,9 @@ export default function CorporateServicesPage() {
                             {/* Image Section */}
                             <div className="relative h-80 overflow-hidden rounded-lg shadow-lg fade-in-right delay-200">
                                 <img
-                                    src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746875215/photo-1487058792275-0ad4aaf24ca7_qqlo0v.avif"
+                                    src={service}
                                     alt="Code on computer screen"
-                                    className="lg:h-80 h-full w-[100vw] object-cover"
+                                    className=" h-full w-[100vw] object-cover"
                                 />
                             </div>
 
@@ -90,13 +91,13 @@ export default function CorporateServicesPage() {
                             <p className="mt-4 text-lg text-gray-600">
                                 CSTS understands the stress associated with legitimate business registration and procedures, therefore
                                 our company offers to minimize the stress of individuals, companies, and institutions by rendering
-                                services of RGD, GIPC, GRA, on their behalf.
+                                services of ORC, GIPC, GRA, on their behalf.
                             </p>
                         </div>
 
                         <div className="mt-12">
                             <div className="mb-6 flex rounded-lg border border-gray-200 bg-white fade-in-up delay-200">
-                                {["RGD", "GRA", "GIPC"].map((tab) => (
+                                {["ORC", "GRA", "GIPC"].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
@@ -110,7 +111,7 @@ export default function CorporateServicesPage() {
                                 ))}
                             </div>
 
-                            {activeTab === "RGD" && (
+                            {activeTab === "ORC" && (
                                 <div className="rounded-lg border border-gray-200 bg-white p-8 fade-in-up delay-300">
                                     <h3 className="mb-6 text-xl font-bold text-gray-900">Registrar Generals' Department (RGD)</h3>
                                     <div className="grid gap-4 md:grid-cols-2">

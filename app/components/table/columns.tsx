@@ -24,6 +24,7 @@ export const UserColumns = [
     { title: "Name" },
     { title: "Email" },
     { title: "Phone" },
+    { title: "Position" },
     { title: "Role" },
     { title: "Action" }
 

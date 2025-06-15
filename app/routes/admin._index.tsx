@@ -1,5 +1,5 @@
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { ArrowRight, BookOpen, Camera, CalendarCheck, FileText, Folder, MessageSquare, Tag, Users } from "lucide-react"
 import MetricCard from "~/components/ui/customCard"
 import dashboard from "~/controllers/dashboard"
@@ -8,13 +8,16 @@ import usersController from "~/controllers/registration"
 import AdminLayout from "~/Layout/AttendantLayout"
 import { getSession } from "~/session"
 import { Card, CardBody, CardHeader } from "@heroui/react"
+import UserModel from "~/model/users"
 
 const Admin = () => {
     const data = useLoaderData<typeof loader>()
+    const [searchParams] = useSearchParams();
+    const error = searchParams.get('error');
     
     if ('error' in data) {
         return (
-            <AdminLayout>
+            <AdminLayout user={data.user}>
                 <div className="text-red-500">
                     Error loading dashboard data: {data.error}
                 </div>
@@ -34,7 +37,8 @@ const Admin = () => {
         totalDirectors,
         monthlyStats,
         contentDistribution,
-        userActivity
+        userActivity,
+        user
     } = data
     
     // Import Chart.js dynamically for client-side only
@@ -212,7 +216,12 @@ const Admin = () => {
     };
     
     return (
-        <AdminLayout>
+        <AdminLayout user={user}>
+            {error === 'access_denied' && (
+                <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <strong>Access Denied:</strong> You don't have permission to access that page. Only administrators can access user management and contact messages.
+                </div>
+            )}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <MetricCard
                     title="Total Trainings"
@@ -302,12 +311,28 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect("/login")
     }
     
+    // Get the current logged-in user by email
+    const user = await UserModel.findOne({ email: token }).lean();
+    if (!user) {
+        return redirect("/login")
+    }
+
+    // Ensure the user object is properly serializable
+    const userData = {
+        _id: user._id.toString(),
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role || 'admin',
+        position: user.position,
+        phone: user.phone,
+        image: user.image
+    };
+    
     if ('error' in dashboardData) {
         return json({ error: dashboardData.error }, { status: 500 })
-
     }
     
-    return dashboardData
+    return { ...dashboardData, user: userData }
 }
 
 

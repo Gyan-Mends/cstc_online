@@ -31,6 +31,11 @@ const TrainingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    trainingTypeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'trainingtype',
+        required: false,
+    },
 }, {
     timestamps: true,
 });

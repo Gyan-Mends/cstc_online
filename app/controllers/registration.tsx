@@ -11,6 +11,7 @@ class UsersController {
         email,
         phone,
         position,
+        role,
         password,
         base64Image,
     }: {
@@ -18,6 +19,7 @@ class UsersController {
          email: string;
          phone: string;
          position: string;
+         role?: string;
          password: string;
          base64Image: string;
 
@@ -47,6 +49,7 @@ class UsersController {
                     email,
                     phone,
                     position,
+                    role: role || 'admin',
                     password: hashedPassword,
                     image:base64Image,
               });
@@ -108,6 +111,7 @@ class UsersController {
         email,
         phone,
         position,
+        role,
         id,
         base64Image, // New parameter for image data
     }: {
@@ -115,6 +119,7 @@ class UsersController {
         email?: string;
         phone?: string;
         position?: string;
+        role?: string;
         id: string;
         base64Image?: string; // Optional
     }) {
@@ -143,6 +148,7 @@ class UsersController {
                     email,
                     phone,
                     position,
+                    role,
                     image: updatedImage, // Update image field
                 },
                 { new: true } // Return updated document
