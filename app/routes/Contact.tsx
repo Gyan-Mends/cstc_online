@@ -1,6 +1,5 @@
 import type React from "react"
 
-import { motion } from "framer-motion"
 import { MapPin, Phone, Mail, Clock, Send, Calendar, ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import RootLayout from "~/Layout/PublicLayout"
@@ -32,24 +31,19 @@ export default function ContactPage() {
                 <Toaster position="top-right"  />
                 <div className="bg-gray-50 py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="text-center"
-                        >
+                        <div className="text-center fade-in-up delay-500">
                             <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Contact Us</h1>
                             <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
                                 Get in touch with our team for inquiries, consultations, or to learn more about our services.
                             </p>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
 
                 <section className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="grid gap-12 lg:grid-cols-2">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+                            <div className="fade-in-up delay-700">
                                 <h2 className="text-2xl font-bold tracking-tight text-gray-900">Send Us a Message</h2>
                                 <p className="mt-4 text-lg text-gray-600">
                                     We'd love to hear from you. Please fill out the form below or contact us using the information provided.
@@ -131,14 +125,9 @@ export default function ContactPage() {
                                     </div>
                                     <input type="text" name="intent" value="create" hidden />
                                 </Form>
-                            </motion.div>
+                            </div>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7, delay: 0.2 }}
-                                className="space-y-8"
-                            >
+                            <div className="space-y-8 fade-in-up delay-900">
                                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                     <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
                                     <div className="mt-6 space-y-4">
@@ -196,7 +185,7 @@ export default function ContactPage() {
                                         </Link>
                                     </div>
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -206,38 +195,34 @@ export default function ContactPage() {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-    const formData = await request.formData();
-    const name = formData.get("fullname");
-    const email = formData.get("email");
-    const phone = formData.get("phone");
-    const message = formData.get("message");
-    const intent = formData.get("intent");
+    const formData = await request.formData()
+    const intent = formData.get("intent")
 
-    try {
-        switch (intent) {
-            case "create":
-                const contact = await Contact.create({
-                    name,
-                    email,
-                    phone,
-                    message,
-                });
-                return json<ContactResponse>({
-                    success: true,
-                    message: "Message sent successfully"
-                });
-            
-            default:
-                return json<ContactResponse>({
-                    success: false,
-                    message: "Invalid action"
-                });
+    if (intent === "create") {
+        const fullname = formData.get("fullname") as string
+        const email = formData.get("email") as string
+        const phone = formData.get("phone") as string
+        const message = formData.get("message") as string
+
+        if (!fullname || !email || !phone || !message) {
+            return json({ success: false, message: "All fields are required" })
         }
-    } catch (error: any) {
-        return json<ContactResponse>({
-            success: false,
-            message: error.message || "Failed to send message"
-        });
+
+        try {
+            await Contact.create({
+                fullname,
+                email,
+                phone,
+                message,
+            })
+
+            return json({ success: true, message: "Your message has been sent successfully!" })
+        } catch (error) {
+            console.error("Error creating contact:", error)
+            return json({ success: false, message: "Failed to send message. Please try again." })
+        }
     }
-};
+
+    return json({ success: false, message: "Invalid action" })
+}
 

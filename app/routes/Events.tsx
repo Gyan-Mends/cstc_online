@@ -12,80 +12,69 @@ export default function EventsPage() {
     return (
         <RootLayout>
             <main className="flex-1">
-                <div className="bg-gray-50 py-12 md:py-16">
+                <section className="bg-gray-50 py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="text-center"
-                        >
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Events</h1>
+                        <div className="text-center fade-in-up">
+                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Events & Workshops</h1>
                             <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                                Join us for upcoming events, workshops, and networking opportunities
+                                Join us for our upcoming events and workshops to enhance your knowledge and skills.
                             </p>
-                        </motion.div>
+                        </div>
                     </div>
-                </div>
+                </section>
 
                 <section className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className=" gap-12 ">
-                            <div className="">
-
-
-                                <div className=" mt-10 lg:grid lg:grid-cols-3 gap-10">
-                                    {events.map((article, index) => (
-                                        <motion.div
-                                            key={index}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{
-                                                duration: 0.5,
-                                                delay: 0.1 * index,
-                                            }}
-                                            className="border-b border-gray-300 bg-white rounded-lg pb-10 shadow-md last:border-0 hover:transform-3d"
-                                        >
-                                            <Link to="/404">
-                                                <div className="group">
-                                                    <div className="mb-4 h-[33vh] w-full rounded-lg bg-gray-200">
-                                                        <img className="rounded-tr-lg rounded-tl-lg h-[33vh] w-full" src={article.image} alt="" /></div>
-                                                    <div className="flex flex-col gap-2 px-2">
-                                                        <div className="flex justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="p-2 w-10 bg-pink-200 rounded-md">
-                                                                    <Calendar className="text-pink-500  h-6 w-6" />
-                                                                </div>
-                                                                <p className="text-gray-400"> {article.date}</p>
-                                                            </div>
-                                                            <div className="flex items-center">
-                                                                <p className="text-gray-400">{article.location}</p>
-                                                            </div>
+                        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                            {events.map((article, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        duration: 0.5,
+                                        delay: 0.1 * index,
+                                    }}
+                                    className="fade-in-up delay-200 event-card border-b border-gray-300 bg-white rounded-lg pb-10 shadow-md last:border-0 hover:transform-3d"
+                                >
+                                    <Link to="/404">
+                                        <div className="group">
+                                            <div className="mb-4 h-[33vh] w-full rounded-lg bg-gray-200">
+                                                <img className="rounded-tr-lg rounded-tl-lg h-[33vh] w-full" src={article.image} alt="" /></div>
+                                            <div className="flex flex-col gap-2 px-2">
+                                                <div className="flex justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="p-2 w-10 bg-pink-200 rounded-md">
+                                                            <Calendar className="text-pink-500  h-6 w-6" />
                                                         </div>
-
-                                                        <p className="font-bold">{article.title}</p>
-                                                        <p className="mt-2">{article.description}</p>
-                                                        <div className="mt-6">
-                                                            <Link
-                                                                to="/404"
-                                                                className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg  flex gap-4 justify-center"
-                                                            >
-                                                                Register For Event <ArrowRight className="h-4 w-4" />
-                                                            </Link>
-                                                        </div>
+                                                        <p className="text-gray-400"> {article.date}</p>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <p className="text-gray-400">{article.location}</p>
                                                     </div>
                                                 </div>
-                                            </Link>
-                                        </motion.div>
-                                    ))}
-                                </div>
 
-                                <div className="mt-10 flex justify-center">
-                                    <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                                        Load more articles
-                                    </button>
-                                </div>
-                            </div>
+                                                <p className="font-bold">{article.title}</p>
+                                                <p className="mt-2">{article.description}</p>
+                                                <div className="mt-6">
+                                                    <Link
+                                                        to="/404"
+                                                        className="text-sm font-medium text-pink-500 hover:text-pink-600 border border-black/20 py-2 px-4 rounded-lg  flex gap-4 justify-center"
+                                                    >
+                                                        Register For Event <ArrowRight className="h-4 w-4" />
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        <div className="mt-10 flex justify-center">
+                            <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                                Load more articles
+                            </button>
                         </div>
                     </div>
                 </section>
