@@ -149,83 +149,61 @@ export default function BlogDetailPage() {
                                     </div>
                                 </motion.div>
                             </div>
-
-                            {/* Sidebar */}
-                            <div className="lg:col-span-1">
-                                <div className="sticky top-24 space-y-8">
-                                    {/* Author Info */}
-                                    <div className="bg-gray-50 rounded-lg p-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">About the Author</h3>
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center">
-                                                <User className="h-6 w-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-gray-900">
-                                                    {typeof blogPost.admin === 'object' ? blogPost.admin.fullName || 'Admin' : 'Admin'}
-                                                </p>
-                                                <p className="text-sm text-gray-600">Content Writer</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Related Articles */}
-                                    {relatedBlogs.length > 0 && (
-                                        <div className="bg-white border border-gray-200 rounded-lg p-6">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Articles</h3>
-                                            <div className="space-y-4">
-                                                {relatedBlogs.slice(0, 3).map((relatedBlog, index) => (
-                                                    <Link 
-                                                        key={index}
-                                                        to={`/blog/${relatedBlog._id}`}
-                                                        className="block group"
-                                                    >
-                                                        <div className="flex space-x-3">
-                                                            {relatedBlog.image && (
-                                                                <img 
-                                                                    src={relatedBlog.image} 
-                                                                    alt={relatedBlog.name}
-                                                                    className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-                                                                />
-                                                            )}
-                                                            <div className="flex-1 min-w-0">
-                                                                <h4 className="text-sm font-medium text-gray-900 group-hover:text-pink-500 line-clamp-2">
-                                                                    {relatedBlog.name}
-                                                                </h4>
-                                                                <p className="text-xs text-gray-500 mt-1">
-                                                                    {typeof relatedBlog.category === 'object' ? relatedBlog.category.name : relatedBlog.category}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Newsletter Signup */}
-                                    <div className="bg-pink-50 rounded-lg p-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Stay Updated</h3>
-                                        <p className="text-sm text-gray-600 mb-4">
-                                            Subscribe to our newsletter for the latest insights and updates.
-                                        </p>
-                                        <form className="space-y-3">
-                                            <input
-                                                type="email"
-                                                placeholder="Your email address"
-                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                                            />
-                                            <button
-                                                type="submit"
-                                                className="w-full bg-pink-500 text-white text-sm py-2 px-4 rounded-md hover:bg-pink-600 transition-colors"
-                                            >
-                                                Subscribe
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+
+                        {/* Related Articles Section */}
+                        {relatedBlogs && relatedBlogs.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.7, delay: 0.3 }}
+                                className="mt-16 pt-12 border-t border-gray-200"
+                            >
+                                <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h2>
+                                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                    {relatedBlogs.slice(0, 3).map((relatedBlog, index) => (
+                                        <Link 
+                                            key={index}
+                                            to={`/blog/${relatedBlog._id}`}
+                                            className="group block"
+                                        >
+                                            <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                                {relatedBlog.image && (
+                                                    <div className="aspect-w-16 aspect-h-9">
+                                                        <img 
+                                                            src={relatedBlog.image} 
+                                                            alt={relatedBlog.name}
+                                                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="p-6">
+                                                    <div className="mb-3">
+                                                        <span className="inline-block px-2 py-1 text-xs font-medium text-pink-600 bg-pink-100 rounded-full">
+                                                            {typeof relatedBlog.category === 'object' ? relatedBlog.category.name : relatedBlog.category}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-pink-600 transition-colors duration-200 line-clamp-2 mb-3">
+                                                        {relatedBlog.name}
+                                                    </h3>
+                                                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                                                        {relatedBlog.description?.replace(/<[^>]*>/g, '').substring(0, 120)}...
+                                                    </p>
+                                                    <div className="flex items-center text-xs text-gray-500">
+                                                        <div className="flex items-center">
+                                                            <User className="mr-1 h-3 w-3" />
+                                                            <span>{typeof relatedBlog.admin === 'object' ? relatedBlog.admin.fullName || 'Admin' : 'Admin'}</span>
+                                                        </div>
+                                                        <span className="mx-2">•</span>
+                                                        <span>{Math.max(1, Math.ceil((relatedBlog.description?.length || 0) / 1000))} min read</span>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
                     </div>
                 </section>
             </main>
