@@ -127,7 +127,7 @@ export default function Footer() {
                                         <span className="bg-gray-200  px-3 py-1 rounded-full text-xs">Business Registration</span>
                                         <span className="bg-gray-200  px-3 py-1 rounded-full text-xs">Compliance</span>
                                         <span className="bg-gray-200  px-3 py-1 rounded-full text-xs">Training & Development</span>
-                                        <span className="bg-gray-200 text-gray-300 px-3 py-1 rounded-full text-xs">Entrepreneurship</span>
+                                        <span className="bg-gray-200  px-3 py-1 rounded-full text-xs">Entrepreneurship</span>
                                     </div>
                                 </div>
                             </div>
