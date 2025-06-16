@@ -1,7 +1,7 @@
-import { Button,  Select, SelectItem, TableCell, TableRow, User } from "@heroui/react"
+import { Button,  Select, SelectItem, TableCell, TableRow, User, Chip } from "@heroui/react"
 import { ActionFunction, json, LinksFunction, LoaderFunction, MetaFunction,  } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useNavigate, useNavigation, useSearchParams, useSubmit } from "@remix-run/react"
-import { Plus, Upload } from "lucide-react"
+import { Plus, Upload, Eye, CheckCircle, Clock, Calendar, User as UserIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Toaster } from "react-hot-toast"
 import { BlogInterface, CategoryInterface } from "~/components/interface"
@@ -28,10 +28,12 @@ const Users = () => {
     const [base64Image, setBase64Image] = useState<any>()
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
     const [isEditModalOpened, setIsEditModalOpened] = useState(false)
+    const [isPreviewModalOpened, setIsPreviewModalOpened] = useState(false)
     const [dataValue, setDataValue] = useState<BlogInterface>()
+    const [previewBlog, setPreviewBlog] = useState<BlogInterface | null>(null)
     const submit = useSubmit()
     const navigate = useNavigate()
-    const actionData = useActionData()
+    const actionData = useActionData<{ success?: boolean; message?: string }>()
     const [content, setContent] = useState("");
     const navigation = useNavigation()
     const [searchParams] = useSearchParams();
@@ -57,6 +59,8 @@ const Users = () => {
 
     const handleCreateModalClosed = () => {
         setIsCreateModalOpened(false)
+        setContent("")
+        setBase64Image(null)
     }
    
     const handleConfirmModalClosed = () => {
@@ -64,10 +68,16 @@ const Users = () => {
     }
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
+        setContent("")
+        setDataValue(undefined)
+    }
+    const handlePreviewModalClosed = () => {
+        setIsPreviewModalOpened(false)
+        setPreviewBlog(null)
     }
 
 
-    const truncateText = (text, wordLimit) => {
+    const truncateText = (text: string, wordLimit: number) => {
         const words = text.split(" ");
         if (words.length > wordLimit) {
             return words.slice(0, wordLimit).join(" ") + "...";
@@ -150,14 +160,77 @@ const Users = () => {
                                 />
                             </p>
                         </TableCell>
-                        <TableCell className="text-xs">{blog.category?.name}</TableCell>
+                        <TableCell className="text-xs">{typeof blog.category === 'object' ? blog.category?.name : blog.category}</TableCell>
                         <TableCell>
                             <div dangerouslySetInnerHTML={{ __html: truncateText(blog.description, 15) }} />
                         </TableCell>
-                        <TableCell className="relative flex items-center gap-4 text-primary">
+                        <TableCell>
+                            <Chip 
+                                color={
+                                    blog.status === 'published' ? 'success' : 
+                                    blog.status === 'review' ? 'warning' : 
+                                    'default'
+                                }
+                                variant="flat"
+                                size="sm"
+                            >
+                                {blog.status || 'draft'}
+                            </Chip>
+                        </TableCell>
+                        <TableCell className="relative flex items-center gap-2 text-primary">
+                            {/* Review Button - Show if blog is draft */}
+                            {blog.status === 'draft' && (
+                                <button 
+                                    onClick={() => {
+                                        submit({
+                                            intent: "submit_for_review",
+                                            id: blog._id
+                                        }, {
+                                            method: "post"
+                                        })
+                                    }}
+                                    className="text-blue-500 hover:text-blue-700"
+                                    title="Submit for Review"
+                                >
+                                    <Clock className="h-4 w-4" />
+                                </button>
+                            )}
+                            
+                            {/* Publish Button - Show if blog is in review */}
+                            {blog.status === 'review' && (
+                                <button 
+                                    onClick={() => {
+                                        submit({
+                                            intent: "publish",
+                                            id: blog._id
+                                        }, {
+                                            method: "post"
+                                        })
+                                    }}
+                                    className="text-green-500 hover:text-green-700"
+                                    title="Publish Blog"
+                                >
+                                    <CheckCircle className="h-4 w-4" />
+                                </button>
+                            )}
+                            
+                            {/* Preview Button */}
+                            <button 
+                                onClick={() => {
+                                    setIsPreviewModalOpened(true)
+                                    setPreviewBlog(blog)
+                                }}
+                                className="text-purple-500 hover:text-purple-700"
+                                title="Preview Blog"
+                            >
+                                <Eye className="h-4 w-4" />
+                            </button>
+                            
                             <button onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(blog)
+                                setContent(blog.description || "")
+                                setBase64Image(blog.image || null)
                             }}>
                                 <EditIcon className="text-primary" />
                             </button>
@@ -175,8 +248,13 @@ const Users = () => {
           </div>
 
             {/* confirm modal */}
-            {/* confirm modal */}
-            {/* <ConfirmModal header="Confirm Delete" content="Are you sure to delete user?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+            <ConfirmModal
+                isOpen={isConfirmModalOpened}
+                onOpenChange={handleConfirmModalClosed}
+                header="Delete Blog"
+                content="Are you sure you want to delete this blog? This action cannot be undone."
+                className=""
+            >
                 <div className="flex gap-4">
                     <Button color="success" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
                         No
@@ -195,7 +273,7 @@ const Users = () => {
                         Yes
                     </Button>
                 </div>
-            </ConfirmModal> */}
+            </ConfirmModal>
 
 
             {dataValue && (
@@ -216,11 +294,11 @@ const Users = () => {
                         <Select
                                 isRequired
                                 className="max-w-xs"
-                                label="Department"
+                                label="Category"
                                 labelPlacement="outside"
-                                placeholder="Select Department"
-                                name="department"
-                                defaultSelectedKeys={[dataValue.category]}
+                                placeholder="Select Category"
+                                name="category"
+                                defaultSelectedKeys={[typeof dataValue?.category === 'object' ? dataValue.category._id : dataValue?.category]}
                                 classNames={{
                                     label: "font-nunito text-sm text-default-100",
                                     popoverContent:
@@ -251,11 +329,10 @@ const Users = () => {
 
 
                         <div className="mt-4 ">
-                            <label className="font-nunito block text-sm" htmlFor="">Image</label>
+                            <label className="font-nunito block text-sm" htmlFor="">Image (Click to change)</label>
                             <div className="relative inline-block w-40 h-40 border-2 border-dashed border-gray-600 rounded-xl dark:border-white/30 mt-2">
                                 <input
                                     name="image"
-                                    required
                                     placeholder=" "
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     type="file"
@@ -271,17 +348,27 @@ const Users = () => {
                                     }}
                                 />
                                 {base64Image ? (
-                                    <img
-                                        src={base64Image}
-                                        alt="Preview"
-                                        className="absolute inset-0 w-full h-full object-cover rounded-xl"
-                                    />
+                                    <div className="relative w-full h-full">
+                                        <img
+                                            src={base64Image}
+                                            alt="Preview"
+                                            className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                                        />
+                                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 rounded-xl flex items-center justify-center">
+                                            <span className="text-white opacity-0 hover:opacity-100 transition-opacity duration-200 text-sm font-medium">
+                                                Click to change
+                                            </span>
+                                        </div>
+                                    </div>
                                 ) : (
                                     <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                                         <Upload className="h-20 w-20 text-white" />
                                     </span>
                                 )}
                             </div>
+                            {base64Image && (
+                                <p className="text-xs text-gray-500 mt-2">Current image is shown above. Click to upload a new one.</p>
+                            )}
                         </div>
 
                         <input hidden name="admin" value={user?._id} type="" />
@@ -393,6 +480,65 @@ const Users = () => {
                     </div>
                 </Form>
             </Drawer>
+
+            {previewBlog && (
+                <Drawer isDrawerOpened={isPreviewModalOpened} handleDrawerClosed={handlePreviewModalClosed} title={`Preview: ${previewBlog.name}`}>
+                    <div className="p-6 max-w-4xl mx-auto">
+                        {/* Status Badge */}
+                        <div className="mb-4">
+                            <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
+                                previewBlog.status === 'published' ? 'bg-green-100 text-green-800' :
+                                previewBlog.status === 'review' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                            }`}>
+                                Status: {previewBlog.status || 'draft'}
+                            </span>
+                        </div>
+
+                        {/* Blog Title */}
+                        <h1 className="text-3xl font-bold text-gray-900 mb-4">{previewBlog.name}</h1>
+                        
+                        {/* Category */}
+                        <div className="mb-4">
+                            <span className="inline-block px-3 py-1 text-sm font-medium text-pink-500 bg-pink-100 rounded-full">
+                                {typeof previewBlog.category === 'object' ? previewBlog.category.name : previewBlog.category}
+                            </span>
+                        </div>
+
+                        {/* Author and Date */}
+                        <div className="flex items-center text-sm text-gray-500 mb-6">
+                            <div className="flex items-center">
+                                <UserIcon className="mr-1 h-4 w-4" />
+                                <span>{typeof previewBlog.admin === 'object' ? previewBlog.admin.fullName || 'Admin' : 'Admin'}</span>
+                            </div>
+                            <span className="mx-2">•</span>
+                            <div className="flex items-center">
+                                <Calendar className="mr-1 h-4 w-4" />
+                                <span>{new Date().toLocaleDateString()}</span>
+                            </div>
+                        </div>
+
+                        {/* Featured Image */}
+                        {previewBlog.image && (
+                            <div className="mb-8 rounded-lg overflow-hidden">
+                                <img 
+                                    src={previewBlog.image} 
+                                    alt={previewBlog.name} 
+                                    className="w-full h-64 object-cover"
+                                />
+                            </div>
+                        )}
+
+                        {/* Blog Content */}
+                        <div className="prose prose-lg max-w-none">
+                            <div 
+                                dangerouslySetInnerHTML={{ __html: previewBlog.description }}
+                                className="text-gray-700 leading-relaxed"
+                            />
+                        </div>
+                    </div>
+                </Drawer>
+            )}
         </AdminLayout>
     )
 }
@@ -438,6 +584,21 @@ export const action: ActionFunction = async ({ request }) => {
                 admin, id
             })
             return updateUser
+            
+        case "submit_for_review":
+            const reviewBlog = await blog.UpdateBlogStatus({
+                id,
+                status: 'review'
+            })
+            return reviewBlog
+            
+        case "publish":
+            const publishBlog = await blog.UpdateBlogStatus({
+                id,
+                status: 'published'
+            })
+            return publishBlog
+            
         // case "logout":
         //     const logout = await usersController.(intent)
         //     return logout

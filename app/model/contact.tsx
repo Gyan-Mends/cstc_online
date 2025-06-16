@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose from "~/mongoose.server";
 import { ContactInterface } from "~/components/interface";
 
 const contactSchema = new mongoose.Schema({
-    name: {
+    fullname: {
         type: String,
         required: true,
     },
@@ -18,16 +18,23 @@ const contactSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+}, {
+    timestamps: true,
+    collection: 'contacts'
 });
 
 let Contact: mongoose.Model<ContactInterface>;
 
-try {
-    Contact = mongoose.model<ContactInterface>("Contact");
-} catch (error) {
-    Contact = mongoose.model<ContactInterface>("Contact", contactSchema);
+// Delete the model if it exists to ensure fresh registration
+if (mongoose.models.Contact) {
+    delete mongoose.models.Contact;
 }
 
+// Also check for different casing
+if (mongoose.models.contact) {
+    delete mongoose.models.contact;
+}
 
+Contact = mongoose.model<ContactInterface>("Contact", contactSchema);
 
 export default Contact;

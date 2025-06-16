@@ -35,7 +35,7 @@ const ComplianceNotice = () => {
     const submit = useSubmit()
     const [isEditModalOpened, setIsEditModalOpened] = useState(false);
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false);
-    const [dataValue, setDataValue] = useState(" ");
+    const [dataValue, setDataValue] = useState<ComplianceNoticeInterface | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const actionData = useActionData<{ message: string; success: boolean; status: number }>();
     const ReactQuill = typeof window === "object" ? require("react-quill") : () => false
@@ -64,6 +64,8 @@ const ComplianceNotice = () => {
 
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
+        setDataValue(null)
+        setContent("")
     }
 
     useEffect(() => {
@@ -119,6 +121,7 @@ const ComplianceNotice = () => {
                             <button onClick={() => {
                                 setIsEditModalOpened(true)
                                 setDataValue(notice)
+                                setContent(notice.description || "")
                             }}>
                                 <EditIcon className="text-primary" />
                             </button>
@@ -177,12 +180,13 @@ const ComplianceNotice = () => {
             />
 
             {dataValue && (
-                <Drawer isDrawerOpened={isEditModalOpened} handleDrawerClosed={handleEditModalClosed} title="Edit Blog">
+                <Drawer isDrawerOpened={isEditModalOpened} handleDrawerClosed={handleEditModalClosed} title="Edit Compliance Notice">
                     <Form method="post" className="flex flex-col gap-4 p-4">
                         <Input
                             label="Title"
                             name="title"
-                            defaultValue={dataValue?.title || ""}
+                            value={dataValue?.title || ""}
+                            onChange={(e) => setDataValue(dataValue ? {...dataValue, title: e.target.value} : null)}
                             placeholder=" "
                             type="text"
                             labelPlacement="outside"

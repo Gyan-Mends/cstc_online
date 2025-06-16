@@ -25,6 +25,11 @@ const BlogSchema = new mongoose.Schema({
         // required: true,
         type: Schema.Types.ObjectId,
     },
+    status: {
+        type: String,
+        enum: ['draft', 'review', 'published'],
+        default: 'draft',
+    },
 }, {
     timestamps: true
 })

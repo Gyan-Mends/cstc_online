@@ -37,7 +37,7 @@ const Event = () => {
         setIsConfirmModalOpened(false)
         setDataValue(null)
     }
-    const { events, totalPages } = useLoaderData<{ events: EventInterface[], totalPages: number }>();
+    const { events, totalPages, user } = useLoaderData<{ events: EventInterface[], totalPages: number, user: any }>();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [base64Image, setBase64Image] = useState<string | null>(null);
     const actionData = useActionData<{
@@ -305,7 +305,7 @@ const Event = () => {
 
                             {/* Image */}
                             <div className=" ">
-                        <input name="base64Image" value={base64Image} type="hidden" />
+                        <input name="base64Image" value={base64Image || ''} type="hidden" />
                         <label className="font-nunito block text-sm !text-black" htmlFor="image">
                             Image
                         </label>
@@ -318,7 +318,7 @@ const Event = () => {
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                 accept="image/*"
                                 onChange={(event) => {
-                                    const file = event.target.files[0];
+                                    const file = event.target.files?.[0];
                                     if (file) {
                                         const reader = new FileReader();
                                         reader.onloadend = () => {

@@ -141,7 +141,7 @@ export default function BlogPage() {
                                                             <span className="mx-2">•</span>
                                                             <div className="flex items-center">
                                                                 <User className="mr-1 h-4 w-4" />
-                                                                <span>{typeof article.admin === 'object' ? article.admin.name || 'Admin' : 'Admin'}</span>
+                                                                <span>{typeof article.admin === 'object' ? article.admin.fullName || 'Admin' : 'Admin'}</span>
                                                             </div>
                                                             <span className="mx-2">•</span>
                                                             <span>{Math.max(1, Math.ceil((article.description?.length || 0) / 1000))} min read</span>
@@ -260,6 +260,10 @@ export default function BlogPage() {
 
 
 export const loader: LoaderFunction = async () => {
-    const articles = await Blog.find()
+    // Only fetch published blogs for public viewing
+    const articles = await Blog.find({ status: 'published' })
+        .populate("admin", "fullName email")
+        .populate("category", "name description")
+        .sort({ createdAt: -1 })
     return json({ articles })
 }

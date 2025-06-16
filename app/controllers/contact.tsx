@@ -3,29 +3,28 @@ import Contact from "~/model/contact"
 
 class ContactController {
     async Create({
-        fullName,
+        fullname,
         email,
         phone,
         message
     }: {
-        fullName: string,
+        fullname: string,
         email: string,
         phone: string,
         message: string
     }) {
-        const newConatact = new Contact({
-            fullName,
+        const newContact = new Contact({
+            fullname,
             email,
             phone,
             message
         })
 
-        const response = await newConatact.save()
+        const response = await newContact.save()
         if (response) {
             return json({ message: "Message sent successfully", success: true });
         } else {
-            return json({ message: "Message not sent ", success: true });
-
+            return json({ message: "Message not sent", success: false });
         }
     }
 
@@ -47,7 +46,7 @@ class ContactController {
             ? {
                 $or: [
                     {
-                        fullName: {
+                        fullname: {
                             $regex: new RegExp(
                                 search_term
                                     .split(" ")
@@ -57,25 +56,32 @@ class ContactController {
                             ),
                         },
                     },
-
+                    {
+                        email: {
+                            $regex: new RegExp(
+                                search_term
+                                    .split(" ")
+                                    .map((term) => `(?=.*${term})`)
+                                    .join(""),
+                                "i"
+                            ),
+                        },
+                    },
                 ],
             }
             : {};
 
         try {
-
-
-            // Get total employee count and calculate total pages       
+            // Get total contact count and calculate total pages       
             const totalContact = await Contact.countDocuments(searchFilter).exec();
             const totalPages = Math.ceil(totalContact / limit);
 
-            // Find users with pagination and search filter
+            // Find contacts with pagination and search filter
             const contacts = await Contact.find(searchFilter)
                 .skip(skipCount)
                 .limit(limit)
+                .sort({ createdAt: -1 })
                 .exec();
-
-
 
             return { contacts, totalPages };
         } catch (error: any) {
@@ -87,20 +93,15 @@ class ContactController {
         }
     }
 
-    async DeleteCat(id: string) {
-        // Delete Logic
-
-        const deleteCategory = await Contact.findByIdAndDelete(id);
-        if (deleteCategory) {
+    async DeleteContact(id: string) {
+        const deleteContact = await Contact.findByIdAndDelete(id);
+        if (deleteContact) {
             return json({ message: "Contact deleted successfully", success: true }, { status: 200 });
         } else {
             return json({ message: "Contact not found", success: false }, { status: 404 });
         }
-
     }
 }
-
-
 
 const contactController = new ContactController
 export default contactController

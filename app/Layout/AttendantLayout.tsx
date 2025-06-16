@@ -29,6 +29,7 @@ import {
     ArrowLeft,
     Bell,
     LogOut,
+    Settings,
 } from "lucide-react";
 import logo from "~/components/image/logo.jpg";
 import ConfirmModal from "~/components/ui/confirmModal";
@@ -172,6 +173,16 @@ const AdminLayout = ({ children, user }: { children: ReactNode, user?: any }) =>
                             </li>
                         </Link>
                     </ul> 
+                    
+                    {/* Settings - Available to all authenticated users */}
+                    <ul className="flex flex-col">
+                        <Link to="/admin/settings">
+                            <li className=" flex items-center gap-2">
+                                <Settings className="h-5 w-5 text-pink-500 " />
+                                Settings
+                            </li>
+                        </Link>
+                    </ul>
                 </div>
 
                 {/* Profile Section

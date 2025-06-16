@@ -79,7 +79,7 @@ export default function GalleryPage() {
     const filteredImages =
         selectedCategory === "All"
             ? galleryImages
-            : galleryImages.filter((image) => image.category === selectedCategory);
+            : galleryImages.filter((image) => image.type === selectedCategory);
 
     return (
         <RootLayout>

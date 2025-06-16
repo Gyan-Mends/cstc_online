@@ -110,8 +110,6 @@ export default function ContactPage() {
                                                 inputWrapper: "bg-white border border-gray-200 !h-60"
                                             }}
                                         />
-
-
                                     </div>
 
                                     <div>
@@ -166,7 +164,7 @@ export default function ContactPage() {
                                 </div>
 
                                 <div className="rounded-lg border border-gray-200 bg-white h-80  shadow-sm">
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7940.728217336641!2d-0.165058!3d5.660366!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sgh!4v1746929755362!5m2!1sen!2sgh" width="600" height="450" className="border:0; h-80 w-full rounded-lg" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d7940.728217336641!2d-0.165058!3d5.660366!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sgh!4v1746929755362!5m2!1sen!2sgh" width="600" height="450" className="border:0; h-80 w-full rounded-lg" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
                                 </div>
 
                                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -204,22 +202,32 @@ export const action: ActionFunction = async ({ request }) => {
         const phone = formData.get("phone") as string
         const message = formData.get("message") as string
 
+        console.log("Form data received:", { fullname, email, phone, message });
+
         if (!fullname || !email || !phone || !message) {
+            console.log("Validation failed - missing fields");
             return json({ success: false, message: "All fields are required" })
         }
 
         try {
-            await Contact.create({
+            console.log("Attempting to create contact...");
+            const newContact = await Contact.create({
                 fullname,
                 email,
                 phone,
                 message,
-            })
+            });
 
+            console.log("Contact created successfully:", newContact);
             return json({ success: true, message: "Your message has been sent successfully!" })
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating contact:", error)
-            return json({ success: false, message: "Failed to send message. Please try again." })
+            console.error("Error details:", {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            return json({ success: false, message: `Failed to send message: ${error.message}` })
         }
     }
 

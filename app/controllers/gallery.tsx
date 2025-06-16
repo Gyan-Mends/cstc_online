@@ -25,10 +25,21 @@ class GalleryController {
         id: string,
         title: string,
         type: string,
-        image: string,
+        image?: string,
     }) {
         try {
-            const updateGallery = await Gallery.findByIdAndUpdate(id, { title, type, image });
+            // Build update object, only include image if a new one is provided
+            const updateData: any = {
+                title,
+                type,
+            };
+
+            // Only update image if a new one is provided
+            if (image && image.trim() !== '') {
+                updateData.image = image;
+            }
+
+            const updateGallery = await Gallery.findByIdAndUpdate(id, updateData);
             if (updateGallery) {
                 return json({ message: "Gallery item updated successfully", success: true }, { status: 200 });
             } else {

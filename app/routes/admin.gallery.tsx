@@ -27,7 +27,7 @@ const Gallery = () => {
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false);
     const [dataValue, setDataValue] = useState<any>({});
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [imagePreview, setImagePreview] = useState("");
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const actionData = useActionData<{ message: string; success: boolean; status: number }>();
 
     const handleConfirmModalClosed = () => {
@@ -36,6 +36,8 @@ const Gallery = () => {
 
     const handleEditModalClosed = () => {
         setIsEditModalOpened(false)
+        setImagePreview(null)
+        setDataValue(null)
     }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +56,7 @@ const Gallery = () => {
             successToast(actionData?.message)
             setIsDrawerOpen(false)
             setIsEditModalOpened(false)
-            setImagePreview("")
+            setImagePreview(null)
         } else if (actionData?.message) {
             errorToast(actionData?.message)
         }
@@ -64,7 +66,7 @@ const Gallery = () => {
         if (dataValue?.image) {
             setImagePreview(dataValue.image);
         } else {
-            setImagePreview("");
+            setImagePreview(null);
         }
     }, [dataValue]);
 
@@ -233,7 +235,20 @@ const Gallery = () => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="image" className="font-nunito text-sm ">Image</label>
+                            <label htmlFor="image" className="font-nunito text-sm ">Image (Click to change)</label>
+                            
+                            {/* Current Image Preview */}
+                            {dataValue?.image && !imagePreview && (
+                                <div className="mb-2">
+                                    <p className="text-xs text-gray-500 mb-2">Current image:</p>
+                                    <img 
+                                        src={dataValue.image} 
+                                        alt="Current" 
+                                        className="w-32 h-32 object-cover rounded border"
+                                    />
+                                </div>
+                            )}
+                            
                             <input 
                                 type="file" 
                                 name="image" 
@@ -241,15 +256,22 @@ const Gallery = () => {
                                 accept="image/*"
                                 className="bg-white shadow-sm dark:bg-[#333] border border-black/30 focus:bg-[#333] rounded-md p-2"
                             />
+                            
+                            {/* New Image Preview */}
                             {imagePreview && (
                                 <div className="mt-2">
+                                    <p className="text-xs text-gray-500 mb-2">New image preview:</p>
                                     <img 
                                         src={imagePreview} 
                                         alt="Preview" 
-                                        className="w-32 h-32 object-cover rounded"
+                                        className="w-32 h-32 object-cover rounded border"
                                     />
                                 </div>
                             )}
+                            
+                            <p className="text-xs text-gray-500">
+                                {dataValue?.image ? 'Leave empty to keep current image, or select a new file to replace it.' : 'Select an image file.'}
+                            </p>
                         </div>
 
                         <input hidden name="intent" value="update" type="hidden" />
@@ -339,18 +361,13 @@ export const action: ActionFunction = async ({ request }) => {
         const title = formData.get("title") as string;
         const type = formData.get("type") as string;
         
-        let image = "";
+        let image: string | undefined = undefined;
         const imageFile = formData.get("image") as File;
         
-        if (imageFile.size > 0) {
-            // Convert new image to base64
+        // Only process image if a new file is provided
+        if (imageFile && imageFile.size > 0) {
             const imageBuffer = await imageFile.arrayBuffer();
             image = `data:${imageFile.type};base64,${Buffer.from(imageBuffer).toString('base64')}`;
-        } else {
-            // Get existing image
-            const galleryItem = await galleryController.getGalleryItems({ request });
-            const item = galleryItem.galleryItems.find((item: GalleryInterface) => item._id === id);
-            image = item.image;
         }
 
         return galleryController.updateGallery({

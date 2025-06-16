@@ -248,8 +248,13 @@ export const loader: LoaderFunction = async ({ params }) => {
             throw new Response("Blog not found", { status: 404 });
         }
 
-        // Get related blogs (same category, excluding current blog)
-        const relatedBlogsResult = await blog.getBlogs({ limit: 6 });
+        // Check if the blog is published - only show published blogs to public
+        if (blogResult.blog?.status !== 'published') {
+            throw new Response("Blog not found", { status: 404 });
+        }
+
+        // Get related blogs (same category, published only, excluding current blog)
+        const relatedBlogsResult = await blog.getPublishedBlogs({ limit: 6 });
         const relatedBlogs = relatedBlogsResult.blogs?.filter((b: BlogInterface) => b._id !== id) || [];
 
         return json({ 

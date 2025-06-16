@@ -1,14 +1,17 @@
 export interface ContactInterface {
     _id: string,
-    firstName: string,
-    middleName: string,
-    lastName: string,
-    number: string,
-    company:string,
-    description:string
+    fullname: string,
+    email: string,
+    phone: string,
+    message: string,
+    createdAt?: string,
+    updatedAt?: string,
 }
 
-
+export interface ContactResponse {
+    success: boolean;
+    message: string;
+}
 
 export interface LoginInterface {
     _id: string,
@@ -35,6 +38,9 @@ export interface BlogInterface {
     image: string
     category: string | { _id: string; name: string; description: string }
     admin: string | { _id: string; fullName: string; email: string }
+    status?: 'draft' | 'review' | 'published'
+    createdAt?: string
+    updatedAt?: string
 }
 
 export interface CategoryInterface {

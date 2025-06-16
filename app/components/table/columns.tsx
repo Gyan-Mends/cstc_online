@@ -8,6 +8,7 @@ export const BlogColumns = [
     { title: "Name", allowSort: true },
     { title: "Category", allowSort: true },
     { title: "Description", allowSort: true },
+    { title: "Status", allowSort: true },
     { title: "Action", allowSort: true }
 ]
 
@@ -83,9 +84,9 @@ export const ComplaintColumns = [
 ]
 export const ContactColumns = [
     { title: "Full Name", allowSort: true },
-    { title: "Number", allowSort: true },
-    { title: "Company", allowSort: true },
-    { title: "Description", allowSort: true },
+    { title: "Phone", allowSort: true },
+    { title: "Email", allowSort: true },
+    { title: "Message", allowSort: true },
     { title: "Action", allowSort: true },
  
 ]

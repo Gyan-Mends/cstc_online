@@ -65,10 +65,10 @@ const Category = () => {
                     )}>
                     {contacts.map((contact: ContactInterface, index: number) => (
                         <TableRow key={index}>
-                            <TableCell>{contact?.firstName + " "+contact?.middleName + " "+ contact?.lastName }</TableCell>
-                            <TableCell>{contact?.number}</TableCell>
-                            <TableCell>{contact?.company}</TableCell>
-                            <TableCell>{contact?.description}</TableCell>
+                            <TableCell>{contact?.fullname}</TableCell>
+                            <TableCell>{contact?.phone}</TableCell>
+                            <TableCell>{contact?.email}</TableCell>
+                            <TableCell>{contact?.message}</TableCell>
                             <TableCell className="relative flex items-center gap-4">
 
                                 <button onClick={() => {
@@ -145,7 +145,7 @@ export const action: ActionFunction = async ({ request }) => {
             //     const logout = await usersController.logout(intent)
             //     return logout
             case "delete":
-                const deleteCat = await contactController.DeleteCat(id)
+                const deleteCat = await contactController.DeleteContact(id)
                 return deleteCat
             default:
                 break;
