@@ -16,6 +16,8 @@ import { EditIcon } from "~/icons/EditIcon"
 import { getSession } from "~/session"
 import directorsBankController from "~/controllers/directorsBank"
 import User from "~/model/users"
+import image1 from "~/components/image/lawyer.jpg"
+import image2 from "~/components/image/hero3.jpg"
 
 const DirectorsBank = () => {
     const { directors, user, totalPages } = useLoaderData<{ directors: DirectorsBankInterface[], user: { user: string }, totalPages: number | any }>()

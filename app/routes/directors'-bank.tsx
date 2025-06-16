@@ -7,6 +7,8 @@ import { Link, useLoaderData } from "@remix-run/react"
 import RootLayout from "~/Layout/PublicLayout"
 import { json, LoaderFunction } from "@remix-run/node"
 import DirectorsBank from "~/model/directorsBank"
+import image1 from "~/components/image/lawyer.jpg"
+import image2 from "~/components/image/hero3.jpg"
 
 export default function DirectorsBankPage() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -280,12 +282,13 @@ export default function DirectorsBankPage() {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="grid gap-12 md:grid-cols-2 md:items-center">
                             <ScrollAnimation direction="right">
-                                <div className="relative h-[300px] overflow-hidden rounded-lg sm:h-[400px]">
+                                <div className="relative h-[50vh] overflow-hidden rounded-lg">
                                     <img
-                                        src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746965892/db_m5irsq.avif"
+                                    className="h-[50vh] w-full object-cover rounded-lg"
+                                        src={image1}
                                         alt="Director registration"
 
-                                        className="object-cover rounded-lg"
+                                       
                                     />
                                 </div>
                             </ScrollAnimation>
@@ -339,13 +342,15 @@ export default function DirectorsBankPage() {
                 <section className="py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <ScrollAnimation>
-                            <div className="relative h-[600px] overflow-hidden rounded-lg">
-                                <img
-                                    src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746966023/bd2_rbhln4.avif"
-                                    alt="Board meeting with laptops"
+                            <div className="relative h-full w-full overflow-hidden rounded-lg">
+                                <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                                    <img
+                                        src={image2}
+                                        alt="Board meeting with laptops"
 
-                                    className="object-cover w-full rounded-lg"
-                                />
+                                        className="object-cover h-full w-full rounded-lg"
+                                    />
+                                </div>
                             </div>
                         </ScrollAnimation>
                     </div>

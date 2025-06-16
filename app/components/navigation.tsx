@@ -1,12 +1,11 @@
-
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Code2, X, Menu } from "lucide-react"
-import { Link, useParams } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 
 export default function Navigation() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const pathname = useParams()
+    const location = useLocation()
 
     const navItems = [
         { name: "Home", path: "/" },
@@ -40,8 +39,9 @@ export default function Navigation() {
                         <Link
                             key={item.name}
                             to={item.path}
-                            className={`text-sm font-medium transition-colors hover:text-pink-500 ${pathname === item.path ? "text-pink-500" : "text-gray-700"
-                                }`}
+                            className={`text-sm font-medium transition-colors hover:text-pink-500 ${
+                                location.pathname === item.path ? "text-pink-500 font-semibold" : "text-gray-700"
+                            }`}
                         >
                             {item.name}
                         </Link>
@@ -68,10 +68,11 @@ export default function Navigation() {
                             <Link
                                 key={item.name}
                                 to={item.path}
-                                className={`block rounded-md px-3 py-2 text-base font-medium ${pathname === item.path
-                                        ? "bg-pink-50 text-pink-500"
+                                className={`block rounded-md px-3 py-2 text-base font-medium transition-colors ${
+                                    location.pathname === item.path
+                                        ? "bg-pink-50 text-pink-500 font-semibold"
                                         : "text-gray-700 hover:bg-gray-50 hover:text-pink-500"
-                                    }`}
+                                }`}
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 {item.name}

@@ -36,52 +36,62 @@ import ConfirmModal from "~/components/ui/confirmModal";
 import logoutController from "~/controllers/logout";
 import usersController from "~/controllers/registration";
 
-
 const AdminLayout = ({ children, user }: { children: ReactNode, user?: any }) => {
-    
-
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const navigation = useNavigation();
-    const navigate = useNavigate();
-    const isLoading = navigation.state === "loading";
-    const [searchTerm, setSearchTerm] = useState("");
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [data, setData] = useState([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [isConfirmModalOpened, setIsConfirmModalOpened] = useState(false)
-    const [dataValue, setDataValue] = useState<any>()
+    const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate()
+    const location = useLocation()
     const submit = useSubmit()
+    const navigation = useNavigation()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
+    const [itemsPerPage, setItemsPerPage] = useState(10)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
+    const [data, setData] = useState([])
+    const [dataValue, setDataValue] = useState<any>()
+
     const handleConfirmModalClosed = () => {
         setIsConfirmModalOpened(false)
     }
 
+    const handleConfirmModalConfirmed = async () => {
+        setIsLoading(true)
+        try {
+            const result = await logoutController.logout()
+            navigate("/login")
+        } catch (error) {
+            console.error("Logout error:", error)
+        } finally {
+            setIsLoading(false)
+            setIsConfirmModalOpened(false)
+        }
+    }
 
+    // Helper function to check if a path is active
+    const isActivePath = (path: string) => {
+        return location.pathname === path || location.pathname.startsWith(path + '/')
+    }
 
-
+    // Helper function to get link classes
+    const getLinkClasses = (path: string) => {
+        const isActive = isActivePath(path)
+        return `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+            isActive 
+                ? "bg-pink-50 text-pink-600 font-semibold" 
+                : "text-gray-700 hover:bg-gray-50 hover:text-pink-500"
+        }`
+    }
 
     return (
-        <div className="flex h-screen bg-gray-50 dark:bg-[#000000]">
-
+        <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
-            <div
-                className={`
-                  ${isSidebarOpen ? "w-64" : "w-0 -ml-64"}
-                  bg-white dark:bg-[#111111] border-r dark:border-r-[#333333] border-r-black/20  shadow-r-md transition-all duration-300 ease-in-out flex flex-col z-30 fixed h-full md:relative
-                `}
-            >
-                <div className="flex items-center justify-between p-4 border-b border-b-black/20">
-                    <div className="flex items-center">
-                        <div className="h-8 w-8 rounded  flex items-center justify-center text-white font-bold font-montserrat">
-                            <img src={logo} alt="" />
-                        </div>
-                        <span className="ml-2 text-xl font-bold text-pink-400 font-montserrat">
-                            CSTS
-                        </span>
-                    </div>
+            <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0`}>
+                <div className="flex items-center justify-between h-16 px-4 border-b">
+                    <img className="w-[8vw] h-8" src="https://res.cloudinary.com/djlnjjzvt/image/upload/v1746824751/CSTS_Logo_eu8gmg.png" alt="Logo" />
                     <Button
                         variant="ghost"
                         onClick={() => setIsSidebarOpen(false)}
@@ -91,98 +101,57 @@ const AdminLayout = ({ children, user }: { children: ReactNode, user?: any }) =>
                     </Button>
                 </div>
 
-                <div className="flex flex-col flex-1 px-4 py-4 space-y-6">
-                    <ul className="flex flex-col">
-                        <Link to="/admin">
-                            <li className=" flex items-center gap-2">
-                                <LayoutDashboard className="h-5 w-5 text-pink-500 " />
-                                Dashboard
-                            </li>
-                        </Link>
-                    </ul>
+                <div className="flex flex-col flex-1 px-4 py-4 space-y-2">
+                    <Link to="/admin" className={getLinkClasses("/admin")}>
+                        <LayoutDashboard className="h-5 w-5" />
+                        Dashboard
+                    </Link>
                     
                     {/* Admin-only navigation items */}
                     {user?.role === 'admin' && (
                         <>
-                            <ul className="flex flex-col">
-                                <Link to="/admin/users">
-                                    <li className=" flex items-center gap-2">
-                                        <Users className="h-5 w-5 text-pink-500 " />
-                                        Users
-                                    </li>
-                                </Link>
-                            </ul>
-                            <ul className="flex flex-col">
-                                <Link to="/admin/contact">
-                                    <li className=" flex items-center gap-2">
-                                        <Mail className="h-5 w-5 text-pink-500 " />
-                                        Contact Us
-                                    </li>
-                                </Link>
-                            </ul>
+                            <Link to="/admin/users" className={getLinkClasses("/admin/users")}>
+                                <Users className="h-5 w-5" />
+                                Users
+                            </Link>
+                            <Link to="/admin/contact" className={getLinkClasses("/admin/contact")}>
+                                <Mail className="h-5 w-5" />
+                                Contact Us
+                            </Link>
                         </>
                     )}
                     
                     {/* Navigation items available to both admin and staff */}
-                   
-                    <ul className="flex flex-col">
-                        <Link to="/admin/blog">
-                            <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
-                                Blog
-                            </li>
-                        </Link>
-                    </ul>
-                    <ul className="flex flex-col">
-                        <Link to="/admin/training">
-                            <li className=" flex items-center gap-2">
-                                <Book className="h-5 w-5 text-pink-500 " />
-                                Training
-                            </li>
-                        </Link>
-                    </ul>
-                     <ul className="flex flex-col">
-                        <Link to="/admin/event">
-                            <li className=" flex items-center gap-2">
-                                <Calendar className="h-5 w-5 text-pink-500 " />
-                                Events
-                            </li>
-                        </Link>
-                    </ul> 
-                     <ul className="flex flex-col">
-                        <Link to="/admin/compliance-notice">
-                            <li className=" flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-pink-500 " />
-                                Compliance Notice
-                            </li>
-                        </Link>
-                    </ul> 
-                     <ul className="flex flex-col">
-                        <Link to="/admin/gallery">
-                            <li className=" flex items-center gap-2">
-                                <ImageIcon className="h-5 w-5 text-pink-500 " />
-                                Gallery
-                            </li>
-                        </Link>
-                    </ul> 
-                     <ul className="flex flex-col">
-                        <Link to="/admin/directors-bank">
-                            <li className=" flex items-center gap-2">
-                                <Users className="h-5 w-5 text-pink-500 " />
-                                Directors Bank
-                            </li>
-                        </Link>
-                    </ul> 
+                    <Link to="/admin/blog" className={getLinkClasses("/admin/blog")}>
+                        <Book className="h-5 w-5" />
+                        Blog
+                    </Link>
+                    <Link to="/admin/training" className={getLinkClasses("/admin/training")}>
+                        <Book className="h-5 w-5" />
+                        Training
+                    </Link>
+                    <Link to="/admin/event" className={getLinkClasses("/admin/event")}>
+                        <Calendar className="h-5 w-5" />
+                        Events
+                    </Link>
+                    <Link to="/admin/compliance-notice" className={getLinkClasses("/admin/compliance-notice")}>
+                        <FileText className="h-5 w-5" />
+                        Compliance Notice
+                    </Link>
+                    <Link to="/admin/gallery" className={getLinkClasses("/admin/gallery")}>
+                        <ImageIcon className="h-5 w-5" />
+                        Gallery
+                    </Link>
+                    <Link to="/admin/directors-bank" className={getLinkClasses("/admin/directors-bank")}>
+                        <Users className="h-5 w-5" />
+                        Directors Bank
+                    </Link>
                     
                     {/* Settings - Available to all authenticated users */}
-                    <ul className="flex flex-col">
-                        <Link to="/admin/settings">
-                            <li className=" flex items-center gap-2">
-                                <Settings className="h-5 w-5 text-pink-500 " />
-                                Settings
-                            </li>
-                        </Link>
-                    </ul>
+                    <Link to="/admin/settings" className={getLinkClasses("/admin/settings")}>
+                        <Settings className="h-5 w-5" />
+                        Settings
+                    </Link>
                 </div>
 
                 {/* Profile Section
@@ -285,41 +254,56 @@ const AdminLayout = ({ children, user }: { children: ReactNode, user?: any }) =>
                        </div>
                     </div>
                 </header>
-                {/* confirm modal */}
-                {/* confirm modal */}
-                <ConfirmModal className="dark:bg-slate-950 border border-white/5" header="Confirm Logout" content="Are you sure to logout?" isOpen={isConfirmModalOpened} onOpenChange={handleConfirmModalClosed}>
+
+                {/* Main content area */}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4">
+                    {children}
+                </main>
+            </div>
+
+            {/* Overlay for mobile */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
+            {/* Confirm Modal */}
+            <ConfirmModal
+                isOpen={isConfirmModalOpened}
+                onOpenChange={handleConfirmModalClosed}
+                header="Confirm Logout"
+                content="Are you sure you want to logout?"
+                className="dark:bg-slate-950 border border-white/5"
+            >
                 <div className="flex gap-4">
-                    <Button color="primary" variant="flat" className="font-montserrat font-semibold" size="sm" onPress={handleConfirmModalClosed}>
-                        No
+                    <Button 
+                        color="primary" 
+                        variant="flat" 
+                        className="font-montserrat font-semibold" 
+                        size="sm" 
+                        onPress={handleConfirmModalClosed}
+                    >
+                        Cancel
                     </Button>
-                    <Button color="danger" variant="flat" className="font-montserrat font-semibold " size="sm" onClick={() => {
-                        handleConfirmModalClosed()
-                        submit({
-                            intent: "logout",
-                        }, {
-                            method: "post"
-                        })
-                    }} >
-                        Yes
+                    <Button 
+                        color="danger" 
+                        variant="flat" 
+                        className="font-montserrat font-semibold" 
+                        size="sm" 
+                        onPress={handleConfirmModalConfirmed}
+                        isLoading={isLoading}
+                    >
+                        Logout
                     </Button>
                 </div>
             </ConfirmModal>
-
-                <main className="flex-1 overflow-auto p-4 sm:p-6 bg-muted/30">
-                    {isLoading ? (
-                        <div className="flex items-center justify-center h-full">
-                            <Spinner size="lg" />
-                        </div>
-                    ) : (
-                        children
-                    )}
-                </main>
-            </div>
         </div>
-    );
-};
+    )
+}
 
-export default AdminLayout;
+export default AdminLayout
 
 
 
